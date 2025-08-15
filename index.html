@@ -6,6 +6,15 @@
 <title>برنامج بيع البونيكام — نسخة سريعة</title>
 <meta name="theme-color" content="#FFD700"/>
 
+<!-- أيقونات ومانيفست للشاشة الرئيسية (تأكد أن الملفات موجودة بجانب index.html) -->
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="bonkaim">
+
 <style>
   :root{
     --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
@@ -29,7 +38,6 @@
   .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
   button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
   .ghost{background:#fff;color:#111}
-  .clean{background:#fff;color:#111}
   .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
   label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
   input[type="number"],input[type="date"]{
@@ -51,16 +59,14 @@
   .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
   tfoot td{background:#f1f1f1;font-weight:700}
 
-  /* شارات مربعة لحراج/أجرة عامل */
+  /* مربعات حراج / أجرة عامل (✓/✗) */
   .flagbox {display:inline-flex; align-items:center; justify-content:center; width:34px;height:34px;
             border:2px solid var(--border); border-radius:6px; font-weight:800; font-size:18px;}
   .flag-ok{background:var(--ok-bg); color:var(--ok);}
   .flag-no{background:var(--bad-bg); color:var(--bad);}
 
   .hint{font-size:12px;color:var(--muted);margin-top:6px}
-  @media (max-width:900px){
-    .inputs{grid-template-columns:1fr 1fr}
-  }
+  @media (max-width:900px){ .inputs{grid-template-columns:1fr 1fr} }
 </style>
 </head>
 <body>
@@ -113,8 +119,8 @@
       <thead>
         <tr>
           <th>إجراءات</th>
-          <th>حراج</th>            <!-- (كان: الحالة) -->
-          <th>أجرة عامل</th>       <!-- (كان: تم الدفع؟) -->
+          <th>حراج</th>
+          <th>أجرة عامل</th>
           <th class="c-net">صافي الربح</th>
           <th class="c-worker">أجر العامل (فلين/2)</th>
           <th class="c-fee">حراج %1</th>
@@ -144,18 +150,16 @@
 </div>
 
 <script>
-/* ---------------- إعداد المزامنة (اختياري) ----------------
-  لو تستخدم NoCodeAPI املأ GET_URL و ADD_URL (تبويب GET ثم Add new rows as JSON)
-  مثال:
-  const GET_URL = 'https://v1.nocodeapi.com/<user>/google_sheets/<key>?tabId=الورقة1';
-  const ADD_URL = 'https://v1.nocodeapi.com/<user>/google_sheets/<key>/addRows?tabId=الورقة1';
-
-  أو لو تستخدم Apps Script اترك GET_URL/ADD_URL يشيران إلى السكربت الخاص بك:
-  - GET:   https://script.google.com/macros/s/..../exec?action=get
-  - POST:  https://script.google.com/macros/s/..../exec?action=add
----------------------------------------------------------------- */
-const GET_URL = ''; // ضع رابط جلب الصفوف (إن رغبت)
-const ADD_URL = ''; // ضع رابط الإضافة (إن رغبت)
+/* —— إعداد المزامنة (اختياري) —— 
+   لو NoCodeAPI:
+   const GET_URL = 'https://v1.nocodeapi.com/<user>/google_sheets/<key>?tabId=الورقة1';
+   const ADD_URL = 'https://v1.nocodeapi.com/<user>/google_sheets/<key>/addRows?tabId=الورقة1';
+   أو Apps Script:
+   GET:  https://script.google.com/macros/s/.../exec?action=get
+   POST: https://script.google.com/macros/s/.../exec?action=add
+*/
+const GET_URL = ''; // رابط الجلب إن رغبت
+const ADD_URL = ''; // رابط الإضافة إن رغبت
 
 const LS_KEY='bonikam_sync_v1';
 let rows=[];
@@ -180,7 +184,6 @@ function compute(r){
   r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net; 
   return r;
 }
-
 function flagBox(tf){
   return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`;
 }
@@ -232,12 +235,15 @@ async function addRow(){
 
   try{
     status('جارِ الإرسال للشيت...');
-    // NoCodeAPI body format:
-    const res=await fetch(ADD_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:[{
-      id:row.id,date:row.date,count:row.count,price:row.price,total:row.total,fee:row.fee,worker:row.worker,net:row.net,
-      harajPaid: row.harajPaid?'TRUE':'FALSE',
-      workerPaid: row.workerPaid?'TRUE':'FALSE'
-    }]})});
+    const res=await fetch(ADD_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({data:[{
+        id:row.id,date:row.date,count:row.count,price:row.price,total:row.total,fee:row.fee,worker:row.worker,net:row.net,
+        harajPaid: row.harajPaid?'TRUE':'FALSE',
+        workerPaid: row.workerPaid?'TRUE':'FALSE'
+      }]})
+    });
     if(!res.ok){
       const t=await res.text();
       status('فشل رفع الصف. محفوظ محليًا.'); alert('تعذّر الإرسال الآن.\n\n'+t);
