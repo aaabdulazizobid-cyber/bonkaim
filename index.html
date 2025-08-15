@@ -1,75 +1,78 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>برنامج بيع البونيكام — نسخة سريعة</title>
-<meta name="theme-color" content="#FFD700"/>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>برنامج بيع البونيكام — نسخة سريعة</title>
+  <meta name="theme-color" content="#FFD700"/>
 
-<!-- أيقونات للشاشة الرئيسية (تأكد أن هذه الملفات بجانب index.html) -->
-<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png?v=3">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=3">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="bonkaim">
-<link rel="manifest" href="manifest.webmanifest">
+  <!-- أيقونات PWA (اختياري لو عندك الملفات بالريبو) -->
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" sizes="192x192" href="icon-192.png">
+  <link rel="icon" sizes="512x512" href="icon-512.png">
+  <link rel="manifest" href="manifest.webmanifest">
 
-<style>
-  :root{
-    --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
-    --gold:#ffd400; --border:#000;
-    --c1:#f7f0e2; /* الإجمالي */
-    --c2:#e8f3e2; /* سعر */
-    --c3:#e7f0fb; /* عدد */
-    --c4:#ffe9b6; /* التاريخ */
-    --c5:#f3e0e7; /* حراج% */
-    --c6:#e6ecfa; /* أجر العامل (رقمي) */
-    --c7:#e7f4e1; /* صافي */
-    --ok:#2e7d32; --bad:#b00020;
-    --ok-bg:#dbf2df; --bad-bg:#f8d7da;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
-  header{background:var(--gold); border-bottom:2px solid var(--border); padding:10px 16px; display:flex; align-items:center; gap:10px}
-  .logo{display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:18px}
-  .logo-badge{width:34px;height:34px;border-radius:8px;background:#111;color:#ffd400;display:inline-grid;place-items:center;font-weight:800}
-  .wrap{max-width:1100px;margin:auto;padding:14px}
-  .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
-  button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
-  .ghost{background:#fff;color:#111}
-  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
-  label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
-  input[type="number"],input[type="date"]{
-    width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px
-  }
-  input[type="checkbox"]{width:20px;height:20px}
-  .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
-  tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
-  tbody tr:nth-child(even){background:#fcfcfc}
-  .num{font-variant-numeric:tabular-nums}
-  .c-total{background:var(--c1)}
-  .c-price{background:var(--c2)}
-  .c-count{background:var(--c3)}
-  .c-date{background:var(--c4)}
-  .c-fee{background:var(--c5)}
-  .c-worker{background:var(--c6)}
-  .c-net{background:var(--c7)}
-  .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
-  tfoot td{background:#f1f1f1;font-weight:700}
+  <style>
+    :root{
+      --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
+      --gold:#ffd400; --border:#000;
+      --c1:#f7f0e2; /* الإجمالي */
+      --c2:#e8f3e2; /* سعر */
+      --c3:#e7f0fb; /* عدد */
+      --c4:#ffe9b6; /* التاريخ */
+      --c5:#f3e0e7; /* حراج% */
+      --c6:#e6ecfa; /* أجر العامل (رقمي) */
+      --c7:#e7f4e1; /* صافي */
+      --ok:#2e7d32; --bad:#b00020;
+      --ok-bg:#dbf2df; --bad-bg:#f8d7da;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+      "Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
+    header{background:var(--gold); border-bottom:2px solid var(--border);
+      padding:10px 16px; display:flex; align-items:center; gap:10px}
+    .logo{display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:18px}
+    .logo-badge{width:34px;height:34px;border-radius:8px;background:#111;color:#ffd400;
+      display:inline-grid;place-items:center;font-weight:800}
+    .wrap{max-width:1100px;margin:auto;padding:14px}
+    .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+    button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
+    .ghost{background:#fff;color:#111}
+    .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
+    label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
+    input[type="number"],input[type="date"]{
+      width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px
+    }
+    input[type="checkbox"]{width:20px;height:20px}
+    .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
+    tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
+    tbody tr:nth-child(even){background:#fcfcfc}
+    .num{font-variant-numeric:tabular-nums}
+    .c-total{background:var(--c1)}
+    .c-price{background:var(--c2)}
+    .c-count{background:var(--c3)}
+    .c-date{background:var(--c4)}
+    .c-fee{background:var(--c5)}
+    .c-worker{background:var(--c6)}
+    .c-net{background:var(--c7)}
+    .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
+    tfoot td{background:#f1f1f1;font-weight:700}
 
-  /* مربعات ✓/✗ لحراج وأجرة عامل */
-  .flagbox{display:inline-flex; align-items:center; justify-content:center; width:34px;height:34px;
-           border:2px solid var(--border); border-radius:6px; font-weight:800; font-size:18px;}
-  .flag-ok{background:var(--ok-bg); color:var(--ok);}
-  .flag-no{background:var(--bad-bg); color:var(--bad);}
+    /* مربّعات ✓/✗ لعمودي حراج + أجرة عامل */
+    .flagbox{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:34px;height:34px;border:2px solid var(--border);border-radius:6px;
+      font-weight:800;font-size:18px;
+    }
+    .flag-ok{background:var(--ok-bg);color:var(--ok)}
+    .flag-no{background:var(--bad-bg);color:var(--bad)}
 
-  .hint{font-size:12px;color:var(--muted);margin-top:6px}
-  @media (max-width:900px){
-    .inputs{grid-template-columns:1fr 1fr}
-  }
-</style>
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    @media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
+  </style>
 </head>
 <body>
 <header>
@@ -113,7 +116,9 @@
         <button id="btnAdd">+ إضافة</button>
       </div>
     </div>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets.</div>
+    <div class="hint">
+      الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets عند توافر الشبكة.
+    </div>
   </div>
 
   <div class="table-wrap" style="margin-top:12px">
@@ -121,11 +126,11 @@
       <thead>
         <tr>
           <th>إجراءات</th>
-          <th>حراج</th>
-          <th>أجرة عامل</th>
+          <th>حراج</th>            <!-- (كان: الحالة) -->
+          <th>أجرة عامل</th>       <!-- (كان: تم الدفع؟) -->
           <th class="c-net">صافي الربح</th>
-          <th class="c-worker">أجر العامل (فلين/2)</th>
-          <th class="c-fee">حراج %1</th>
+          <th class="c-worker">(2/فلين) أجر العامل</th>
+          <th class="c-fee">حراج 1%</th>
           <th class="c-total">الإجمالي</th>
           <th class="c-price">سعر الفلين</th>
           <th class="c-count">عدد الفلين</th>
@@ -152,18 +157,14 @@
 </div>
 
 <script>
-/* ================== مزامنة عبر Google Apps Script ==================
-   استخدم رابط الويب آب عندك (نشر → نشر تنفيذ جديد → Web app)
-   هذا الرابط اللي أعطيتني آخر مرة:
-*/
-const APPS_URL = 'https://script.google.com/macros/s/AKfycbwRRRcDqJ7itfDfqPoq_lxw3dDBaW9ksFvByJ5yQ-tG9iRplqvXPN21QldSnOGOJxc/exec';
-const GET_URL  = APPS_URL + '?action=get';
-const ADD_URL  = APPS_URL + '?action=add';
+/* ===== التزامن عبر Google Apps Script (نفس ما اتفقنا) ===== */
+const APP_URL = 'https://script.google.com/macros/s/AKfycbwRRRcDqJ7itfDfqPoq_lxw3dDBaW9ksFvByJ5yQ-tG9iRplqvXPN21QldSnOGOJxc/exec';
+const GET_URL = APP_URL + '?action=get';
+const ADD_URL = APP_URL + '?action=add';
 
 const LS_KEY='bonikam_sync_v1';
 let rows=[];
 
-/* أدوات مساعدة */
 function todayISO(){
   const d=new Date();
   const t=new Date(d.getTime()-d.getTimezoneOffset()*60000);
@@ -181,10 +182,14 @@ function compute(r){
   const fee=+(total*0.01).toFixed(2);
   const worker=+(c*2).toFixed(2);
   const net=+(total-fee-worker).toFixed(2);
-  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net;
+  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net; 
   return r;
 }
-function flagBox(tf){ return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`; }
+
+/* مربّع ✓/✗ */
+function flagBox(tf){
+  return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`;
+}
 
 function render(){
   const tb=document.getElementById('tbody'); tb.innerHTML='';
@@ -220,7 +225,6 @@ function delRow(id){
   save(); render(); status('حُذف محليًا (الشيت لم يتغيّر).');
 }
 
-/* إضافة صف (POST → Apps Script) */
 async function addRow(){
   const date=document.getElementById('date').value||todayISO();
   const count=+document.getElementById('count').value||0;
@@ -232,7 +236,6 @@ async function addRow(){
     id: Date.now()+''+Math.random().toString(16).slice(2),
     date,count,price,harajPaid,workerPaid
   });
-
   rows.push(row); save(); render();
 
   try{
@@ -240,45 +243,49 @@ async function addRow(){
     const res=await fetch(ADD_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ row })
+      body: JSON.stringify({data:[{
+        id:row.id,date:row.date,count:row.count,price:row.price,total:row.total,
+        fee:row.fee,worker:row.worker,net:row.net,
+        harajPaid: row.harajPaid?'TRUE':'FALSE',
+        workerPaid: row.workerPaid?'TRUE':'FALSE'
+      }]})
     });
     if(!res.ok){
       const t=await res.text();
-      status('فشل رفع الصف. محفوظ محليًا.'); alert('تعذّر الإرسال الآن.\n\n'+t);
+      status('تعذّر الإرسال، محفوظ محلياً.');
+      alert('تعذّر الإرسال الآن—محفوظ محلياً.\n\n'+t);
     }else{
       status('تم الرفع للشيت ✔️');
     }
   }catch(e){
-    status('الشيت غير متاح الآن.'); alert('تعذّر الإرسال الآن—محفوظ محليًا.');
+    status('الشيت غير متاح الآن. محفوظ محلياً.');
   }
+
   document.getElementById('count').value='';
   document.getElementById('price').value='';
 }
 
-/* سحب الصفوف (GET ← Apps Script) */
 async function pull(){
   try{
     status('جارِ التحديث من الشيت...');
     const r=await fetch(GET_URL);
     if(!r.ok) throw new Error('GET failed');
-    const j=await r.json(); // {data:[...]}
-    const arr=Array.isArray(j.data)? j.data : [];
+    const j=await r.json();
+    const arr=Array.isArray(j.data)? j.data : (Array.isArray(j)? j : []);
     rows = arr.map(o=>compute({
-      id: o.id ?? o.ID ?? '',
-      date: o.date ?? '',
+      id:o.id??o.ID??'',
+      date:o.date??'',
       count:+o.count||0, price:+o.price||0,
       total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
-      harajPaid: (o.harajPaid===true||o.harajPaid==='TRUE'||o.harajPaid==='تم'||o.harajPaid==='✓'),
-      workerPaid:(o.workerPaid===true||o.workerPaid==='TRUE'||o.workerPaid==='تم'||o.workerPaid==='✓')
+      harajPaid:(o.harajPaid===true||o.harajPaid==='TRUE'||o.harajPaid==='تم'),
+      workerPaid:(o.workerPaid===true||o.workerPaid==='TRUE'||o.workerPaid==='تم')
     }));
     save(); render(); status('تم التحديث من الشيت ✔️');
   }catch(e){
-    status('تعذّر الجلب من الشيت.'); alert('تأكد من رابط السكربت/الصلاحيات.');
+    status('تعذّر الجلب من الشيت.');
+    alert('تأكد من رابط السكربت والصلاحيات (Anyone).');
   }
 }
-
-/* تحديث تلقائي خفيف عند الرجوع للصفحة */
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) pull(); });
 
 document.getElementById('btnAdd').addEventListener('click', addRow);
 document.getElementById('btnPull').addEventListener('click', pull);
