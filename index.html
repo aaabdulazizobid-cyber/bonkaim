@@ -1,216 +1,245 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>برنامج بيع البونيكام</title>
-<meta name="theme-color" content="#f4c400">
-<link rel="manifest" href="manifest.webmanifest">
-<style>
-  :root{
-    --gold:#f4c400;
-    --ink:#111;
-    --muted:#666;
-    --card:#fff;
-    --bg:#f7f7f9;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>bonkaim — برنامج بيع البونيكام</title>
 
-    /* ألوان الأعمدة مثل الصورة */
-    --col-date:#ffe5a8;      /* التاريخ */
-    --col-count:#d8ecff;     /* عدد الفلين */
-    --col-price:#e9f7e9;     /* سعر الفلين */
-    --col-total:#ffe9c9;     /* الإجمالي */
-    --col-fee:#f6d6dc;       /* حراج 1% */
-    --col-worker:#dfe8ff;    /* أجرة العامل */
-    --col-net:#d6f2d6;       /* صافي الربح */
-    --col-state:#f9f3cf;     /* الحالة */
-  }
+  <!-- أيقونة/مانيفست -->
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#FFD400">
 
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  <style>
+    :root{
+      --gold:#FFD400;
+      --ink:#111;
+      --bg:#f8f9fb;
+      --card:#fff;
+      --muted:#666;
 
-  /* شريط أصفر مع شعار bonkaim */
-  header{background:var(--gold);padding:12px 16px;border-bottom:1px solid #000}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px}
-  .brand-logo{
-    width:28px;height:28px;border-radius:6px;background:#000;display:flex;align-items:center;justify-content:center;
-  }
-  .brand-logo span{color:var(--gold);font-weight:900;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+      /* ألوان الأعمدة (مطابقة للصورة) */
+      --col-date:#ffe49a;        /* التاريخ: أصفر باهت */
+      --col-count:#d8ecff;       /* عدد الفلين: سماوي فاتح */
+      --col-price:#def3d9;       /* سعر الفلين: أخضر فاتح */
+      --col-total:#ffe9c9;       /* الإجمالي: بيج/برتقالي فاتح */
+      --col-fee:#ffd6de;         /* حراج 1%: وردي فاتح */
+      --col-worker:#dfe5ff;      /* أجرة العامل: بنفسجي/أزرق فاتح */
+      --col-net:#dff2e3;         /* صافي الربح: نعناعي */
+      --col-state:#fff3bf;       /* الحالة: أصفر باهت */
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;background:var(--bg);color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif
+    }
+    header{
+      background:var(--gold);padding:10px 14px;display:flex;align-items:center;gap:10px
+    }
+    .brand{
+      display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:.4px
+    }
+    .brand-badge{
+      display:inline-flex;align-items:center;justify-content:center;
+      background:#FFD400;border-radius:10px;padding:6px 10px;
+      border:2px solid #111;font-weight:900
+    }
+    .brand-badge span{font-size:16px}
+    .wrap{max-width:1100px;margin:auto;padding:16px}
 
-  .wrap{max-width:1100px;margin:auto;padding:14px}
+    .card{background:#fff;border:2px solid #000;border-radius:12px;padding:12px;margin-top:12px}
 
-  .panel{background:var(--card);border:1px solid #000;border-radius:12px;padding:12px;margin-bottom:12px}
+    /* النموذج */
+    .form{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;align-items:end}
+    label{font-size:13px;color:#444;display:block;margin:4px 0 6px}
+    input[type="date"],input[type="number"]{
+      width:100%;padding:12px 10px;font-size:16px;border:2px solid #000;border-radius:10px;background:#fff
+    }
+    input[type="checkbox"]{width:20px;height:20px}
+    button{
+      padding:12px 14px;font-size:15px;border:2px solid #000;border-radius:10px;background:#111;color:#fff;cursor:pointer
+    }
+    .btn-secondary{background:#fff;color:#111}
+    .btn-green{background:#2e7d32}
+    .btn-danger{background:#fff;color:#b00020;border-color:#ffb6b6}
 
-  .grid{display:grid;grid-template-columns:repeat(6,minmax(140px,1fr));gap:10px}
-  @media (max-width:900px){.grid{grid-template-columns:1fr 1fr}}
+    .status{font-size:12px;color:#333;margin-inline-start:8px}
 
-  label{font-size:13px;color:#444;margin-bottom:6px;display:block}
-  input[type="number"],input[type="date"]{
-    width:100%;padding:10px;border:1.5px solid #000;border-radius:10px;background:#fff;font-size:16px
-  }
-  .chk-row{display:flex;align-items:center;gap:8px;margin-top:8px}
-  input[type="checkbox"]{width:20px;height:20px;border:1.5px solid #000;border-radius:4px}
+    /* الجدول */
+    .table-wrap{margin-top:12px;background:#fff;border:2px solid #000;border-radius:12px;overflow:hidden}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    thead th{
+      position:sticky;top:0;background:#fafafa;z-index:1;
+      border-bottom:2px solid #000;border-left:2px solid #000;
+      font-size:14px;padding:10px;text-align:center
+    }
+    thead th:first-child{border-right:2px solid #000}
+    tbody td, tfoot td{
+      padding:10px 8px;text-align:center;
+      border-bottom:2px solid #000;border-left:2px solid #000
+    }
+    tbody tr:nth-child(even){background:#fcfcfc}
+    tfoot td{font-weight:700;background:#f0f0f0}
+    .num{font-variant-numeric:tabular-nums}
 
-  .btn{padding:12px 14px;border:1.5px solid #000;border-radius:10px;background:#000;color:#fff;cursor:pointer}
-  .btn.secondary{background:#fff;color:#000}
-  .btn.small{padding:6px 10px;font-size:13px;border-radius:8px}
+    /* ألوان الأعمدة بالترتيب كما بالصورة */
+    thead th.col-actions, tbody td.col-actions{background:#fff}
+    thead th.col-state,   tbody td.col-state{background:var(--col-state)}
+    thead th.col-paid,    tbody td.col-paid{background:#fff} /* عمود مربع الصح نفسه */
+    thead th.col-net,     tbody td.col-net{background:var(--col-net)}
+    thead th.col-worker,  tbody td.col-worker{background:var(--col-worker)}
+    thead th.col-fee,     tbody td.col-fee{background:var(--col-fee)}
+    thead th.col-total,   tbody td.col-total{background:var(--col-total)}
+    thead th.col-price,   tbody td.col-price{background:var(--col-price)}
+    thead th.col-count,   tbody td.col-count{background:var(--col-count)}
+    thead th.col-date,    tbody td.col-date{background:var(--col-date)}
 
-  .tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-  .status{font-size:12px;color:#333}
+    /* شارات الحالة (تم/لم يتم) */
+    .badge{
+      min-width:44px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:2px;border-radius:24px;padding:8px 6px;border:2px solid #000;font-size:12px;line-height:1
+    }
+    .badge-ok{background:#d4f7da}
+    .badge-ok::before{content:"تم";font-weight:700}
+    .badge-no{background:#ffd7d7}
+    .badge-no::before{content:"لم";font-weight:700}
+    .badge small{font-size:11px}
 
-  /* جدول بحدود سوداء غليظة */
-  .tablewrap{background:#fff;border:1.5px solid #000;border-radius:12px;overflow:hidden}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid #000;padding:10px;font-size:14px;text-align:center}
-  tbody td, tfoot td{border-top:1px solid #000;border-right:1px solid #000;text-align:center;padding:10px}
-  tbody tr:nth-child(even){background:#fcfcfc}
-  tfoot td{font-weight:700;background:#f0f0f0}
-
-  /* ألوان الأعمدة */
-  td.col-date   {background:var(--col-date)}
-  td.col-count  {background:var(--col-count)}
-  td.col-price  {background:var(--col-price)}
-  td.col-total  {background:var(--col-total)}
-  td.col-fee    {background:var(--col-fee)}
-  td.col-worker {background:var(--col-worker)}
-  td.col-net    {background:var(--col-net)}
-  td.col-state  {background:var(--col-state)}
-
-  .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1.5px solid #000;border-radius:999px;font-size:12px}
-  .badge.ok{background:#dff3df}
-  .badge.no{background:#ffdcdc}
-  .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #000;background:#fff}
-  .ok .dot{background:#2e7d32}
-  .no .dot{background:#b00020}
-
-  .row-actions .btn{background:#fff;color:#000}
-  .num{font-variant-numeric:tabular-nums}
-  .hint{font-size:12px;color:#666;margin-top:6px}
-</style>
+    .row-actions button{padding:6px 10px;font-size:13px;border-radius:8px}
+    .hint{font-size:12px;color:#666;margin-top:6px}
+    @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px}}
+  </style>
 </head>
 <body>
-
-<header>
-  <div class="wrap">
+  <header>
     <div class="brand">
-      <div class="brand-logo"><span>bk</span></div>
-      bonkaim — برنامج بيع البونيكام
+      <div class="brand-badge"><span>bonkaim</span></div>
+      <div>برنامج بيع البونيكام</div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn-secondary" id="btnPull">تحديث من الشيت</button>
+        <button class="btn-secondary" id="btnClearLocal">مسح المحلي</button>
+        <span id="syncStat" class="status">جاهز.</span>
+      </div>
+
+      <form id="entryForm" class="form">
+        <div>
+          <label>عدد الفلين</label>
+          <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 100" required>
+        </div>
+        <div>
+          <label>التاريخ</label>
+          <input type="date" id="date" required>
+        </div>
+        <div>
+          <label>سعر الفلين (ريال)</label>
+          <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25" required>
+        </div>
+        <div>
+          <label style="margin-bottom:6px">دفع الحراج؟</label><br>
+          <input type="checkbox" id="harajPaid">
+        </div>
+        <div>
+          <label style="margin-bottom:6px">دفع أجرة العامل؟</label><br>
+          <input type="checkbox" id="workerPaid">
+        </div>
+        <div>
+          <button type="submit" class="btn-green" style="width:100%">+ إضافة</button>
+        </div>
+      </form>
+      <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — الحفظ محلي + مزامنة مع Google Sheets.</div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th class="col-actions">إجراءات</th>
+            <th class="col-state">الحالة</th>
+            <th class="col-paid">تم الدفع؟</th>
+            <th class="col-net">صافي الربح</th>
+            <th class="col-worker">أجرة العامل (2/فلين)</th>
+            <th class="col-fee">حراج 1%</th>
+            <th class="col-total">الإجمالي</th>
+            <th class="col-price">سعر الفلين</th>
+            <th class="col-count">عدد الفلين</th>
+            <th class="col-date">التاريخ</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td>الإجماليات</td>
+            <td></td>
+            <td></td>
+            <td id="tNet" class="num">0.00</td>
+            <td id="tWorker" class="num">0.00</td>
+            <td id="tFee" class="num">0.00</td>
+            <td id="tTotal" class="num">0.00</td>
+            <td id="tAvgPrice" class="num">0.00 (متوسط)</td>
+            <td id="tCount" class="num">0</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
   </div>
-</header>
-
-<div class="wrap">
-
-  <div class="panel">
-    <div class="tools">
-      <button id="btnPull" class="btn secondary">تحديث من الشيت</button>
-      <button id="btnClearLocal" class="btn secondary">مسح المحلي</button>
-      <span id="syncStat" class="status">جاهز.</span>
-    </div>
-
-    <form id="entryForm" class="grid">
-      <div>
-        <label>عدد الفلين</label>
-        <input type="number" id="count" inputmode="numeric" step="1" min="0" placeholder="مثال: 100" required>
-      </div>
-      <div>
-        <label>التاريخ</label>
-        <input type="date" id="date" required>
-      </div>
-      <div>
-        <label>سعر الفلين (ريال)</label>
-        <input type="number" id="price" inputmode="decimal" step="0.01" min="0" placeholder="مثال: 25" required>
-      </div>
-      <div class="chk-row">
-        <input type="checkbox" id="harajPaid">
-        <label for="harajPaid" style="margin:0">دفع الحراج</label>
-      </div>
-      <div class="chk-row">
-        <input type="checkbox" id="workerPaid">
-        <label for="workerPaid" style="margin:0">دفع أجرة العامل</label>
-      </div>
-      <div><button class="btn" type="submit" style="width:100%">+ إضافة</button></div>
-    </form>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا ويُزامن مع Google Sheets.</div>
-  </div>
-
-  <div class="tablewrap">
-    <table id="tbl">
-      <thead>
-        <tr>
-          <th>إجراءات</th>
-          <th>الحالة</th>
-          <th>صافي الربح</th>
-          <th>أجرة العامل (2/فلين)</th>
-          <th>حراج 1%</th>
-          <th>الإجمالي</th>
-          <th>سعر الفلين</th>
-          <th>عدد الفلين</th>
-          <th>التاريخ</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-      <tfoot>
-        <tr>
-          <td>الإجماليات</td>
-          <td></td>
-          <td id="tNet" class="num">0.00</td>
-          <td id="tWorker" class="num">0.00</td>
-          <td id="tFee" class="num">0.00</td>
-          <td id="tTotal" class="num">0.00</td>
-          <td id="tAvgPrice" class="num">0.00 (متوسط)</td>
-          <td id="tCount" class="num">0</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-
-</div>
 
 <script>
-/* ==== 1) روابطك (بدّلها بما لديك) ==== */
-const GET_URL = 'PUT_YOUR_GET_ENDPOINT_HERE'; // مثال NoCodeAPI: https://v1.nocodeapi.com/bonkaim/google_sheets/XXXX?tabId=الورقة1
-const ADD_URL = 'PUT_YOUR_ADD_ENDPOINT_HERE'; // مثال NoCodeAPI (addRows):  https://v1.nocodeapi.com/bonkaim/google_sheets/XXXX/addRows?tabId=الورقة1
-// أو استخدم Apps Script: GET_URL = 'https://script.google.com/macros/s/.../exec?sheet=الورقة1&op=get' وهكذا
+/* =============== الإعدادات =============== */
+/* اختر وضع المزامنة: 'NOCODEAPI' أو 'APPS_SCRIPT' */
+const SYNC_MODE = 'NOCODEAPI'; // غيّرها إلى 'APPS_SCRIPT' لو بتستخدم سكربت جوجل
 
-/* ==== 2) تخزين محلي ==== */
-const LS_KEY='bonikam_sync_v2';
-let entries=[];
+/* NoCodeAPI */
+const NOCODE_GET  = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ?tabId=الورقة1';
+const NOCODE_POST = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ/addRows?tabId=الورقة1';
+
+/* Apps Script (ضع رابطك هنا إذا استخدمته) */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRRRcDqJ7itfDfqPoq_lxw3dDBaW9ksFvByJ5yQ-tG9iRplqvXPN21QldSnOGOJxc/exec';
+
+/* =============== من هنا يبدأ التطبيق =============== */
+const LS_KEY = 'bonikam_sync_v2';
+let entries = [];
 
 function todayISO(){
-  const d=new Date();const z=new Date(d.getTime()-d.getTimezoneOffset()*60000);
-  return z.toISOString().slice(0,10);
+  const d = new Date();
+  const tz = new Date(d.getTime() - d.getTimezoneOffset()*60000);
+  return tz.toISOString().slice(0,10);
 }
 function load(){ entries = JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(entries)); }
-function statusMsg(t){ document.getElementById('syncStat').textContent=t; }
+function status(t){ document.getElementById('syncStat').textContent = t; }
 
-/* ==== 3) حساب القيم ==== */
 function compute(e){
-  const c=+e.count||0, p=+e.price||0;
-  const total=c*p;
-  const fee=+(total*0.01).toFixed(2);
-  const worker=+(c*2).toFixed(2);
-  const net=+(total-fee-worker).toFixed(2);
+  const c = +e.count||0, p = +e.price||0;
+  const total = c*p;
+  const fee = +(total*0.01).toFixed(2);
+  const worker = +(c*2).toFixed(2);
+  const net = +(total - fee - worker).toFixed(2);
   e.total=+total.toFixed(2); e.fee=fee; e.worker=worker; e.net=net;
   return e;
 }
 
-/* ==== 4) رسم الجدول بالألوان والبادجات ==== */
-function badge(paid){
-  return `<span class="badge ${paid?'ok':'no'}">
-            <span class="dot"></span>
-            ${paid?'تم الدفع':'لم يتم الدفع'}
-          </span>`;
+function badgeHTML(yes){
+  return yes
+    ? '<div class="badge badge-ok"><small>الدفع</small></div>'
+    : '<div class="badge badge-no"><small>يتم الدفع</small></div>';
 }
+
 function render(){
-  const tb=document.getElementById('tbody'); tb.innerHTML='';
-  entries.sort((a,b)=>a.date.localeCompare(b.date));
+  const tb = document.getElementById('tbody'); tb.innerHTML='';
+  entries.sort((a,b)=> a.date.localeCompare(b.date));
   for(const e of entries){
-    const tr=document.createElement('tr');
+    const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="row-actions"><button class="btn small" onclick="delRow('${e.id}')">حذف</button></td>
-      <td class="col-state">${badge(e.workerPaid)}</td>
+      <td class="col-actions row-actions"><button class="btn-danger" onclick="delRow('${e.id}')">حذف</button></td>
+      <td class="col-state">${badgeHTML(e.harajPaid)}</td>
+      <td class="col-paid">${e.workerPaid? '✅' : '⬜️'}</td>
       <td class="col-net num">${(e.net??0).toFixed(2)}</td>
       <td class="col-worker num">${(e.worker??0).toFixed(2)}</td>
       <td class="col-fee num">${(e.fee??0).toFixed(2)}</td>
@@ -221,95 +250,112 @@ function render(){
     `;
     tb.appendChild(tr);
   }
-  const sum=k=>entries.reduce((a,c)=>a+Number(c[k]||0),0);
-  const avgPrice = entries.length? entries.reduce((a,c)=>a+Number(c.price||0),0)/entries.length : 0;
-  document.getElementById('tCount').textContent = sum('count').toFixed(0);
-  document.getElementById('tTotal').textContent = sum('total').toFixed(2);
-  document.getElementById('tFee').textContent   = sum('fee').toFixed(2);
-  document.getElementById('tWorker').textContent= sum('worker').toFixed(2);
-  document.getElementById('tNet').textContent   = sum('net').toFixed(2);
-  document.getElementById('tAvgPrice').textContent = avgPrice.toFixed(2)+' (متوسط)';
+  const sum = k=>entries.reduce((a,c)=>a+Number(c[k]||0),0);
+  const priceAvg = entries.length? (entries.reduce((a,c)=>a+Number(c.price||0),0)/entries.length):0;
+  document.getElementById('tCount').textContent  = sum('count').toFixed(0);
+  document.getElementById('tTotal').textContent  = sum('total').toFixed(2);
+  document.getElementById('tFee').textContent    = sum('fee').toFixed(2);
+  document.getElementById('tWorker').textContent = sum('worker').toFixed(2);
+  document.getElementById('tNet').textContent    = sum('net').toFixed(2);
+  document.getElementById('tAvgPrice').textContent = priceAvg.toFixed(2)+' (متوسط)';
 }
-function delRow(id){ entries=entries.filter(x=>x.id!==id); save(); render(); }
 
-/* ==== 5) إضافة صف ==== */
+function delRow(id){
+  entries = entries.filter(x=>x.id!==id);
+  save(); render(); status('حُذف محليًا (لن يُحذف من الشيت).');
+}
+
 async function addEntry(ev){
   ev.preventDefault();
+  const date = document.getElementById('date').value || todayISO();
+  const count = +document.getElementById('count').value || 0;
+  const price = +document.getElementById('price').value || 0;
+  const harajPaid = document.getElementById('harajPaid').checked;
+  const workerPaid = document.getElementById('workerPaid').checked;
+
   const row = compute({
     id: Date.now()+''+Math.random().toString(16).slice(2),
-    date: document.getElementById('date').value || todayISO(),
-    count:+document.getElementById('count').value||0,
-    price:+document.getElementById('price').value||0,
-    harajPaid: document.getElementById('harajPaid').checked,
-    workerPaid: document.getElementById('workerPaid').checked
+    date, count, price, harajPaid, workerPaid
   });
-
   entries.push(row); save(); render();
 
-  // إرسال للشيت (اختياري حسب تفعيل الروابط)
-  if(ADD_URL.startsWith('http')){
-    try{
-      statusMsg('جارِ الرفع للشيت…');
-      const res = await fetch(ADD_URL, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          data:[{
-            id:row.id,date:row.date,count:row.count,price:row.price,total:row.total,
-            fee:row.fee,worker:row.worker,net:row.net,
-            harajPaid: row.harajPaid?'TRUE':'FALSE',
-            workerPaid: row.workerPaid?'TRUE':'FALSE'
-          }]
-        })
+  try{
+    status('جارِ الرفع للشيت...');
+    let ok = false, text = '';
+    if(SYNC_MODE==='NOCODEAPI'){
+      const res = await fetch(NOCODE_POST, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ data: [{
+          id: row.id, date: row.date, count: row.count, price: row.price,
+          total: row.total, fee: row.fee, worker: row.worker, net: row.net,
+          harajPaid: row.harajPaid ? 'TRUE' : 'FALSE',
+          workerPaid: row.workerPaid ? 'TRUE' : 'FALSE'
+        }]})
       });
-      if(!res.ok){ throw new Error(await res.text()); }
-      statusMsg('تمت الإضافة للشيت ✔️');
-    }catch(err){
-      statusMsg('تعذر الإرسال للشيت — محفوظ محليًا.');
-      console.warn(err);
-      alert('تعذّر إرسال الصف للشيت الآن. سيبقى محفوظ محليًا.');
+      ok = res.ok; text = await res.text();
+    }else{
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ contents: JSON.stringify({
+          id: row.id, date: row.date, count: row.count, price: row.price,
+          total: row.total, fee: row.fee, worker: row.worker, net: row.net,
+          harajPaid: row.harajPaid, workerPaid: row.workerPaid
+        })})
+      });
+      ok = res.ok; text = await res.text();
     }
+    if(ok){ status('تمت الإضافة للشيت ✔️'); }
+    else  { status('فشل الإرسال للشيت'); alert('فشل الإرسال للشيت:\n'+text); }
+  }catch(err){
+    status('الشيت غير متاح الآن.'); alert('تعذّر الإرسال للشيت الآن. يبقى محفوظ محليًا.');
   }
 
   document.getElementById('count').value='';
   document.getElementById('price').value='';
 }
 
-/* ==== 6) سحب من الشيت ==== */
 async function pullFromSheet(){
-  if(!GET_URL.startsWith('http')){ statusMsg('فعّل رابط GET أولًا.'); return; }
   try{
-    statusMsg('جارِ التحديث من الشيت…');
-    const r = await fetch(GET_URL);
-    if(!r.ok) throw new Error('GET failed');
-    const j = await r.json();
-    const rows = Array.isArray(j.data)? j.data : [];
+    status('جارِ التحديث من الشيت...');
+    let rows = [];
+    if(SYNC_MODE==='NOCODEAPI'){
+      const res = await fetch(NOCODE_GET);
+      if(!res.ok) throw 0;
+      const data = await res.json();
+      rows = Array.isArray(data.data)? data.data : [];
+    }else{
+      const res = await fetch(APPS_SCRIPT_URL);
+      if(!res.ok) throw 0;
+      rows = await res.json();
+    }
     entries = rows.map(r => compute({
-      id:r.id??r.ID??'',
-      date:r.date??'',
-      count:+r.count||0,
-      price:+r.price||0,
-      total:+r.total||0,
-      fee:+r.fee||0,
-      worker:+r.worker||0,
-      net:+r.net||0,
-      harajPaid:(r.harajPaid===true || r.harajPaid==='TRUE'),
+      id: r.id ?? r.ID ?? '',
+      date: r.date ?? '',
+      count: +r.count || 0,
+      price: +r.price || 0,
+      total: +r.total || 0,
+      fee: +r.fee || 0,
+      worker: +r.worker || 0,
+      net: +r.net || 0,
+      harajPaid: (r.harajPaid===true || r.harajPaid==='TRUE' || r['تم الدفع']==='تم'),
       workerPaid:(r.workerPaid===true || r.workerPaid==='TRUE')
     }));
-    save(); render(); statusMsg('تم التحديث من الشيت ✔️');
+    save(); render(); status('تم التحديث من الشيت ✔️');
   }catch(e){
-    statusMsg('تعذّر التحديث من الشيت.');
-    alert('ما قدرنا نسحب من الشيت. تأكد من الرابط وحدّ الاستخدام.');
+    status('تعذّر التحديث من الشيت.');
+    alert('تعذّر السحب من الشيت. تأكّد من الروابط/الصلاحيات.');
   }
 }
 
-/* ==== 7) تشغيل ==== */
-document.getElementById('date').value=todayISO();
+document.getElementById('date').value = todayISO();
 document.getElementById('entryForm').addEventListener('submit', addEntry);
 document.getElementById('btnPull').addEventListener('click', pullFromSheet);
 document.getElementById('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('تمسح النسخة المحلية فقط؟')){ entries=[]; save(); render(); statusMsg('تم مسح المحلي.'); }
+  if(confirm('متأكد تبي تمسح النسخة المحلية فقط؟')){
+    entries=[]; save(); render(); status('تم مسح المحلي. (الشيت ما تغيّر)');
+  }
 });
+
 load(); render();
 </script>
 </body>
