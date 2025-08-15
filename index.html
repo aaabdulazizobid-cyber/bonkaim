@@ -3,47 +3,32 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>برنامج بيع البونيكام — متزامن مع Google Sheets</title>
+<title>برنامج بيع البونيكام — Google Sheets متزامن</title>
 <meta name="theme-color" content="#FFD700">
 <style>
-  :root{
-    --bg:#f8f9fb; --card:#fff; --ink:#111;
-    --muted:#666; --brand:#ffd700; --brand-d:#e0c200;
-    --green:#c6efce; --red:#ffc7ce; --yellow:#fff2cc; --blue:#ddebf7;
-    --lightgreen:#e2efda; --orange:#fce4d6; --pink:#ead1dc; --steel:#d9e1f2; --net:#c6e0b4;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif;line-height:1.5}
-  header{background:var(--brand);border-bottom:1px solid var(--brand-d);padding:12px 16px;font-weight:800;text-align:center;border-radius:0 0 12px 12px}
-  .wrap{max-width:1200px;margin:auto;padding:16px}
-  .card{background:var(--card);border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px}
+  :root{--bg:#f8f9fb;--card:#fff;--ink:#111;--muted:#666;--gold:#ffd700;--danger:#b00020;--ok:#2e7d32}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
+  header{background:var(--gold);padding:10px 14px;text-align:center;font-weight:700}
+  .wrap{max-width:1100px;margin:auto;padding:16px}
+  .card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px}
   .form{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;align-items:end}
-  label{font-size:13px;color:#555;display:block;margin-bottom:6px}
+  label{font-size:13px;color:#555;display:block;margin:4px 0 6px}
   input[type="date"],input[type="number"]{width:100%;padding:12px 10px;font-size:16px;border:1.5px solid #bbb;border-radius:10px;background:#fff}
   input[type="checkbox"]{width:22px;height:22px}
   button{padding:12px 14px;font-size:15px;border:1px solid #222;border-radius:10px;background:#111;color:#fff;cursor:pointer}
-  button.secondary{background:#fff;color:#111}
-  .hint{font-size:12px;color:#666;margin-top:6px}
-  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .pill{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid #ccc;background:#fff}
-  .ok{background:#eaffea;border-color:#a4d7a4}
-  .bad{background:#ffecec;border-color:#efb1b1}
-  .table-wrap{margin-top:12px;background:var(--card);border:1px solid #000;border-radius:12px;overflow:hidden}
+  .secondary{background:#fff;color:#111}
+  .green{background:var(--ok);border-color:var(--ok)}
+  .danger{background:#fff;color:var(--danger);border-color:#ffd6d6}
+  .row-actions button{padding:6px 10px;font-size:13px}
+  .table-wrap{margin-top:12px;background:#fff;border:1px solid #000;border-radius:12px;overflow:hidden}
   table{width:100%;border-collapse:separate;border-spacing:0}
   thead th{position:sticky;top:0;background:#fafafa;z-index:1;border-bottom:2px solid #000;font-size:14px;padding:12px;text-align:center}
-  tbody td{padding:10px 8px;border-bottom:1px solid #000;border-top:1px solid #000;border-right:1px solid #000}
+  tbody td{padding:10px 8px;border-bottom:1px solid #000;border-top:1px solid #000;border-right:1px solid #000;text-align:center}
   tbody tr:nth-child(even){background:#fcfcfc}
-  tfoot td{padding:12px 8px;font-weight:bold;border-top:3px solid #000;background:#f0f0f0}
-  .center{text-align:center}
+  tfoot td{padding:12px 8px;font-weight:bold;border-top:3px solid #000;background:#f0f0f0;text-align:center}
   .num{font-variant-numeric:tabular-nums}
-  .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:600}
-  .paid{background:var(--green)} .unpaid{background:var(--red)}
-  .cell-date{background:var(--yellow)} .cell-count{background:var(--blue)}
-  .cell-price{background:var(--lightgreen)} .cell-total{background:var(--orange)}
-  .cell-fee{background:var(--pink)} .cell-worker{background:var(--steel)}
-  .cell-net{background:var(--net)}
-  .del-btn{background:#fff;color:#b00020;border:1px solid #ffd6d6;border-radius:8px;padding:6px 10px;cursor:pointer}
-  .row-actions{display:flex;gap:6px;justify-content:center}
+  .hint{font-size:12px;color:#666;margin-top:6px}
+  .status{font-size:12px;color:#333;margin-top:8px}
   @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px}}
 </style>
 </head>
@@ -52,58 +37,54 @@
 <div class="wrap">
 
   <div class="card">
-    <div class="bar">
-      <span id="conn" class="pill">يتحقق من الاتصال…</span>
-      <button type="button" class="secondary" id="btnPull">تحديث من الشيت</button>
-      <button type="button" class="secondary" id="btnFlush">مسح المحلي</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="secondary" id="btnPull">تحديث من الشيت</button>
+      <button class="secondary" id="btnClearLocal">مسح المحلي</button>
+      <span id="syncStat" class="status">جاهز.</span>
     </div>
-  </div>
 
-  <!-- النموذج -->
-  <div class="card">
     <form id="entryForm" class="form">
+      <div>
+        <label>عدد الفلين</label>
+        <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 100" required>
+      </div>
       <div>
         <label>التاريخ</label>
         <input type="date" id="date" required>
       </div>
       <div>
-        <label>عدد الفلين</label>
-        <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 100">
+        <label>سعر الفلين (ريال)</label>
+        <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25" required>
       </div>
       <div>
-        <label>سعر الفلين (ريال)</label>
-        <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25">
-      </div>
-      <div class="center">
-        <label for="harajPaid" style="margin-bottom:6px">دفع الحراج</label>
+        <label style="margin-bottom:6px">دفع الحراج</label><br>
         <input type="checkbox" id="harajPaid">
       </div>
-      <div class="center">
-        <label for="workerPaid" style="margin-bottom:6px">دفع أجرة العامل</label>
+      <div>
+        <label style="margin-bottom:6px">دفع أجرة العامل</label><br>
         <input type="checkbox" id="workerPaid">
       </div>
-      <div class="center">
-        <button type="submit">+ إضافة</button>
+      <div>
+        <button type="submit" class="green" style="width:100%">+ إضافة</button>
       </div>
     </form>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي. يحفظ تلقائيًا محليًا ويزامن مع Google Sheets.</div>
+    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — الحفظ محلي + مزامنة مع Google Sheets.</div>
   </div>
 
-  <!-- الجدول -->
   <div class="table-wrap">
     <table id="tbl">
       <thead>
         <tr>
           <th>إجراء</th>
           <th>رسوم حراج</th>
-          <th class="cell-net">صافي الربح</th>
-          <th class="cell-worker">أجرة العامل (2/فلين)</th>
-          <th class="cell-fee">حراج 1%</th>
-          <th class="cell-total">الإجمالي</th>
-          <th class="cell-price">سعر الفلين</th>
-          <th class="cell-count">عدد الفلين</th>
-          <th class="cell-date">التاريخ</th>
-          <th>حالة الأجرة</th>
+          <th>صافي الربح</th>
+          <th>أجرة العامل (2/فلين)</th>
+          <th>حراج 1%</th>
+          <th>الإجمالي</th>
+          <th>سعر الفلين</th>
+          <th>عدد الفلين</th>
+          <th>التاريخ</th>
+          <th>دفع الأجرة</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -111,14 +92,14 @@
         <tr>
           <td>الإجماليات</td>
           <td></td>
-          <td id="tNet" class="num center">0.00</td>
-          <td id="tWorker" class="num center">0.00</td>
-          <td id="tFee" class="num center">0.00</td>
-          <td id="tTotal" class="num center">0.00</td>
-          <td id="tAvgPrice" class="num center">0.00 (متوسط)</td>
-          <td id="tCount" class="num center">0</td>
+          <td id="tNet" class="num">0.00</td>
+          <td id="tWorker" class="num">0.00</td>
+          <td id="tFee" class="num">0.00</td>
+          <td id="tTotal" class="num">0.00</td>
+          <td id="tAvgPrice" class="num">0.00 (متوسط)</td>
+          <td id="tCount" class="num">0</td>
           <td></td>
-          <td class="center" style="font-size:12px">يحفظ تلقائيًا</td>
+          <td style="font-size:12px">يحفظ تلقائيًا + مزامنة بالشيت</td>
         </tr>
       </tfoot>
     </table>
@@ -126,176 +107,153 @@
 </div>
 
 <script>
-/* ================= إعدادات NoCodeAPI ================= */
-const NOCODE_BASE = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ';
-const SHEET_TAB   = 'الورقة1';
+// ✅ NoCodeAPI endpoints (على الورقة: "الورقة1")
+const GET_URL = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ?tabId=الورقة1';
+const ADD_URL = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ/addRows?tabId=الورقة1';
 
-/* ================= حالة التطبيق المحلية ================= */
 const LS_KEY = 'bonikam_sync_v1';
-let entries = [];          // البيانات المحلية المعروضة
-let pending = [];          // صفوف فشلت مزامنتها (نحاول لاحقًا)
+let entries = [];
 
-/* ================= مساعدين عامّين ================= */
 function todayISO(){
   const d = new Date();
   const tz = new Date(d.getTime() - d.getTimezoneOffset()*60000);
   return tz.toISOString().slice(0,10);
 }
-function loadAll(){
-  const o = JSON.parse(localStorage.getItem(LS_KEY) || '{"entries":[],"pending":[]}');
-  entries = Array.isArray(o.entries)?o.entries:[];
-  pending = Array.isArray(o.pending)?o.pending:[];
-}
-function saveAll(){
-  localStorage.setItem(LS_KEY, JSON.stringify({entries,pending}));
-}
+function load(){ entries = JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(entries)); }
+function status(txt){ document.getElementById('syncStat').textContent = txt; }
+
 function compute(e){
-  const count = Number(e.count)||0, price = Number(e.price)||0;
-  const total = count * price;
-  const fee = +(total * 0.01).toFixed(2);
-  const worker = +(count * 2).toFixed(2);
+  const c = +e.count||0, p = +e.price||0;
+  const total = c*p;
+  const fee = +(total*0.01).toFixed(2);
+  const worker = +(c*2).toFixed(2);
   const net = +(total - fee - worker).toFixed(2);
-  e.total = +total.toFixed(2); e.fee = fee; e.worker = worker; e.net = net;
+  e.total=+total.toFixed(2); e.fee=fee; e.worker=worker; e.net=net;
   return e;
 }
-function badge(ok){ return ok ? '<span class="badge paid">تم الدفع</span>' : '<span class="badge unpaid">لم يتم الدفع</span>'; }
 
-/* ================= اتصال NoCodeAPI ================= */
-async function httpJson(url, options={}) {
-  const res = await fetch(url, {
-    method: options.method || 'GET',
-    headers: { 'Content-Type': 'application/json', ...(options.headers||{}) },
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-  if (!res.ok) throw new Error(await res.text().catch(()=>res.statusText));
-  return res.json();
-}
-async function pushToSheet(entry){ // POST JSON objects
-  const url = `${NOCODE_BASE}?tabId=${encodeURIComponent(SHEET_TAB)}`;
-  return httpJson(url, { method:'POST', body: { data:[entry] } });
-}
-async function pullFromSheet(){   // GET rows
-  const qs = new URLSearchParams({ tabId:SHEET_TAB, perPage:'1000', page:'1' });
-  const url = `${NOCODE_BASE}?${qs.toString()}`;
-  const out = await httpJson(url);
-  return out.data || [];
-}
-
-/* ================= العرض ================= */
 function render(){
-  const tbody = document.getElementById('tbody'); tbody.innerHTML='';
-  // رتب حسب التاريخ
-  entries.sort((a,b)=> (a.date||'').localeCompare(b.date||''));
+  const tb = document.getElementById('tbody'); tb.innerHTML='';
+  entries.sort((a,b)=> a.date.localeCompare(b.date));
   for(const e of entries){
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="row-actions"><button class="del-btn" data-id="${e.id}">حذف</button></td>
-      <td class="center">${badge(!!e.harajPaid)}</td>
-      <td class="cell-net num center">${(e.net??0).toFixed(2)}</td>
-      <td class="cell-worker num center">${(e.worker??0).toFixed(2)}</td>
-      <td class="cell-fee num center">${(e.fee??0).toFixed(2)}</td>
-      <td class="cell-total num center">${(e.total??0).toFixed(2)}</td>
-      <td class="cell-price num center">${e.price??0}</td>
-      <td class="cell-count num center">${e.count??0}</td>
-      <td class="cell-date center">${e.date||''}</td>
-      <td class="center">${badge(!!e.workerPaid)}</td>
+      <td class="row-actions"><button class="danger" onclick="delRow('${e.id}')">حذف</button></td>
+      <td>${e.harajPaid?'تم':'لم'}</td>
+      <td class="num">${(e.net??0).toFixed(2)}</td>
+      <td class="num">${(e.worker??0).toFixed(2)}</td>
+      <td class="num">${(e.fee??0).toFixed(2)}</td>
+      <td class="num">${(e.total??0).toFixed(2)}</td>
+      <td class="num">${e.price}</td>
+      <td class="num">${e.count}</td>
+      <td>${e.date}</td>
+      <td>${e.workerPaid?'تم':'لم'}</td>
     `;
-    tr.querySelector('.del-btn').onclick = ()=>{ removeLocal(e.id); };
-    tbody.appendChild(tr);
+    tb.appendChild(tr);
   }
   const sum = k=>entries.reduce((a,c)=>a+Number(c[k]||0),0);
-  const priceAvg = entries.filter(e=>e.price>0).length ? (sum('price')/entries.filter(e=>e.price>0).length) : 0;
-  document.getElementById('tCount').textContent  = sum('count').toFixed(0);
-  document.getElementById('tTotal').textContent  = sum('total').toFixed(2);
-  document.getElementById('tFee').textContent    = sum('fee').toFixed(2);
-  document.getElementById('tWorker').textContent = sum('worker').toFixed(2);
-  document.getElementById('tNet').textContent    = sum('net').toFixed(2);
+  const priceAvg = entries.length? (entries.reduce((a,c)=>a+Number(c.price||0),0)/entries.length):0;
+  document.getElementById('tCount').textContent = sum('count').toFixed(0);
+  document.getElementById('tTotal').textContent = sum('total').toFixed(2);
+  document.getElementById('tFee').textContent   = sum('fee').toFixed(2);
+  document.getElementById('tWorker').textContent= sum('worker').toFixed(2);
+  document.getElementById('tNet').textContent   = sum('net').toFixed(2);
   document.getElementById('tAvgPrice').textContent = priceAvg.toFixed(2)+' (متوسط)';
 }
 
-/* ================= عمليات محلية ================= */
-function addLocal(e){ entries.push(e); saveAll(); render(); }
-function removeLocal(id){ entries = entries.filter(x=>x.id!==id); saveAll(); render(); }
+function delRow(id){
+  entries = entries.filter(x=>x.id!==id);
+  save(); render(); status('حُذف محليًا (لن يُحذف من الشيت).');
+}
 
-/* ================= واجهات الأزرار ================= */
-async function onAddSubmit(ev){
+async function addEntry(ev){
   ev.preventDefault();
-  const date   = (document.getElementById('date').value)||todayISO();
-  const count  = Number(document.getElementById('count').value||0);
-  const price  = Number(document.getElementById('price').value||0);
-  const harajPaid  = document.getElementById('harajPaid').checked;
+  const date = document.getElementById('date').value || todayISO();
+  const count = +document.getElementById('count').value || 0;
+  const price = +document.getElementById('price').value || 0;
+  const harajPaid = document.getElementById('harajPaid').checked;
   const workerPaid = document.getElementById('workerPaid').checked;
-  const row = compute({ id:Date.now().toString(), date, count, price, harajPaid, workerPaid });
-  addLocal(row);
 
-  // جرّب الإرسال للشيت
-  try {
-    await pushToSheet(row);
-    setConn(true, 'متصل بـ Google Sheets');
-  } catch(e){
-    pending.push(row); saveAll();
-    setConn(false, 'تعذّر الإرسال الآن (سيتكرر لاحقًا)');
-    alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا وسيعاد إرساله عند التحديث.');
+  const row = compute({
+    id: Date.now()+''+Math.random().toString(16).slice(2),
+    date, count, price, harajPaid, workerPaid
+  });
+
+  entries.push(row); save(); render();
+
+  try{
+    status('جارِ الرفع للشيت...');
+    const res = await fetch(ADD_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        data: [{
+          id: row.id,
+          date: row.date,
+          count: row.count,
+          price: row.price,
+          total: row.total,
+          fee: row.fee,
+          worker: row.worker,
+          net: row.net,
+          harajPaid: row.harajPaid ? 'TRUE' : 'FALSE',
+          workerPaid: row.workerPaid ? 'TRUE' : 'FALSE'
+        }]
+      })
+    });
+    if(!res.ok){
+      const t = await res.text();
+      status('تعذّر الإرسال للشيت. يبقى محفوظ محليًا.');
+      alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.\n\nنص الاستجابة:\n'+t);
+    }else{
+      status('تمت الإضافة للشيت ✔️');
+    }
+  }catch(err){
+    status('الشيت غير متاح الآن.');
+    alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.\nجرّب لاحقًا زر (تحديث من الشيت).');
   }
 
   document.getElementById('count').value='';
   document.getElementById('price').value='';
 }
 
-async function onPull(){
+async function pullFromSheet(){
   try{
-    // حاول إرسال المعلّق أولًا
-    if(pending.length){
-      const cp = [...pending]; pending = [];
-      for(const r of cp){
-        try{ await pushToSheet(r); } catch{ pending.push(r); }
-      }
-      saveAll();
-    }
-    const rows = await pullFromSheet();
-    // نتوقع أن رؤوس الأعمدة مطابقة مفاتيحنا — لو في سلاسل TRUE/FALSE نحولها
-    const norm = rows.map(r=>({
-      id: String(r.id||r.ID||r.Id||r.row_id||Date.now()),
-      date: r.date||'',
-      count: Number(r.count||0),
-      price: Number(r.price||0),
-      total: Number(r.total||0),
-      fee: Number(r.fee||0),
-      worker: Number(r.worker||0),
-      net: Number(r.net||0),
-      harajPaid: (r.harajPaid===true || r.harajPaid==="TRUE"),
-      workerPaid:(r.workerPaid===true|| r.workerPaid==="TRUE"),
+    status('جارِ التحديث من الشيت...');
+    const res = await fetch(GET_URL);
+    if(!res.ok){ throw new Error('GET failed'); }
+    const data = await res.json();
+    const rows = Array.isArray(data.data)? data.data : [];
+    entries = rows.map(r => compute({
+      id: r.id ?? r.ID ?? '',
+      date: r.date ?? '',
+      count: +r.count || 0,
+      price: +r.price || 0,
+      total: +r.total || 0,
+      fee: +r.fee || 0,
+      worker: +r.worker || 0,
+      net: +r.net || 0,
+      harajPaid: (r.harajPaid===true || r.harajPaid==='TRUE'),
+      workerPaid:(r.workerPaid===true || r.workerPaid==='TRUE')
     }));
-    entries = norm; saveAll(); render();
-    setConn(true,'تم التحديث من الشيت');
+    save(); render(); status('تم التحديث من الشيت ✔️');
   }catch(e){
-    console.error(e);
-    setConn(false,'تعذّر الجلب من الشيت');
-    alert('تعذّر الجلب من الشيت.\n'+(e.message||e));
-  }
-}
-function onFlush(){
-  if(confirm('متأكد تبي تمسح كل البيانات المحلية؟')){
-    entries=[]; pending=[]; saveAll(); render();
+    status('تعذّر التحديث من الشيت.');
+    alert('ما قدرنا نسحب من الشيت. تأكد من رابط GET ومن حد الاستخدام في NoCodeAPI.');
   }
 }
 
-/* ================= حالة الاتصال ================= */
-function setConn(ok,msg){
-  const t = document.getElementById('conn');
-  t.textContent = msg || (ok?'متصل بـ Google Sheets':'غير متصل');
-  t.className = 'pill ' + (ok?'ok':'bad');
-}
-
-/* ================= تشغيل أولي ================= */
 document.getElementById('date').value = todayISO();
-document.getElementById('entryForm').addEventListener('submit', onAddSubmit);
-document.getElementById('btnPull').addEventListener('click', onPull);
-document.getElementById('btnFlush').addEventListener('click', onFlush);
+document.getElementById('entryForm').addEventListener('submit', addEntry);
+document.getElementById('btnPull').addEventListener('click', pullFromSheet);
+document.getElementById('btnClearLocal').addEventListener('click', ()=>{
+  if(confirm('متأكد تبي تمسح النسخة المحلية فقط؟')){
+    entries=[]; save(); render(); status('تم مسح المحلي. (الشيت ما تغيّر)');
+  }
+});
 
-loadAll(); render();
-setConn(true,'جاهز');
-
+load(); render();
 </script>
 </body>
 </html>
