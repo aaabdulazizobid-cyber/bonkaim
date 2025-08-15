@@ -38,9 +38,13 @@
     .cell-price{background:var(--lightgreen)} .cell-total{background:var(--orange)}
     .cell-fee{background:var(--pink)} .cell-worker{background:var(--steel)}
     .cell-net{background:var(--net)}
-    .actions button{padding:6px 10px;font-size:13px}
-    .del-btn{background:#fff;color:#b00020;border:1px solid #ffd6d6;border-radius:8px;padding:6px 10px;cursor:pointer}
-    .edit-btn{background:#333;color:#fff;border:1px solid #111;border-radius:8px;padding:6px 10px;cursor:pointer}
+    /* زر الحذف الأحمر */
+    .del-btn{
+      background:#e53935; color:#fff; border:0;
+      padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700;
+      transition:background .2s ease;
+    }
+    .del-btn:hover{ background:#c62828; }
     .row-actions{display:flex;gap:6px;justify-content:center}
     @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px} thead th{font-size:13px} tbody td{font-size:14px}}
   </style>
@@ -178,7 +182,6 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="row-actions">
-          <button class="edit-btn" onclick="startEdit('${e.id}')">تعديل</button>
           <button class="del-btn" onclick="removeRow('${e.id}')">حذف</button>
         </td>
         <td class="center">${badge(!!e.harajPaid)}</td>
@@ -215,10 +218,6 @@
     document.getElementById('tWorker').textContent = sum('worker').toFixed(2);
     document.getElementById('tNet').textContent    = sum('net').toFixed(2);
     document.getElementById('tAvgPrice').textContent = priceAvg.toFixed(2)+' (متوسط)';
-  }
-
-  function startEdit(id){
-    alert('تقدر تعدّل السعر أو العدد مباشرة داخل الجدول، واضغط Enter أو اطلع من الخانة لحفظ التعديل.');
   }
 
   document.getElementById('date').value = todayISO();
