@@ -1,136 +1,123 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>برنامج بيع البونيكام — نسخة سريعة</title>
-  <meta name="theme-color" content="#FFD700"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>bonkaim — نسخة سريعة</title>
+<meta name="theme-color" content="#FFD700"/>
 
-  <!-- أيقونات PWA (اختياري لو عندك الملفات بالريبو) -->
-  <link rel="apple-touch-icon" href="icon-180.png">
-  <link rel="icon" sizes="192x192" href="icon-192.png">
-  <link rel="icon" sizes="512x512" href="icon-512.png">
-  <link rel="manifest" href="manifest.webmanifest">
+<style>
+  :root{
+    --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
+    --gold:#ffd400; --border:#000;
+    /* ألوان الأعمدة */
+    --c1:#ffe9b6; /* التاريخ */
+    --c2:#e7f0fb; /* عدد */
+    --c3:#e8f3e2; /* سعر */
+    --c4:#f7f0e2; /* الإجمالي */
+    --c5:#f3e0e7; /* حراج% */
+    --c6:#e6ecfa; /* أجر العامل (رقمي) */
+    --c7:#e7f4e1; /* صافي */
+    /* مربعات حالة الحراج/أجرة عامل */
+    --ok:#2e7d32; --bad:#b00020;
+    --ok-bg:#dbf2df; --bad-bg:#f8d7da;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
+  /* الشريط العلوي */
+  header{background:var(--gold); border-bottom:2px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800}
+  .brand-badge{width:30px;height:30px;border-radius:8px;background:#111;color:#ffd400;display:grid;place-items:center;font-weight:800}
+  .wrap{max-width:1100px;margin:auto;padding:14px}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+  button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
+  .ghost{background:#fff;color:#111}
+  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px;align-items:end}
+  label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
+  input[type="number"],input[type="date"]{
+    width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px
+  }
+  input[type="checkbox"]{width:20px;height:20px}
+  /* الجدول */
+  .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden;margin-top:12px}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
+  tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
+  tbody tr:nth-child(even){background:#fcfcfc}
+  tfoot td{background:#f1f1f1;font-weight:700}
+  .num{font-variant-numeric:tabular-nums}
+  .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
 
-  <style>
-    :root{
-      --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
-      --gold:#ffd400; --border:#000;
-      --c1:#f7f0e2; /* الإجمالي */
-      --c2:#e8f3e2; /* سعر */
-      --c3:#e7f0fb; /* عدد */
-      --c4:#ffe9b6; /* التاريخ */
-      --c5:#f3e0e7; /* حراج% */
-      --c6:#e6ecfa; /* أجر العامل (رقمي) */
-      --c7:#e7f4e1; /* صافي */
-      --ok:#2e7d32; --bad:#b00020;
-      --ok-bg:#dbf2df; --bad-bg:#f8d7da;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
-      "Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
-    header{background:var(--gold); border-bottom:2px solid var(--border);
-      padding:10px 16px; display:flex; align-items:center; gap:10px}
-    .logo{display:inline-flex; align-items:center; gap:10px; font-weight:800; font-size:18px}
-    .logo-badge{width:34px;height:34px;border-radius:8px;background:#111;color:#ffd400;
-      display:inline-grid;place-items:center;font-weight:800}
-    .wrap{max-width:1100px;margin:auto;padding:14px}
-    .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
-    button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
-    .ghost{background:#fff;color:#111}
-    .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
-    label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
-    input[type="number"],input[type="date"]{
-      width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px
-    }
-    input[type="checkbox"]{width:20px;height:20px}
-    .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
-    table{width:100%;border-collapse:separate;border-spacing:0}
-    thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
-    tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
-    tbody tr:nth-child(even){background:#fcfcfc}
-    .num{font-variant-numeric:tabular-nums}
-    .c-total{background:var(--c1)}
-    .c-price{background:var(--c2)}
-    .c-count{background:var(--c3)}
-    .c-date{background:var(--c4)}
-    .c-fee{background:var(--c5)}
-    .c-worker{background:var(--c6)}
-    .c-net{background:var(--c7)}
-    .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
-    tfoot td{background:#f1f1f1;font-weight:700}
+  /* تلوين أعمدة */
+  .c-date{background:var(--c1)}
+  .c-count{background:var(--c2)}
+  .c-price{background:var(--c3)}
+  .c-total{background:var(--c4)}
+  .c-fee{background:var(--c5)}
+  .c-worker{background:var(--c6)}
+  .c-net{background:var(--c7)}
 
-    /* مربّعات ✓/✗ لعمودي حراج + أجرة عامل */
-    .flagbox{
-      display:inline-flex;align-items:center;justify-content:center;
-      width:34px;height:34px;border:2px solid var(--border);border-radius:6px;
-      font-weight:800;font-size:18px;
-    }
-    .flag-ok{background:var(--ok-bg);color:var(--ok)}
-    .flag-no{background:var(--bad-bg);color:var(--bad)}
+  /* مربعات ✓ / ✗ */
+  .flagbox{display:inline-flex; align-items:center; justify-content:center; width:34px;height:34px;
+           border:2px solid var(--border); border-radius:6px; font-weight:800; font-size:18px; line-height:1}
+  .flag-ok{background:var(--ok-bg); color:var(--ok)}
+  .flag-no{background:var(--bad-bg); color:var(--bad)}
 
-    .hint{font-size:12px;color:var(--muted);margin-top:6px}
-    @media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
-  </style>
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  @media (max-width:900px){ .inputs{grid-template-columns:1fr 1fr} }
+</style>
 </head>
 <body>
 <header>
-  <div class="logo">
-    <span class="logo-badge">B</span>
+  <div class="brand">
+    <span class="brand-badge">B</span>
     <span>bonkaim</span>
   </div>
-</header>
-
-<div class="wrap">
-
-  <div class="toolrow">
+  <div class="tools">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
     <button class="ghost" id="btnClearLocal">مسح المحلي</button>
     <span id="syncStat" class="hint">جاهز.</span>
   </div>
+</header>
 
-  <div class="card">
-    <div class="inputs">
-      <div>
-        <label>عدد الفلين</label>
-        <input id="count" type="number" inputmode="numeric" min="0" step="1" placeholder="مثال: 100"/>
-      </div>
-      <div>
-        <label>التاريخ</label>
-        <input id="date" type="date"/>
-      </div>
-      <div>
-        <label>سعر الفلين (ريال)</label>
-        <input id="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25"/>
-      </div>
-      <div>
-        <label>حراج (مدفوع؟)</label>
-        <input id="harajPaid" type="checkbox"/>
-      </div>
-      <div>
-        <label>أجرة عامل (مدفوعة؟)</label>
-        <input id="workerPaid" type="checkbox"/>
-      </div>
-      <div style="display:flex;align-items:end">
-        <button id="btnAdd">+ إضافة</button>
-      </div>
+<div class="wrap">
+  <div class="inputs">
+    <div>
+      <label>التاريخ</label>
+      <input id="date" type="date"/>
     </div>
-    <div class="hint">
-      الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets عند توافر الشبكة.
+    <div>
+      <label>عدد الفلين</label>
+      <input id="count" type="number" inputmode="numeric" min="0" step="1" placeholder="مثال: 100"/>
+    </div>
+    <div>
+      <label>سعر الفلين (ريال)</label>
+      <input id="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25"/>
+    </div>
+    <div>
+      <label>حراج (مدفوع؟)</label>
+      <input id="harajPaid" type="checkbox"/>
+    </div>
+    <div>
+      <label>أجرة عامل (مدفوعة؟)</label>
+      <input id="workerPaid" type="checkbox"/>
+    </div>
+    <div style="display:flex">
+      <button id="btnAdd">+ إضافة</button>
     </div>
   </div>
+  <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets عند الشبكة.</div>
 
-  <div class="table-wrap" style="margin-top:12px">
+  <div class="table-wrap">
     <table id="tbl">
       <thead>
         <tr>
           <th>إجراءات</th>
-          <th>حراج</th>            <!-- (كان: الحالة) -->
-          <th>أجرة عامل</th>       <!-- (كان: تم الدفع؟) -->
+          <th>حراج</th>
+          <th>أجرة عامل</th>
           <th class="c-net">صافي الربح</th>
           <th class="c-worker">(2/فلين) أجر العامل</th>
-          <th class="c-fee">حراج 1%</th>
+          <th class="c-fee">حراج %1</th>
           <th class="c-total">الإجمالي</th>
           <th class="c-price">سعر الفلين</th>
           <th class="c-count">عدد الفلين</th>
@@ -157,10 +144,16 @@
 </div>
 
 <script>
-/* ===== التزامن عبر Google Apps Script (نفس ما اتفقنا) ===== */
-const APP_URL = 'https://script.google.com/macros/s/AKfycbwRRRcDqJ7itfDfqPoq_lxw3dDBaW9ksFvByJ5yQ-tG9iRplqvXPN21QldSnOGOJxc/exec';
-const GET_URL = APP_URL + '?action=get';
-const ADD_URL = APP_URL + '?action=add';
+/* ================== إعداد مزامنة Apps Script ================== */
+/* هذا هو رابط السكربت الذي أعطيتني */
+const APP_SCRIPT = 'https://script.google.com/macros/s/AKfycbyLzIWPv6HW5pzKrw6RlMDx7BxpoHqJuFmUwnn30aFDElDCOcQFmr9qUYVHcnruUsPiRQ/exec';
+/* نفترض أن السكربت يدعم:
+   GET  =>  ?action=get         (يرجع صفوف بصيغة JSON)
+   POST =>  ?action=add         (يستقبل JSON للصف المُضاف)
+*/
+const GET_URL = APP_SCRIPT + '?action=get';
+const ADD_URL = APP_SCRIPT + '?action=add';
+/* =============================================================== */
 
 const LS_KEY='bonikam_sync_v1';
 let rows=[];
@@ -186,10 +179,7 @@ function compute(r){
   return r;
 }
 
-/* مربّع ✓/✗ */
-function flagBox(tf){
-  return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`;
-}
+function flagBox(tf){ return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`; }
 
 function render(){
   const tb=document.getElementById('tbody'); tb.innerHTML='';
@@ -243,22 +233,17 @@ async function addRow(){
     const res=await fetch(ADD_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({data:[{
-        id:row.id,date:row.date,count:row.count,price:row.price,total:row.total,
-        fee:row.fee,worker:row.worker,net:row.net,
+      body: JSON.stringify({
+        id:row.id,date:row.date,count:row.count,price:row.price,total:row.total,fee:row.fee,worker:row.worker,net:row.net,
         harajPaid: row.harajPaid?'TRUE':'FALSE',
         workerPaid: row.workerPaid?'TRUE':'FALSE'
-      }]})
+      })
     });
-    if(!res.ok){
-      const t=await res.text();
-      status('تعذّر الإرسال، محفوظ محلياً.');
-      alert('تعذّر الإرسال الآن—محفوظ محلياً.\n\n'+t);
-    }else{
-      status('تم الرفع للشيت ✔️');
-    }
+    if(!res.ok){ throw new Error(await res.text()); }
+    status('تم الرفع للشيت ✔️');
   }catch(e){
-    status('الشيت غير متاح الآن. محفوظ محلياً.');
+    status('تعذّر الإرسال الآن — محفوظ محليًا.'); 
+    alert('تعذّر الإرسال الآن، السطر محفوظ محليًا.\nسيتاح زر "تحديث من الشيت" للمزامنة لاحقًا.');
   }
 
   document.getElementById('count').value='';
@@ -268,29 +253,34 @@ async function addRow(){
 async function pull(){
   try{
     status('جارِ التحديث من الشيت...');
-    const r=await fetch(GET_URL);
+    const r=await fetch(GET_URL,{cache:'no-store'});
     if(!r.ok) throw new Error('GET failed');
     const j=await r.json();
-    const arr=Array.isArray(j.data)? j.data : (Array.isArray(j)? j : []);
-    rows = arr.map(o=>compute({
-      id:o.id??o.ID??'',
-      date:o.date??'',
+    /* نتسامح مع شكل الإرجاع: مصفوفة مباشرة أو {data:[...]} */
+    const arr = Array.isArray(j)?.valueOf? (Array.isArray(j)? j : []) : [];
+    const data = Array.isArray(j.data) ? j.data : arr;
+
+    rows = data.map(o=>compute({
+      id: o.id ?? o.ID ?? '',
+      date: o.date ?? '',
       count:+o.count||0, price:+o.price||0,
       total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
-      harajPaid:(o.harajPaid===true||o.harajPaid==='TRUE'||o.harajPaid==='تم'),
-      workerPaid:(o.workerPaid===true||o.workerPaid==='TRUE'||o.workerPaid==='تم')
+      harajPaid: (o.harajPaid===true || o.harajPaid==='TRUE' || o.harajPaid==='تم'),
+      workerPaid:(o.workerPaid===true|| o.workerPaid==='TRUE'|| o.workerPaid==='تم')
     }));
     save(); render(); status('تم التحديث من الشيت ✔️');
   }catch(e){
-    status('تعذّر الجلب من الشيت.');
-    alert('تأكد من رابط السكربت والصلاحيات (Anyone).');
+    status('تعذّر الجلب من الشيت.'); 
+    alert('تعذّر الجلب من الشيت. تأكّد أن سكربت Apps Script يُرجع JSON مناسب لـ action=get.');
   }
 }
 
 document.getElementById('btnAdd').addEventListener('click', addRow);
 document.getElementById('btnPull').addEventListener('click', pull);
 document.getElementById('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('متأكد تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.');}
+  if(confirm('متأكد تمسح النسخة المحلية فقط؟')){
+    rows=[]; save(); render(); status('تم مسح المحلي. (الشيت لم يتغيّر)');
+  }
 });
 
 load(); render();
