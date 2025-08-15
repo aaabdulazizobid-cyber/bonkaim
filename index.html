@@ -1,94 +1,80 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>برنامج بيع البونيكام — متزامن مع Google Sheets</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>برنامج بيع البونيكام — متزامن</title>
   <meta name="theme-color" content="#FFD700">
-  <!-- أيقونات (عندك هذه الملفات في المستودع) -->
   <link rel="icon" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-180.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
   <style>
     :root{
-      --gold:#ffd700; --ink:#111; --muted:#666; --ok:#2e7d32; --danger:#b00020;
-      --c1:#e9f3ff; --c2:#e7f5e5; --c3:#e9edff; --c4:#fbe2e0; --c5:#ffe9d2; --c6:#eef6e9;
+      --gold:#ffd700; --ink:#111; --muted:#666; --bg:#f8f9fb; --card:#fff;
+      --ok:#2e7d32; --bad:#b00020; --line:#000;
+      --c1:#e6f0ff; --c2:#e7f5e7; --c3:#e7ecff; --c4:#fdeee6; --c5:#e7f3e7;
     }
     *{box-sizing:border-box}
-    body{margin:0;background:#f8f9fb;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
-
-    /* شريط علوي أصفر + كلمة Bonkaim */
-    header{background:var(--gold);color:#000;padding:10px 14px;display:flex;align-items:center;gap:10px}
-    .app-badge{display:inline-flex;align-items:center;justify-content:center;
-      background:#f0c700;color:#000;border-radius:10px;padding:4px 10px;font-weight:800;letter-spacing:.3px}
-    .title{margin-inline-start:auto;margin-inline-end:auto;font-weight:800}
-
-    .wrap{max-width:1100px;margin:auto;padding:16px}
-
-    /* النموذج */
-    .card{background:#fff;border:1px solid #000;border-radius:12px;padding:12px;margin:12px 0}
+    html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
+    header{background:var(--gold);padding:10px 14px;text-align:center;font-weight:800;letter-spacing:.3px}
+    .wrap{max-width:1100px;margin:auto;padding:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
     .form{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;align-items:end}
-    label{font-size:13px;color:#444;margin:4px 0 6px;display:block}
-    input[type="date"],input[type="number"]{
-      width:100%;padding:10px 10px;font-size:16px;border:2px solid #000;border-radius:10px;background:#fff
-    }
-    input[type="checkbox"]{width:20px;height:20px}
-    button{padding:12px 14px;font-size:15px;border:2px solid #000;border-radius:10px;background:#111;color:#fff;cursor:pointer}
-    .secondary{background:#fff;color:#111}
-    .green{background:#2e7d32}
-    .hint{font-size:12px;color:#666;margin-top:6px}
+    label{font-size:13px;color:#444;display:block;margin:4px 0 6px}
+    input[type="date"],input[type="number"]{width:100%;padding:10px 10px;font-size:16px;border:1.5px solid #bbb;border-radius:10px;background:#fff}
+    input[type="checkbox"]{width:22px;height:22px}
+    button{padding:12px 14px;font-size:15px;border:1px solid var(--line);border-radius:10px;background:var(--ink);color:#fff;cursor:pointer}
+    .secondary{background:#fff;color:var(--ink)}
+    .green{background:var(--ok);border-color:var(--ok)}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px}
 
-    /* الجدول بحدود سودة ثقيلة */
-    .table-wrap{margin-top:12px;background:#fff;border:2px solid #000;border-radius:12px;overflow:hidden}
+    /* جدول بحدود سوداء قوية */
+    .table-wrap{margin-top:12px;background:#fff;border:2px solid var(--line);border-radius:12px;overflow:hidden}
     table{width:100%;border-collapse:separate;border-spacing:0}
-    thead th{position:sticky;top:0;background:#fafafa;z-index:1;border-bottom:3px solid #000;
-      font-size:14px;padding:12px;text-align:center}
-    tbody td{padding:10px 8px;border-bottom:2px solid #000;border-top:2px solid #000;border-right:2px solid #000;text-align:center}
+    thead th{position:sticky;top:0;background:#fafafa;z-index:1;border-bottom:2px solid var(--line);font-size:14px;padding:12px;text-align:center}
+    tbody td{padding:10px 8px;border-bottom:1px solid var(--line);border-top:1px solid var(--line);border-right:1px solid var(--line);text-align:center}
     tbody tr:nth-child(even){background:#fcfcfc}
-    tfoot td{padding:12px 8px;font-weight:800;border-top:3px solid #000;background:#f5f5f5;text-align:center}
-
+    tfoot td{padding:12px 8px;font-weight:bold;border-top:3px solid var(--line);background:#f0f0f0;text-align:center}
     .num{font-variant-numeric:tabular-nums}
 
-    /* شارة الحالة (حِراج) — دويرة خضراء / وردية */
-    .badge{display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;border-radius:50%;
-      border:2px solid #000;font-weight:800;line-height:1.2}
-    .badge.ok{background:#c9f0cd;color:#0d3b12}
-    .badge.no{background:#f9cdd3;color:#5a121b}
+    /* ألوان الأعمدة (نفس القديمة) */
+    .col-date{background:#ffeab5}
+    .col-count{background:#e6f0ff}
+    .col-price{background:#e7f5e7}
+    .col-total{background:#fdeee6}
+    .col-fee{background:#f7d6dc}
+    .col-worker{background:#e7ecff}
+    .col-net{background:#d8eac9}
 
-    .row-actions button{padding:6px 10px;font-size:13px;border-radius:8px}
-    .btn-del{background:#111;color:#fff;border:2px solid #000}
+    /* مربّع حالة الحراج ✓ / ✗ */
+    .flag{display:inline-flex;align-items:center;justify-content:center;
+          width:28px;height:28px;border:2px solid var(--line);border-radius:6px;
+          font-weight:800;background:#fff;}
+    .flag.on{background:#e9f6ef;border-color:var(--ok);color:var(--ok)}
+    .flag.on::after{content:"✓"}
+    .flag.off{background:#fde8ea;border-color:var(--bad);color:var(--bad)}
+    .flag.off::after{content:"✗"}
 
-    /* ألوان الأعمدة مثل الصورة اللي عجبتك */
-    td.col-price{background:#e5f1e5}
-    td.col-count{background:#d9e8ff}
-    td.col-total{background:#ffe6cf}
-    td.col-fee{background:#f6d5d8}
-    td.col-worker{background:#dfe7fb}
-    td.col-net{background:#dfead6}
-    td.col-date{background:#ffefc4}
+    /* شارة حذف */
+    .btn-del{background:#000;border:1px solid #000;color:#fff;border-radius:10px;padding:8px 12px}
+    .btn-del:hover{opacity:.9}
 
     @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px}}
   </style>
 </head>
 <body>
-  <header>
-    <span class="app-badge">bonkaim</span>
-    <div class="title">برنامج بيع البونيكام (نسخة سريعة)</div>
-  </header>
+  <header>bonkaim</header>
 
   <div class="wrap">
     <div class="card">
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
         <button class="secondary" id="btnPull">تحديث من الشيت</button>
-        <button class="secondary" id="btnClearLocal">مسح</button>
-        <span id="syncStat" style="font-size:13px;color:#333;align-self:center">جاهز.</span>
+        <button class="secondary" id="btnClearLocal">مسح المحلي</button>
+        <span id="syncStat" style="margin-inline-start:8px;font-size:12px;color:#333">جاهز.</span>
       </div>
 
       <form id="entryForm" class="form">
         <div>
           <label>عدد الفلين</label>
-          <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="100 :مثال" required>
+          <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 100" required>
         </div>
         <div>
           <label>التاريخ</label>
@@ -96,22 +82,21 @@
         </div>
         <div>
           <label>سعر الفلين (ريال)</label>
-          <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="25 :مثال" required>
+          <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25" required>
         </div>
         <div>
-          <label style="margin-bottom:6px">تم دفع الحراج؟</label>
+          <label style="margin-bottom:6px">دفع الحراج</label><br>
           <input type="checkbox" id="harajPaid">
         </div>
         <div>
-          <label style="margin-bottom:6px">أُجرة عامل</label>   <!-- ← ← تم تغيير العنوان من (تم الدفع؟) إلى (أُجرة عامل) -->
+          <label style="margin-bottom:6px">أجرة العامل</label><br>
           <input type="checkbox" id="workerPaid">
         </div>
         <div>
           <button type="submit" class="green" style="width:100%">+ إضافة</button>
         </div>
       </form>
-
-      <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + مزامنة مع Google Sheets.</div>
+      <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — حفظ محلي + مزامنة Google Sheets.</div>
     </div>
 
     <div class="table-wrap">
@@ -119,15 +104,15 @@
         <thead>
           <tr>
             <th>إجراءات</th>
-            <th>حِراج</th>              <!-- ← ← بدل "الحالة" إلى "حِراج" -->
-            <th>أُجرة عامل</th>         <!-- ← ← بدل "تم الدفع؟" إلى "أُجرة عامل" -->
-            <th>صافي الربح</th>
-            <th>أجر العامل (2/فلين)</th>
-            <th>حراج 1%</th>
-            <th>الإجمالي</th>
-            <th>سعر الفلين</th>
-            <th>عدد الفلين</th>
-            <th>التاريخ</th>
+            <th>حراج</th>
+            <th class="col-net">صافي الربح</th>
+            <th class="col-worker">أجر العامل (2/فلين)</th>
+            <th class="col-fee">حراج %1</th>
+            <th class="col-total">الإجمالي</th>
+            <th class="col-price">سعر الفلين</th>
+            <th class="col-count">عدد الفلين</th>
+            <th class="col-date">التاريخ</th>
+            <th>أجرة عامل</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -135,14 +120,14 @@
           <tr>
             <td>الإجماليات</td>
             <td></td>
-            <td></td>
             <td id="tNet" class="num">0.00</td>
             <td id="tWorker" class="num">0.00</td>
             <td id="tFee" class="num">0.00</td>
             <td id="tTotal" class="num">0.00</td>
             <td id="tAvgPrice" class="num">0.00 (متوسط)</td>
             <td id="tCount" class="num">0</td>
-            <td style="font-size:12px">يحفظ تلقائيًا في جهازك + مزامنة بالشيت</td>
+            <td></td>
+            <td style="font-size:12px">يحفظ تلقائيًا + مزامنة بالشيت</td>
           </tr>
         </tfoot>
       </table>
@@ -150,14 +135,10 @@
   </div>
 
 <script>
-/* ------------ إعدادات Google Sheets عبر NoCodeAPI ------------- */
-/* نفس معرّفك الذي استخدمناه: MpBntOqzeXdxSGmZ + اسم الورقة: الورقة1  */
-const BASE = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ';
-const TAB  = 'الورقة1';
-const GET_URL = `${BASE}?tabId=${encodeURIComponent(TAB)}`;
-const ADD_URL = `${BASE}/addRows?tabId=${encodeURIComponent(TAB)}`;
+/* === إعدادات الربط (استبدل الروابط لو عندك مختلفة) === */
+const GET_URL = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ?tabId=الورقة1';
+const ADD_URL = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ/addRows?tabId=الورقة1';
 
-/* ------------------------- منطق الصفحة ------------------------- */
 const LS_KEY = 'bonikam_sync_v1';
 let entries = [];
 
@@ -172,17 +153,12 @@ function status(txt){ document.getElementById('syncStat').textContent = txt; }
 
 function compute(e){
   const c = +e.count||0, p = +e.price||0;
-  const total = +(c*p).toFixed(2);
+  const total = c*p;
   const fee = +(total*0.01).toFixed(2);
   const worker = +(c*2).toFixed(2);
   const net = +(total - fee - worker).toFixed(2);
-  e.total=total; e.fee=fee; e.worker=worker; e.net=net;
+  e.total=+total.toFixed(2); e.fee=fee; e.worker=worker; e.net=net;
   return e;
-}
-
-function badgeHTML(ok){
-  const cls = ok ? 'badge ok' : 'badge no';
-  return `<span class="${cls}">${ok?'تم':'لم'}</span>`;
 }
 
 function render(){
@@ -191,9 +167,10 @@ function render(){
   for(const e of entries){
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="row-actions"><button class="btn-del" onclick="delRow('${e.id}')">حذف</button></td>
-      <td>${badgeHTML(!!e.harajPaid)}</td>
-      <td><input type="checkbox" ${e.workerPaid?'checked':''} disabled></td>
+      <td><button class="btn-del" onclick="delRow('${e.id}')">حذف</button></td>
+      <td>
+        <span class="flag ${e.harajPaid ? 'on':'off'}" title="${e.harajPaid?'حراج: تم':'حراج: لم'}" aria-hidden="true"></span>
+      </td>
       <td class="num col-net">${(e.net??0).toFixed(2)}</td>
       <td class="num col-worker">${(e.worker??0).toFixed(2)}</td>
       <td class="num col-fee">${(e.fee??0).toFixed(2)}</td>
@@ -201,6 +178,9 @@ function render(){
       <td class="num col-price">${e.price}</td>
       <td class="num col-count">${e.count}</td>
       <td class="col-date">${e.date}</td>
+      <td>
+        <input type="checkbox" ${e.workerPaid?'checked':''} disabled aria-label="أجرة عامل">
+      </td>
     `;
     tb.appendChild(tr);
   }
@@ -224,8 +204,8 @@ async function addEntry(ev){
   const row = compute({
     id: Date.now()+''+Math.random().toString(16).slice(2),
     date: document.getElementById('date').value || todayISO(),
-    count:+document.getElementById('count').value || 0,
-    price:+document.getElementById('price').value || 0,
+    count: +document.getElementById('count').value || 0,
+    price: +document.getElementById('price').value || 0,
     harajPaid: document.getElementById('harajPaid').checked,
     workerPaid: document.getElementById('workerPaid').checked
   });
@@ -248,14 +228,14 @@ async function addEntry(ev){
     });
     if(!res.ok){
       const t = await res.text();
-      status('تعذّر الإرسال للشيت. محفوظ محليًا.');
-      alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.\n\n'+t);
+      status('تعذّر الإرسال للشيت. يبقى محفوظ محليًا.');
+      alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.\n\nنص الاستجابة:\n'+t);
     }else{
       status('تمت الإضافة للشيت ✔️');
     }
   }catch(err){
     status('الشيت غير متاح الآن.');
-    alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.');
+    alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.\nجرّب لاحقًا زر (تحديث من الشيت).');
   }
 
   document.getElementById('count').value='';
@@ -266,7 +246,7 @@ async function pullFromSheet(){
   try{
     status('جارِ التحديث من الشيت...');
     const res = await fetch(GET_URL);
-    if(!res.ok) throw new Error('GET failed');
+    if(!res.ok){ throw new Error('GET failed'); }
     const data = await res.json();
     const rows = Array.isArray(data.data)? data.data : [];
     entries = rows.map(r => compute({
@@ -278,13 +258,13 @@ async function pullFromSheet(){
       fee: +r.fee || 0,
       worker: +r.worker || 0,
       net: +r.net || 0,
-      harajPaid: (r.harajPaid===true || r.harajPaid==='TRUE' || r.harajPaid==='تم'),
-      workerPaid:(r.workerPaid===true || r.workerPaid==='TRUE' || r.workerPaid==='تم')
+      harajPaid: (r.harajPaid===true || r.harajPaid==='TRUE'),
+      workerPaid:(r.workerPaid===true || r.workerPaid==='TRUE')
     }));
     save(); render(); status('تم التحديث من الشيت ✔️');
   }catch(e){
     status('تعذّر التحديث من الشيت.');
-    alert('ما قدرنا نسحب من الشيت. تأكد من الرابط وحد الاستخدام.');
+    alert('ما قدرنا نسحب من الشيت. تأكد من رابط GET ومن حد الاستخدام في NoCodeAPI.');
   }
 }
 
