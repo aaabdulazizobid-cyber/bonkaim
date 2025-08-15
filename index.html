@@ -1,94 +1,245 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>برنامج بيع البونيكام (نسخة سريعة)</title>
-<meta name="theme-color" content="#FFD700">
-<style>
-:root{
-  --bg:#f8f9fb; --card:#fff; --ink:#111; --muted:#666;
-  --green:#c6f6ce; --red:#ffc7ce; --yellow:#fff2cc; --blue:#ddebff;
-  --lightgreen:#e2feda; --orange:#ffc46d; --pink:#ead1dc;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto}
-.wrap{max-width:1200px;margin:auto;padding:16px}
-header{background:#ffd700;border-bottom:1px solid #e0c200;border-radius:12px;padding:10px 14px}
-.table-wrap{margin-top:12px;background:var(--card);border:1px solid #000;border-radius:12px;overflow-x:auto}
-table{width:100%;border-collapse:separate;border-spacing:0}
-th,td{padding:8px 12px;border-bottom:1px solid #ccc;text-align:center}
-th{background:var(--yellow)}
-tr:nth-child(even){background:#f7f7f7}
-.btn{padding:8px 14px;background:#000;color:#fff;border:none;border-radius:6px;cursor:pointer}
-.status{display:inline-block;padding:4px 8px;border-radius:8px;font-size:13px}
-.status.yes{background:var(--green)}
-.status.no{background:var(--red)}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>برنامج بيع البونيكام (نسخة سريعة)</title>
+
+  <meta name="theme-color" content="#FFD700">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="البونيكام">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+  <link rel="apple-touch-icon" href="icon-180.png">
+
+  <style>
+    :root{
+      --bg:#f8f9fb; --card:#fff; --ink:#111; --muted:#666;
+      --green:#c6efce; --red:#ffc7ce; --yellow:#fff2cc; --blue:#ddebf7;
+      --lightgreen:#e2efda; --orange:#fce4d6; --pink:#ead1dc; --steel:#d9e1f2; --net:#c6e0b4;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif;line-height:1.5}
+    .wrap{max-width:1200px;margin:auto;padding:16px}
+    header{background:#ffd700;border-bottom:1px solid #e0c200;border-radius:12px;padding:10px 14px;text-align:center;font-weight:700}
+    .card{background:var(--card);border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px}
+    .form{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:10px;align-items:end}
+    label{font-size:13px;color:#555;display:block;margin-bottom:6px}
+    input[type="date"],input[type="number"],input[type="text"]{width:100%;padding:12px 10px;font-size:16px;border:1.5px solid #bbb;border-radius:10px;background:#fff}
+    input[type="checkbox"]{width:22px;height:22px}
+    button{padding:12px 14px;font-size:15px;border:1px solid #222;border-radius:10px;background:#111;color:#fff;cursor:pointer}
+    button.secondary{background:#fff;color:#111}
+    .hint{font-size:12px;color:#666;margin-top:6px}
+    .table-wrap{margin-top:12px;background:var(--card);border:1px solid #000;border-radius:12px;overflow:hidden}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    thead th{position:sticky;top:0;background:#fafafa;z-index:1;border-bottom:2px solid #000;font-size:14px;padding:12px;text-align:center}
+    tbody td{padding:10px 8px;border-bottom:1px solid #000;border-top:1px solid #000;border-right:1px solid #000}
+    tbody tr:nth-child(even){background:#fcfcfc}
+    tfoot td{padding:12px 8px;font-weight:bold;border-top:3px solid #000;background:#f0f0f0}
+    .center{text-align:center}
+    .num{font-variant-numeric:tabular-nums}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:600}
+    .paid{background:var(--green)} .unpaid{background:var(--red)}
+    .cell-date{background:var(--yellow)} .cell-count{background:var(--blue)}
+    .cell-price{background:var(--lightgreen)} .cell-total{background:var(--orange)}
+    .cell-fee{background:var(--pink)} .cell-worker{background:var(--steel)}
+    .cell-net{background:var(--net)} .cell-paidcol{background:var(--yellow)}
+    .actions button{padding:8px 10px;font-size:13px}
+    @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px} thead th{font-size:13px} tbody td{font-size:14px}}
+  </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <h2>برنامج بيع البونيكام (نسخة سريعة)</h2>
-</header>
+  <header>برنامج بيع البونيكام (نسخة سريعة)</header>
+  <div class="wrap">
 
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-  <th>إجراءات</th>
-  <th>رسوم حراج</th>
-  <th>دفع أجرة العامل</th>
-  <th>صافي الربح</th>
-  <th>أجر العامل (2 ريال/فلين)</th>
-  <th>حراج 1%</th>
-  <th>الإجمالي</th>
-  <th>سعر الفلين</th>
-  <th>عدد الفلين</th>
-  <th>التاريخ</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-  <td><button class="btn">حذف</button></td>
-  <td><span class="status yes">تم الدفع</span></td>
-  <td><span class="status yes">تم الدفع</span></td>
-  <td>91.00</td>
-  <td>8.00</td>
-  <td>1.00</td>
-  <td>100.00</td>
-  <td>25</td>
-  <td>4</td>
-  <td>2025/08/15</td>
-</tr>
-<tr>
-  <td><button class="btn">حذف</button></td>
-  <td><span class="status no">لم يتم الدفع</span></td>
-  <td><span class="status yes">تم الدفع</span></td>
-  <td>455.00</td>
-  <td>40.00</td>
-  <td>5.00</td>
-  <td>500.00</td>
-  <td>25</td>
-  <td>20</td>
-  <td>2025/08/14</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-  <td colspan="2">الإجماليات</td>
-  <td>--</td>
-  <td>546.00</td>
-  <td>48.00</td>
-  <td>6.00</td>
-  <td>600.00</td>
-  <td>25</td>
-  <td>24</td>
-  <td>-</td>
-</tr>
-</tfoot>
-</table>
-</div>
-</div>
+    <div class="card">
+      <form id="entryForm" class="form" onsubmit="addEntry(event)">
+        <div>
+          <label>التاريخ</label>
+          <input type="date" id="date" required>
+        </div>
+        <div>
+          <label>عدد الفلين</label>
+          <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 100">
+        </div>
+        <div>
+          <label>سعر الفلين (ريال)</label>
+          <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25">
+        </div>
+        <div class="center">
+          <label for="paid" style="margin-bottom:6px">تم الدفع؟</label>
+          <input type="checkbox" id="paid">
+        </div>
+        <div class="center">
+          <label for="harajPaid" style="margin-bottom:6px">تم دفع الحراج؟</label>
+          <input type="checkbox" id="harajPaid">
+        </div>
+        <div class="center">
+          <label for="workerPaid" style="margin-bottom:6px">تم دفع الأجرة؟</label>
+          <input type="checkbox" id="workerPaid">
+        </div>
+        <div class="center">
+          <button type="submit">+ إضافة</button>
+          <button type="button" class="secondary" onclick="clearAll()">مسح</button>
+        </div>
+      </form>
+      <div class="hint">يحفظ تلقائيًا في جهازك. الأجرة = <b>2 ريال</b> × عدد الفلين، والحراج = <b>1%</b> من الإجمالي.</div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>إجراءات</th>
+            <th>رسوم حراج</th>
+            <th class="cell-paidcol">تم الدفع؟</th>
+            <th class="cell-net">صافي الربح</th>
+            <th class="cell-worker">أجر العامل (فلين/2)</th>
+            <th class="cell-fee">حراج %1</th>
+            <th class="cell-total">الإجمالي</th>
+            <th class="cell-price">سعر الفلين</th>
+            <th class="cell-count">عدد الفلين</th>
+            <th class="cell-date">التاريخ</th>
+            <th>حالة الأجرة</th>
+            <th class="cell-paidcol">تم دفع الأجرة؟</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td>الإجماليات</td>
+            <td></td>
+            <td></td>
+            <td id="tNet" class="num center">0.00</td>
+            <td id="tWorker" class="num center">0.00</td>
+            <td id="tFee" class="num center">0.00</td>
+            <td id="tTotal" class="num center">0.00</td>
+            <td id="tAvgPrice" class="num center">0.00 (متوسط)</td>
+            <td id="tCount" class="num center">0</td>
+            <td></td>
+            <td colspan="2" class="center" style="font-size:12px">يحفظ تلقائيًا في جهازك</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </div>
+
+<script>
+  const key = 'bonikam_v8';
+  let entries = [];
+
+  function todayISO(){
+    const d = new Date();
+    const tz = new Date(d.getTime() - d.getTimezoneOffset()*60000);
+    return tz.toISOString().slice(0,10);
+  }
+  function load(){ entries = JSON.parse(localStorage.getItem(key)||'[]'); }
+  function save(){ localStorage.setItem(key, JSON.stringify(entries)); }
+
+  function compute(e){
+    const count = Number(e.count)||0, price = Number(e.price)||0;
+    const total = count * price;
+    const fee = +(total * 0.01).toFixed(2);
+    const worker = +(count * 2).toFixed(2);
+    const net = +(total - fee - worker).toFixed(2);
+    e.total = +total.toFixed(2); e.fee = fee; e.worker = worker; e.net = net;
+    return e;
+  }
+
+  function addEntry(ev){
+    ev.preventDefault();
+    const date = document.getElementById('date').value || todayISO();
+    const count = Number(document.getElementById('count').value)||0;
+    const price = Number(document.getElementById('price').value)||0;
+    const paid = document.getElementById('paid').checked;
+    const harajPaid = document.getElementById('harajPaid').checked;
+    const workerPaid = document.getElementById('workerPaid').checked;
+    const id = Date.now()+''+Math.random().toString(16).slice(2);
+    entries.push( compute({id,date,count,price,paid,harajPaid,workerPaid}) );
+    save(); render();
+    document.getElementById('count').value=''; document.getElementById('price').value='';
+  }
+
+  function removeRow(id){ entries = entries.filter(x=>x.id!==id); save(); render(); }
+
+  function setFlag(id, field, val){
+    const e = entries.find(x=>x.id===id); if(!e) return;
+    e[field] = !!val; save(); render();
+  }
+
+  function updateField(id, field, val){
+    const e = entries.find(x=>x.id===id); if(!e) return;
+    if(field==='date'){ e.date = val; }
+    if(field==='count' || field==='price'){
+      const n = Number(val); if(!isFinite(n)) return;
+      e[field]=n; compute(e);
+    }
+    save(); render();
+  }
+
+  function clearAll(){
+    if(confirm('متأكد تبي تمسح الكل؟')){ entries=[]; save(); render(); }
+  }
+
+  function badge(ok){ return ok ? '<span class="badge paid">تم الدفع</span>' : '<span class="badge unpaid">لم يتم الدفع</span>'; }
+
+  function render(){
+    const tbody = document.getElementById('tbody'); tbody.innerHTML='';
+    entries.sort((a,b)=> a.date.localeCompare(b.date));
+
+    for(const e of entries){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="actions center"><button class="secondary" onclick="removeRow('${e.id}')">حذف</button></td>
+        <td class="center">${badge(!!e.harajPaid)}</td>
+        <td class="center"><input type="checkbox" ${e.paid?'checked':''} onchange="setFlag('${e.id}','paid',this.checked)"></td>
+        <td class="cell-net num center">${(e.net??0).toFixed(2)}</td>
+        <td class="cell-worker num center">${(e.worker??0).toFixed(2)}</td>
+        <td class="cell-fee num center">${(e.fee??0).toFixed(2)}</td>
+        <td class="cell-total num center">${(e.total??0).toFixed(2)}</td>
+        <td class="cell-price num center" contenteditable="true">${e.price}</td>
+        <td class="cell-count num center" contenteditable="true">${e.count}</td>
+        <td class="cell-date center"><input type="date" value="${e.date}" style="width:100%;padding:6px;border:1px solid #999;border-radius:8px"></td>
+        <td class="center">${badge(!!e.workerPaid)}</td>
+        <td class="center"><input type="checkbox" ${e.workerPaid?'checked':''} onchange="setFlag('${e.id}','workerPaid',this.checked)"></td>
+      `;
+
+      const dateInp   = tr.children[9].querySelector('input');
+      const priceTd   = tr.children[7];
+      const countTd   = tr.children[8];
+      dateInp.addEventListener('change',ev=>updateField(e.id,'date',ev.target.value));
+
+      function commitEditable(td, field){
+        td.addEventListener('keydown',ev=>{ if(ev.key==='Enter'){ev.preventDefault(); td.blur();}});
+        td.addEventListener('blur',()=>updateField(e.id,field, td.innerText.replace(/[^\d.]/g,'')));
+      }
+      commitEditable(priceTd,'price');
+      commitEditable(countTd,'count');
+
+      tbody.appendChild(tr);
+    }
+
+    const sum = (k)=>entries.reduce((a,c)=>a+Number(c[k]||0),0);
+    const priceAvg = entries.filter(e=>e.price>0).length ? (sum('price')/entries.filter(e=>e.price>0).length) : 0;
+    document.getElementById('tCount').textContent  = sum('count').toFixed(0);
+    document.getElementById('tTotal').textContent  = sum('total').toFixed(2);
+    document.getElementById('tFee').textContent    = sum('fee').toFixed(2);
+    document.getElementById('tWorker').textContent = sum('worker').toFixed(2);
+    document.getElementById('tNet').textContent    = sum('net').toFixed(2);
+    document.getElementById('tAvgPrice').textContent = priceAvg.toFixed(2)+' (متوسط)';
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+
+  document.getElementById('date').value = todayISO();
+  load(); render();
+</script>
 </body>
 </html>
