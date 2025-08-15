@@ -3,17 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>برنامج بيع البونيكام (نسخة سريعة)</title>
+  <title>برنامج بيع البونيكام (نسخة مصححة)</title>
 
   <meta name="theme-color" content="#FFD700">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="البونيكام">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  <link rel="apple-touch-icon" href="icon-180.png">
-
   <style>
     :root{
       --bg:#f8f9fb; --card:#fff; --ink:#111; --muted:#666;
@@ -25,9 +17,9 @@
     .wrap{max-width:1200px;margin:auto;padding:16px}
     header{background:#ffd700;border-bottom:1px solid #e0c200;border-radius:12px;padding:10px 14px;text-align:center;font-weight:700}
     .card{background:var(--card);border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px}
-    .form{display:grid;grid-template-columns:repeat(7,minmax(120px,1fr));gap:10px;align-items:end}
+    .form{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;align-items:end}
     label{font-size:13px;color:#555;display:block;margin-bottom:6px}
-    input[type="date"],input[type="number"],input[type="text"]{width:100%;padding:12px 10px;font-size:16px;border:1.5px solid #bbb;border-radius:10px;background:#fff}
+    input[type="date"],input[type="number"]{width:100%;padding:12px 10px;font-size:16px;border:1.5px solid #bbb;border-radius:10px;background:#fff}
     input[type="checkbox"]{width:22px;height:22px}
     button{padding:12px 14px;font-size:15px;border:1px solid #222;border-radius:10px;background:#111;color:#fff;cursor:pointer}
     button.secondary{background:#fff;color:#111}
@@ -45,15 +37,19 @@
     .cell-date{background:var(--yellow)} .cell-count{background:var(--blue)}
     .cell-price{background:var(--lightgreen)} .cell-total{background:var(--orange)}
     .cell-fee{background:var(--pink)} .cell-worker{background:var(--steel)}
-    .cell-net{background:var(--net)} .cell-paidcol{background:var(--yellow)}
-    .actions button{padding:8px 10px;font-size:13px}
+    .cell-net{background:var(--net)}
+    .actions button{padding:6px 10px;font-size:13px}
+    .del-btn{background:#fff;color:#b00020;border:1px solid #ffd6d6;border-radius:8px;padding:6px 10px;cursor:pointer}
+    .edit-btn{background:#333;color:#fff;border:1px solid #111;border-radius:8px;padding:6px 10px;cursor:pointer}
+    .row-actions{display:flex;gap:6px;justify-content:center}
     @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px} thead th{font-size:13px} tbody td{font-size:14px}}
   </style>
 </head>
 <body>
-  <header>برنامج بيع البونيكام (نسخة سريعة)</header>
+  <header>برنامج بيع البونيكام (نسخة مصححة)</header>
   <div class="wrap">
 
+    <!-- النموذج -->
     <div class="card">
       <form id="entryForm" class="form" onsubmit="addEntry(event)">
         <div>
@@ -69,15 +65,11 @@
           <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25">
         </div>
         <div class="center">
-          <label for="paid" style="margin-bottom:6px">تم الدفع؟</label>
-          <input type="checkbox" id="paid">
-        </div>
-        <div class="center">
-          <label for="harajPaid" style="margin-bottom:6px">تم دفع الحراج؟</label>
+          <label for="harajPaid" style="margin-bottom:6px">دفع الحراج</label>
           <input type="checkbox" id="harajPaid">
         </div>
         <div class="center">
-          <label for="workerPaid" style="margin-bottom:6px">تم دفع الأجرة؟</label>
+          <label for="workerPaid" style="margin-bottom:6px">دفع أجرة العامل</label>
           <input type="checkbox" id="workerPaid">
         </div>
         <div class="center">
@@ -85,32 +77,30 @@
           <button type="button" class="secondary" onclick="clearAll()">مسح</button>
         </div>
       </form>
-      <div class="hint">يحفظ تلقائيًا في جهازك. الأجرة = <b>2 ريال</b> × عدد الفلين، والحراج = <b>1%</b> من الإجمالي.</div>
+      <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ تلقائيًا.</div>
     </div>
 
+    <!-- الجدول بدون عمود "تم الدفع؟" العام -->
     <div class="table-wrap">
       <table id="tbl">
         <thead>
           <tr>
             <th>إجراءات</th>
             <th>رسوم حراج</th>
-            <th class="cell-paidcol">تم الدفع؟</th>
             <th class="cell-net">صافي الربح</th>
-            <th class="cell-worker">أجر العامل (فلين/2)</th>
-            <th class="cell-fee">حراج %1</th>
+            <th class="cell-worker">أجرة العامل (2/فلين)</th>
+            <th class="cell-fee">حراج 1%</th>
             <th class="cell-total">الإجمالي</th>
             <th class="cell-price">سعر الفلين</th>
             <th class="cell-count">عدد الفلين</th>
             <th class="cell-date">التاريخ</th>
             <th>حالة الأجرة</th>
-            <th class="cell-paidcol">تم دفع الأجرة؟</th>
           </tr>
         </thead>
         <tbody id="tbody"></tbody>
         <tfoot>
           <tr>
             <td>الإجماليات</td>
-            <td></td>
             <td></td>
             <td id="tNet" class="num center">0.00</td>
             <td id="tWorker" class="num center">0.00</td>
@@ -119,7 +109,7 @@
             <td id="tAvgPrice" class="num center">0.00 (متوسط)</td>
             <td id="tCount" class="num center">0</td>
             <td></td>
-            <td colspan="2" class="center" style="font-size:12px">يحفظ تلقائيًا في جهازك</td>
+            <td class="center" style="font-size:12px">يحفظ تلقائيًا في جهازك</td>
           </tr>
         </tfoot>
       </table>
@@ -128,7 +118,7 @@
   </div>
 
 <script>
-  const key = 'bonikam_v8';
+  const key = 'bonikam_v10';
   let entries = [];
 
   function todayISO(){
@@ -154,21 +144,15 @@
     const date = document.getElementById('date').value || todayISO();
     const count = Number(document.getElementById('count').value)||0;
     const price = Number(document.getElementById('price').value)||0;
-    const paid = document.getElementById('paid').checked;
     const harajPaid = document.getElementById('harajPaid').checked;
     const workerPaid = document.getElementById('workerPaid').checked;
     const id = Date.now()+''+Math.random().toString(16).slice(2);
-    entries.push( compute({id,date,count,price,paid,harajPaid,workerPaid}) );
+    entries.push( compute({id,date,count,price,harajPaid,workerPaid}) );
     save(); render();
     document.getElementById('count').value=''; document.getElementById('price').value='';
   }
 
   function removeRow(id){ entries = entries.filter(x=>x.id!==id); save(); render(); }
-
-  function setFlag(id, field, val){
-    const e = entries.find(x=>x.id===id); if(!e) return;
-    e[field] = !!val; save(); render();
-  }
 
   function updateField(id, field, val){
     const e = entries.find(x=>x.id===id); if(!e) return;
@@ -193,23 +177,24 @@
     for(const e of entries){
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="actions center"><button class="secondary" onclick="removeRow('${e.id}')">حذف</button></td>
+        <td class="row-actions">
+          <button class="edit-btn" onclick="startEdit('${e.id}')">تعديل</button>
+          <button class="del-btn" onclick="removeRow('${e.id}')">حذف</button>
+        </td>
         <td class="center">${badge(!!e.harajPaid)}</td>
-        <td class="center"><input type="checkbox" ${e.paid?'checked':''} onchange="setFlag('${e.id}','paid',this.checked)"></td>
         <td class="cell-net num center">${(e.net??0).toFixed(2)}</td>
         <td class="cell-worker num center">${(e.worker??0).toFixed(2)}</td>
         <td class="cell-fee num center">${(e.fee??0).toFixed(2)}</td>
         <td class="cell-total num center">${(e.total??0).toFixed(2)}</td>
-        <td class="cell-price num center" contenteditable="true">${e.price}</td>
-        <td class="cell-count num center" contenteditable="true">${e.count}</td>
+        <td class="cell-price num center editable">${e.price}</td>
+        <td class="cell-count num center editable">${e.count}</td>
         <td class="cell-date center"><input type="date" value="${e.date}" style="width:100%;padding:6px;border:1px solid #999;border-radius:8px"></td>
         <td class="center">${badge(!!e.workerPaid)}</td>
-        <td class="center"><input type="checkbox" ${e.workerPaid?'checked':''} onchange="setFlag('${e.id}','workerPaid',this.checked)"></td>
       `;
 
-      const dateInp   = tr.children[9].querySelector('input');
-      const priceTd   = tr.children[7];
-      const countTd   = tr.children[8];
+      const dateInp   = tr.children[8].querySelector('input');
+      const priceTd   = tr.children[6];
+      const countTd   = tr.children[7];
       dateInp.addEventListener('change',ev=>updateField(e.id,'date',ev.target.value));
 
       function commitEditable(td, field){
@@ -232,10 +217,8 @@
     document.getElementById('tAvgPrice').textContent = priceAvg.toFixed(2)+' (متوسط)';
   }
 
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(()=>{});
-    });
+  function startEdit(id){
+    alert('تقدر تعدّل السعر أو العدد مباشرة داخل الجدول، واضغط Enter أو اطلع من الخانة لحفظ التعديل.');
   }
 
   document.getElementById('date').value = todayISO();
