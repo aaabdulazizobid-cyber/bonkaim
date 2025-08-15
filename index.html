@@ -1,40 +1,60 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>برنامج بيع البونيكام — متزامن مع Google Sheets</title>
-<meta name="theme-color" content="#FFD700">
-<style>
-  :root{--bg:#f8f9fb;--card:#fff;--ink:#111;--muted:#666;--gold:#ffd700;--danger:#b00020;--ok:#2e7d32}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
-  header{background:var(--gold);padding:10px 14px;text-align:center;font-weight:700}
-  .wrap{max-width:1100px;margin:auto;padding:16px}
-  .card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px}
-  .form{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;align-items:end}
-  label{font-size:13px;color:#555;display:block;margin:4px 0 6px}
-  input[type="date"],input[type="number"]{width:100%;padding:12px 10px;font-size:16px;border:1.5px solid #bbb;border-radius:10px;background:#fff}
-  input[type="checkbox"]{width:22px;height:22px}
-  button{padding:12px 14px;font-size:15px;border:1px solid #222;border-radius:10px;background:#111;color:#fff;cursor:pointer}
-  .secondary{background:#fff;color:#111}
-  .green{background:var(--ok);border-color:var(--ok)}
-  .danger{background:#fff;color:var(--danger);border-color:#ffd6d6}
-  .row-actions button{padding:6px 10px;font-size:13px}
-  .table-wrap{margin-top:12px;background:#fff;border:1px solid #000;border-radius:12px;overflow:hidden}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  thead th{position:sticky;top:0;background:#fafafa;z-index:1;border-bottom:2px solid #000;font-size:14px;padding:12px;text-align:center}
-  tbody td{padding:10px 8px;border-bottom:1px solid #000;border-top:1px solid #000;border-right:1px solid #000;text-align:center}
-  tbody tr:nth-child(even){background:#fcfcfc}
-  tfoot td{padding:12px 8px;font-weight:bold;border-top:3px solid #000;background:#f0f0f0;text-align:center}
-  .num{font-variant-numeric:tabular-nums}
-  .hint{font-size:12px;color:#666;margin-top:6px}
-  .status{font-size:12px;color:#333;margin-top:8px}
-  @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bonkaim — بيع البونيكام</title>
+  <meta name="theme-color" content="#FFD700">
+  <!-- أيقونة التبويب (favicon) -->
+  <link rel="icon" type="image/png" href="https://i.ibb.co/8Xnmc5L/bonkaim.png">
+
+  <style>
+    :root{
+      --bg:#f8f9fb; --card:#fff; --ink:#111; --muted:#666;
+      --gold:#ffd700; --ok:#2e7d32; --ok-bg:#eaf7ea;
+      --warn:#b00020; --warn-bg:#ffecec;
+      --thead:#fff7cc; --row-zebra:#fcfcfc; --tfoot:#f3f3f3;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);
+         font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
+    header{background:var(--gold);padding:10px 14px;text-align:center;font-weight:700}
+    .wrap{max-width:1100px;margin:auto;padding:16px}
+    .card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px}
+
+    .form{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;align-items:end}
+    label{font-size:13px;color:#555;display:block;margin:4px 0 6px}
+    input[type="date"],input[type="number"]{width:100%;padding:12px 10px;font-size:16px;border:1.5px solid #bbb;border-radius:10px;background:#fff}
+    input[type="checkbox"]{width:22px;height:22px}
+    button{padding:12px 14px;font-size:15px;border:1px solid #111;border-radius:10px;background:#111;color:#fff;cursor:pointer}
+    .secondary{background:#fff;color:#111}
+    .green{background:var(--ok);border-color:var(--ok)}
+    .danger{background:#fff;color:var(--warn);border-color:#ffd6d6}
+    .row-actions button{padding:6px 10px;font-size:13px}
+    .hint{font-size:12px;color:#666;margin-top:6px}
+    .status{font-size:12px;color:#333;margin-top:8px}
+
+    .table-wrap{margin-top:12px;background:#fff;border:1px solid #000;border-radius:12px;overflow:hidden}
+    table{width:100%;border-collapse:separate;border-spacing:0}
+    thead th{
+      position:sticky;top:0;background:var(--thead);z-index:1;
+      border-bottom:2px solid #000;font-size:14px;padding:12px;text-align:center;font-weight:700;color:#000
+    }
+    tbody td{padding:10px 8px;border-bottom:1px solid #000;border-top:1px solid #000;border-right:1px solid #000;text-align:center}
+    tbody tr:nth-child(even){background:var(--row-zebra)}
+    tfoot td{padding:12px 8px;font-weight:bold;border-top:3px solid #000;background:var(--tfoot);text-align:center}
+
+    .badge{display:inline-block;padding:.25rem .6rem;border-radius:999px;font-size:12px;font-weight:700}
+    .badge.ok{background:var(--ok-bg);color:var(--ok);border:1px solid #cce7cc}
+    .badge.no{background:var(--warn-bg);color:var(--warn);border:1px solid #ffd1d1}
+
+    .num{font-variant-numeric:tabular-nums}
+    tr.paid{ background:#f8fff8 !important; } /* تظليل خفيف إذا أجرة العامل مدفوعة */
+    @media (max-width:900px){.form{grid-template-columns:1fr 1fr;gap:8px}}
+  </style>
 </head>
 <body>
-<header>برنامج بيع البونيكام — متزامن مع Google Sheets</header>
+<header>Bonkaim — بيع البونيكام (متزامن مع Google Sheets)</header>
 
 <div class="wrap">
 
@@ -48,7 +68,7 @@
     <form id="entryForm" class="form">
       <div>
         <label>عدد الفلين</label>
-        <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 20" required>
+        <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 100" required>
       </div>
       <div>
         <label>التاريخ</label>
@@ -59,18 +79,18 @@
         <input type="number" id="price" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25" required>
       </div>
       <div>
-        <label style="margin-bottom:6px">دفع الحراج</label><br>
+        <label style="margin-bottom:6px">رسوم حراج مدفوعة؟</label><br>
         <input type="checkbox" id="harajPaid">
       </div>
       <div>
-        <label style="margin-bottom:6px">دفع أجرة العامل</label><br>
+        <label style="margin-bottom:6px">أجرة العامل مدفوعة؟</label><br>
         <input type="checkbox" id="workerPaid">
       </div>
       <div>
         <button type="submit" class="green" style="width:100%">+ إضافة</button>
       </div>
     </form>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — الحفظ محلي + مزامنة مع Google Sheets.</div>
+    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets.</div>
   </div>
 
   <div class="table-wrap">
@@ -109,15 +129,16 @@
 </div>
 
 <script>
-// ================= إعدادات الربط =================
+/* ===== Apps Script (GET/POST) ===== */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRRRcDqJ7itfDfqPoq_lxw3dDBaW9ksFvByJ5yQ-tG9iRplqvXPN21QldSnOGOJxc/exec';
-const GET_URL = APPS_SCRIPT_URL;   // جلب الصفوف من الشيت
-const ADD_URL = APPS_SCRIPT_URL;   // إضافة صف
+const GET_URL = APPS_SCRIPT_URL;   // جلب
+const ADD_URL = APPS_SCRIPT_URL;   // إضافة
 
+/* ===== تخزين محلي ===== */
 const LS_KEY = 'bonikam_sync_v1';
 let entries = [];
 
-// ================= أدوات مساعدة =================
+/* ===== أدوات ===== */
 function todayISO(){
   const d = new Date();
   const tz = new Date(d.getTime() - d.getTimezoneOffset()*60000);
@@ -137,15 +158,19 @@ function compute(e){
   return e;
 }
 
-// ================= العرض =================
+/* ===== العرض ===== */
 function render(){
-  const tb = document.getElementById('tbody'); tb.innerHTML='';
+  const tb = document.getElementById('tbody'); 
+  tb.innerHTML='';
+
   entries.sort((a,b)=> a.date.localeCompare(b.date));
+
   for(const e of entries){
     const tr = document.createElement('tr');
+    if (e.workerPaid) tr.classList.add('paid');
     tr.innerHTML = `
       <td class="row-actions"><button class="danger" onclick="delRow('${e.id}')">حذف</button></td>
-      <td>${e.harajPaid?'تم':'لم'}</td>
+      <td>${e.harajPaid ? '<span class="badge ok">تم</span>' : '<span class="badge no">لم</span>'}</td>
       <td class="num">${(e.net??0).toFixed(2)}</td>
       <td class="num">${(e.worker??0).toFixed(2)}</td>
       <td class="num">${(e.fee??0).toFixed(2)}</td>
@@ -153,10 +178,11 @@ function render(){
       <td class="num">${e.price}</td>
       <td class="num">${e.count}</td>
       <td>${e.date}</td>
-      <td>${e.workerPaid?'تم':'لم'}</td>
+      <td>${e.workerPaid ? '<span class="badge ok">تم</span>' : '<span class="badge no">لم</span>'}</td>
     `;
     tb.appendChild(tr);
   }
+
   const sum = k=>entries.reduce((a,c)=>a+Number(c[k]||0),0);
   const priceAvg = entries.length? (entries.reduce((a,c)=>a+Number(c.price||0),0)/entries.length):0;
   document.getElementById('tCount').textContent = sum('count').toFixed(0);
@@ -172,7 +198,7 @@ function delRow(id){
   save(); render(); status('حُذف محليًا (لن يُحذف من الشيت).');
 }
 
-// ================= إضافة صف =================
+/* ===== إضافة صف ===== */
 async function addEntry(ev){
   ev.preventDefault();
   const date = document.getElementById('date').value || todayISO();
@@ -186,29 +212,21 @@ async function addEntry(ev){
     date, count, price, harajPaid, workerPaid
   });
 
+  // محلي + عرض
   entries.push(row); save(); render();
 
+  // إرسال لـ Apps Script (نستخدم no-cors لتجاوز CORS)
   try{
     status('جارِ الرفع للشيت...');
     await fetch(ADD_URL, {
       method:'POST',
-      mode:'no-cors',                         // مهم لتجاوز CORS
+      mode:'no-cors',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        id: row.id,
-        date: row.date,
-        count: row.count,
-        price: row.price,
-        total: row.total,
-        fee: row.fee,
-        worker: row.worker,
-        net: row.net,
-        harajPaid: row.harajPaid,
-        workerPaid: row.workerPaid
-      })
+      body: JSON.stringify(row)
+      // ملاحظــة: سكربت GAS اللي عطيتك إياه يقبل الجسم ككائن واحد.
+      // لو تستخدم النسخة اللي تقبل {data:[...] } عدّل هنا بسهولة.
     });
-    // لا نستطيع قراءة الاستجابة مع no-cors، نكتفي بالرسالة:
-    status('أُرسِل للشيت (افتح الشيت وشوف السطر خلال ثوانٍ).');
+    status('أُرسِل للشيت (افتح الشيت وتحقق بعد ثوانٍ).');
   }catch(err){
     console.error(err);
     status('الشيت غير متاح الآن.');
@@ -219,13 +237,13 @@ async function addEntry(ev){
   document.getElementById('price').value='';
 }
 
-// ================= جلب من الشيت =================
+/* ===== جلب من الشيت ===== */
 async function pullFromSheet(){
   try{
     status('جارِ التحديث من الشيت...');
     const res = await fetch(GET_URL);
     if(!res.ok){ throw new Error('GET failed'); }
-    const data = await res.json(); // الكود في السكربت يرجّع { ok:true, data:[...] }
+    const data = await res.json(); // { ok:true, data:[...] }
     const rows = Array.isArray(data.data)? data.data : [];
     entries = rows.map(r => compute({
       id: r.id ?? r.ID ?? '',
@@ -243,11 +261,11 @@ async function pullFromSheet(){
   }catch(e){
     console.error(e);
     status('تعذّر التحديث من الشيت.');
-    alert('ما قدرنا نسحب من الشيت. تأكد من رابط GET ومن أن السكربت منشور.');
+    alert('ما قدرنا نسحب من الشيت. تأكد أن الـ Web App منشور بإتاحة (أي شخص لديه الرابط).');
   }
 }
 
-// ================= تهيئة =================
+/* ===== تهيئة ===== */
 document.getElementById('date').value = todayISO();
 document.getElementById('entryForm').addEventListener('submit', addEntry);
 document.getElementById('btnPull').addEventListener('click', pullFromSheet);
