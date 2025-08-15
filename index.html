@@ -3,11 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>برنامج بيع البونيكام — Google Sheets متزامن</title>
+<title>برنامج بيع البونيكام — متزامن مع Google Sheets</title>
 <meta name="theme-color" content="#FFD700">
 <style>
   :root{--bg:#f8f9fb;--card:#fff;--ink:#111;--muted:#666;--gold:#ffd700;--danger:#b00020;--ok:#2e7d32}
-  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
   header{background:var(--gold);padding:10px 14px;text-align:center;font-weight:700}
   .wrap{max-width:1100px;margin:auto;padding:16px}
   .card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px}
@@ -34,6 +35,7 @@
 </head>
 <body>
 <header>برنامج بيع البونيكام — متزامن مع Google Sheets</header>
+
 <div class="wrap">
 
   <div class="card">
@@ -46,7 +48,7 @@
     <form id="entryForm" class="form">
       <div>
         <label>عدد الفلين</label>
-        <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 100" required>
+        <input type="number" id="count" inputmode="numeric" min="0" step="1" placeholder="مثال: 20" required>
       </div>
       <div>
         <label>التاريخ</label>
@@ -107,13 +109,15 @@
 </div>
 
 <script>
-// ✅ NoCodeAPI endpoints (على الورقة: "الورقة1")
-const GET_URL = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ?tabId=الورقة1';
-const ADD_URL = 'https://v1.nocodeapi.com/bonkaim/google_sheets/MpBntOqzeXdxSGmZ/addRows?tabId=الورقة1';
+// ================= إعدادات الربط =================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwRRRcDqJ7itfDfqPoq_lxw3dDBaW9ksFvByJ5yQ-tG9iRplqvXPN21QldSnOGOJxc/exec';
+const GET_URL = APPS_SCRIPT_URL;   // جلب الصفوف من الشيت
+const ADD_URL = APPS_SCRIPT_URL;   // إضافة صف
 
 const LS_KEY = 'bonikam_sync_v1';
 let entries = [];
 
+// ================= أدوات مساعدة =================
 function todayISO(){
   const d = new Date();
   const tz = new Date(d.getTime() - d.getTimezoneOffset()*60000);
@@ -133,6 +137,7 @@ function compute(e){
   return e;
 }
 
+// ================= العرض =================
 function render(){
   const tb = document.getElementById('tbody'); tb.innerHTML='';
   entries.sort((a,b)=> a.date.localeCompare(b.date));
@@ -167,6 +172,7 @@ function delRow(id){
   save(); render(); status('حُذف محليًا (لن يُحذف من الشيت).');
 }
 
+// ================= إضافة صف =================
 async function addEntry(ev){
   ev.preventDefault();
   const date = document.getElementById('date').value || todayISO();
@@ -184,32 +190,27 @@ async function addEntry(ev){
 
   try{
     status('جارِ الرفع للشيت...');
-    const res = await fetch(ADD_URL, {
+    await fetch(ADD_URL, {
       method:'POST',
+      mode:'no-cors',                         // مهم لتجاوز CORS
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        data: [{
-          id: row.id,
-          date: row.date,
-          count: row.count,
-          price: row.price,
-          total: row.total,
-          fee: row.fee,
-          worker: row.worker,
-          net: row.net,
-          harajPaid: row.harajPaid ? 'TRUE' : 'FALSE',
-          workerPaid: row.workerPaid ? 'TRUE' : 'FALSE'
-        }]
+        id: row.id,
+        date: row.date,
+        count: row.count,
+        price: row.price,
+        total: row.total,
+        fee: row.fee,
+        worker: row.worker,
+        net: row.net,
+        harajPaid: row.harajPaid,
+        workerPaid: row.workerPaid
       })
     });
-    if(!res.ok){
-      const t = await res.text();
-      status('تعذّر الإرسال للشيت. يبقى محفوظ محليًا.');
-      alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.\n\nنص الاستجابة:\n'+t);
-    }else{
-      status('تمت الإضافة للشيت ✔️');
-    }
+    // لا نستطيع قراءة الاستجابة مع no-cors، نكتفي بالرسالة:
+    status('أُرسِل للشيت (افتح الشيت وشوف السطر خلال ثوانٍ).');
   }catch(err){
+    console.error(err);
     status('الشيت غير متاح الآن.');
     alert('تعذّر الإرسال للشيت الآن، السطر محفوظ محليًا.\nجرّب لاحقًا زر (تحديث من الشيت).');
   }
@@ -218,12 +219,13 @@ async function addEntry(ev){
   document.getElementById('price').value='';
 }
 
+// ================= جلب من الشيت =================
 async function pullFromSheet(){
   try{
     status('جارِ التحديث من الشيت...');
     const res = await fetch(GET_URL);
     if(!res.ok){ throw new Error('GET failed'); }
-    const data = await res.json();
+    const data = await res.json(); // الكود في السكربت يرجّع { ok:true, data:[...] }
     const rows = Array.isArray(data.data)? data.data : [];
     entries = rows.map(r => compute({
       id: r.id ?? r.ID ?? '',
@@ -234,16 +236,18 @@ async function pullFromSheet(){
       fee: +r.fee || 0,
       worker: +r.worker || 0,
       net: +r.net || 0,
-      harajPaid: (r.harajPaid===true || r.harajPaid==='TRUE'),
-      workerPaid:(r.workerPaid===true || r.workerPaid==='TRUE')
+      harajPaid: (r.harajPaid===true || r.harajPaid==='TRUE' || r.harajPaid==='تم'),
+      workerPaid:(r.workerPaid===true || r.workerPaid==='TRUE' || r.workerPaid==='تم')
     }));
     save(); render(); status('تم التحديث من الشيت ✔️');
   }catch(e){
+    console.error(e);
     status('تعذّر التحديث من الشيت.');
-    alert('ما قدرنا نسحب من الشيت. تأكد من رابط GET ومن حد الاستخدام في NoCodeAPI.');
+    alert('ما قدرنا نسحب من الشيت. تأكد من رابط GET ومن أن السكربت منشور.');
   }
 }
 
+// ================= تهيئة =================
 document.getElementById('date').value = todayISO();
 document.getElementById('entryForm').addEventListener('submit', addEntry);
 document.getElementById('btnPull').addEventListener('click', pullFromSheet);
