@@ -1,244 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>برنامج بيع البونيكام — نسخة سريعة</title>
-<meta name="theme-color" content="#FFD700"/>
-
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="manifest" href="manifest.json">
-
-<style>
-  :root{
-    --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
-    --gold:#ffd400; --border:#000;
-    --c1:#f7f0e2; --c2:#e8f3e2; --c3:#e7f0fb; --c4:#ffe9b6;
-    --c5:#f3e0e7; --c6:#e6ecfa; --c7:#e7f4e1;
-    --ok:#2e7d32; --bad:#b00020; --ok-bg:#dbf2df; --bad-bg:#f8d7da;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
-  header{background:var(--gold); border-bottom:2px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between}
-  .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px}
-  .logo-badge{width:34px;height:34px;border-radius:8px;background:#111;color:#ffd400;display:grid;place-items:center;font-weight:800}
-  .wrap{max-width:1100px;margin:auto;padding:14px}
-  .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
-  button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
-  .ghost{background:#fff;color:#111}
-  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
-  label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
-  input[type="number"],input[type="date"]{width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px}
-  .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
-  tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
-  tbody tr:nth-child(even){background:#fcfcfc}
-  .num{font-variant-numeric:tabular-nums}
-  .c-total{background:var(--c1)} .c-price{background:var(--c2)} .c-count{background:var(--c3)}
-  .c-date{background:var(--c4)} .c-fee{background:var(--c5)} .c-worker{background:var(--c6)} .c-net{background:var(--c7)}
-  .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
-  tfoot td{background:#f1f1f1;font-weight:700}
-  .flagbox{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800;font-size:18px}
-  .flag-ok{background:var(--ok-bg);color:var(--ok)} .flag-no{background:var(--bad-bg);color:var(--bad)}
-  .hint{font-size:12px;color:var(--muted);margin-top:6px}
-  @media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>برنامج بيع البونيكام</title>
+  <style>
+    body {
+      font-family: Tahoma, Arial, sans-serif;
+      margin: 20px;
+      background: #f8f8f8;
+      color: #222;
+      direction: rtl;
+      text-align: center;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #eee;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="logo">
-    <span class="logo-badge">B</span><span>bonkaim</span>
-  </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="ghost" id="btnPull">تحديث من الشيت</button>
-    <button class="ghost" id="btnClearLocal">مسح المحلي</button>
-  </div>
-</header>
 
-<div class="wrap">
-  <div class="toolrow"><span id="syncStat" class="hint">جاهز.</span></div>
+  <h2>📊 برنامج بيع البونيكام</h2>
 
-  <div class="card">
-    <div class="inputs">
-      <div><label>عدد الفلين</label><input id="count" type="number" inputmode="numeric" min="0" step="1" placeholder="مثال: 100"></div>
-      <div><label>التاريخ</label><input id="date" type="date"></div>
-      <div><label>سعر الفلين (ريال)</label><input id="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25"></div>
-      <div><label>حراج (مدفوع؟)</label><input id="harajPaid" type="checkbox"></div>
-      <div><label>أجرة عامل (مدفوعة؟)</label><input id="workerPaid" type="checkbox"></div>
-      <div style="display:flex;align-items:end"><button id="btnAdd">+ إضافة</button></div>
-    </div>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> — يحفظ محليًا + يتزامن مع Google Sheets.</div>
-  </div>
+  <label>عدد الفلين:</label>
+  <input type="number" id="count" placeholder="مثال: 100"><br>
 
-  <div class="table-wrap" style="margin-top:12px">
-    <table id="tbl">
-      <thead>
-        <tr>
-          <th>إجراءات</th><th>حراج</th><th>أجرة عامل</th>
-          <th class="c-net">صافي الربح</th><th class="c-worker">أجر العامل (2/فلين)</th>
-          <th class="c-fee">حراج %1</th><th class="c-total">الإجمالي</th>
-          <th class="c-price">سعر الفلين</th><th class="c-count">عدد الفلين</th><th class="c-date">التاريخ</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-      <tfoot>
-        <tr>
-          <td>الإجماليات</td><td></td><td></td>
-          <td class="num" id="tNet">0.00</td><td class="num" id="tWorker">0.00</td>
-          <td class="num" id="tFee">0.00</td><td class="num" id="tTotal">0.00</td>
-          <td class="num" id="tAvgPrice">0.00 (متوسط)</td><td class="num" id="tCount">0</td>
-          <td style="font-size:12px">يحفظ تلقائيًا + مزامنة بالشيت</td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-</div>
+  <label>سعر الفلين (ريال):</label>
+  <input type="number" id="price" placeholder="مثال: 25"><br>
 
-<script>
-/* ===== الإعدادات ===== */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx9A-ujkCNCT_KWOMxZkGNFIGdpUlx5-n6-U6_URaSdlWYiA70WI4-SUMgjRez8dnQ/exec';
-const LS_KEY = 'bonkaim_sync_v2';
-let rows = [];
-const $ = id => document.getElementById(id);
+  <label>
+    <input type="checkbox" id="harajPaid"> حراج مدفوع؟
+  </label><br>
 
-/* ===== عام ===== */
-function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10);}
-$('date').value = todayISO();
-function load(){ rows=JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(rows)); }
-function status(s){ $('syncStat').textContent=s; }
+  <label>
+    <input type="checkbox" id="workerPaid"> أجرة عامل مدفوعة؟
+  </label><br>
 
-/* الحسبة */
-function compute(r){
-  const c=+r.count||0, p=+r.price||0;
-  const total=c*p;
-  const fee=+(total*0.01).toFixed(2);
-  const worker=+(c*2).toFixed(2);
-  const net=+(total-fee-worker).toFixed(2);
-  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net; 
-  return r;
-}
-function flagBox(tf){ return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`; }
+  <button onclick="saveRow()">➕ إضافة</button>
+  <button onclick="loadRows()">🔄 تحديث من الشيت</button>
 
-/* الرسم */
-function render(){
-  const tb=$('tbody'); tb.innerHTML='';
-  rows.sort((a,b)=> a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  for(const r of rows){
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td><button class="rowbtn" onclick="deleteRow('${r.id}')">حذف</button></td>
-      <td>${flagBox(!!r.harajPaid)}</td>
-      <td>${flagBox(!!r.workerPaid)}</td>
-      <td class="num c-net">${(r.net??0).toFixed(2)}</td>
-      <td class="num c-worker">${(r.worker??0).toFixed(2)}</td>
-      <td class="num c-fee">${(r.fee??0).toFixed(2)}</td>
-      <td class="num c-total">${(r.total??0).toFixed(2)}</td>
-      <td class="num c-price">${r.price}</td>
-      <td class="num c-count">${r.count}</td>
-      <td class="c-date">${r.date}</td>`;
-    tb.appendChild(tr);
-  }
-  const sum=k=>rows.reduce((a,c)=>a+Number(c[k]||0),0);
-  const avg=rows.length? rows.reduce((a,c)=>a+Number(c.price||0),0)/rows.length : 0;
-  $('tCount').textContent = sum('count').toFixed(0);
-  $('tTotal').textContent = sum('total').toFixed(2);
-  $('tFee').textContent   = sum('fee').toFixed(2);
-  $('tWorker').textContent= sum('worker').toFixed(2);
-  $('tNet').textContent   = sum('net').toFixed(2);
-  $('tAvgPrice').textContent = avg.toFixed(2)+' (متوسط)';
-}
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>الإجمالي</th>
+        <th>صافي الربح</th>
+        <th>أجرة العامل</th>
+        <th>حراج</th>
+        <th>إجراءات</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-/* إضافة */
-async function addRow(){
-  const date=$('date').value||todayISO();
-  const count=+$('count').value||0;
-  const price=+$('price').value||0;
-  const harajPaid=$('harajPaid').checked;
-  const workerPaid=$('workerPaid').checked;
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbze6kYvsRaCelyxkMqsHuyz1yMJE_z98yKOzvX2oyaBfXH3p81kNRas8vyQS_3du2BA/exec";
 
-  const row=compute({id: Date.now()+''+Math.random().toString(16).slice(2), date,count,price, harajPaid, workerPaid});
-  rows.push(row); save(); render();
+    // إضافة صف جديد
+    async function saveRow() {
+      const count = document.getElementById("count").value;
+      const price = document.getElementById("price").value;
+      const harajPaid = document.getElementById("harajPaid").checked;
+      const workerPaid = document.getElementById("workerPaid").checked;
 
-  $('count').value=''; $('price').value='';
-  try{
-    await postForm({action:'add', ...row,
-      harajPaid: row.harajPaid?'TRUE':'FALSE',
-      workerPaid: row.workerPaid?'TRUE':'FALSE'
-    });
-    status('تم الرفع للشيت ✔️');
-    await pull(true); // حدث فورًا لظهور السجل في الجهاز الآخر
-  }catch(e){
-    status('فشل الرفع الآن — محفوظ محليًا.');
-    alert('فشل الرفع — اضغط "تحديث من الشيت" لاحقًا.');
-  }
-}
+      const data = {
+        action: "add",
+        count,
+        price,
+        harajPaid,
+        workerPaid
+      };
 
-/* حذف */
-async function deleteRow(id){
-  const keep = rows.find(r=>r.id===id);
-  rows = rows.filter(r=>r.id!==id); save(); render();
-  try{
-    await postForm({action:'delete', id});
-    status('تم الحذف من الشيت ✔️');
-    await pull(true);
-  }catch(e){
-    // رجّع الصف إذا فشل الحذف
-    if(keep){ rows.push(keep); save(); render(); }
-    alert('تعذّر الحذف من الشيت، أعد المحاولة لاحقًا.');
-  }
-}
-
-/* إرسال form-url-encoded (بدون ترويسات → بلا preflight) */
-function postForm(obj){
-  const body = new URLSearchParams();
-  for(const k in obj) body.append(k, String(obj[k]??''));
-  // نضيف معلمة عشوائية لمنع الكاش على بعض الشبكات
-  body.append('_ts', Date.now());
-  return fetch(SCRIPT_URL, { method:'POST', body });
-}
-
-/* سحب + دمج */
-async function pull(quiet=false){
-  try{
-    if(!quiet) status('جارِ التحديث من الشيت...');
-    const r = await fetch(SCRIPT_URL+'?action=get&_ts='+(Date.now()), {cache:'no-store'});
-    if(!r.ok) throw new Error('GET failed');
-    const j = await r.json();
-    const remote = Array.isArray(j.data)? j.data : [];
-    const map = new Map(rows.map(x=>[String(x.id), x]));
-    for(const o of remote){
-      const id = String(o.id||'');
-      const merged = compute({
-        id, date:String(o.date||''), count:+o.count||0, price:+o.price||0,
-        total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
-        harajPaid:(o.harajPaid===true||o.harajPaid==='TRUE'||o.harajPaid==='تم'),
-        workerPaid:(o.workerPaid===true||o.workerPaid==='TRUE'||o.workerPaid==='تم')
-      });
-      const local = map.get(id);
-      if(!local){ rows.push(merged); } else { Object.assign(local, merged); }
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" }
+        });
+        alert("✅ تم الحفظ");
+        loadRows();
+      } catch (err) {
+        alert("❌ خطأ في الحفظ");
+        console.error(err);
+      }
     }
-    save(); render(); if(!quiet) status('تم التحديث من الشيت ✔️');
-  }catch(e){
-    if(!quiet){ status('تعذّر الجلب من الشيت.'); alert('تعذّر الجلب — تأكد من صلاحيات تطبيق الويب.'); }
-  }
-}
 
-/* أزرار */
-$('btnAdd').addEventListener('click', addRow);
-$('btnPull').addEventListener('click', ()=>pull(false));
-$('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('تأكيد مسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.');}
-});
+    // تحميل البيانات
+    async function loadRows() {
+      try {
+        const res = await fetch(SCRIPT_URL);
+        const rows = await res.json();
+        renderTable(rows);
+      } catch (err) {
+        console.error("خطأ في الجلب:", err);
+      }
+    }
 
-/* سحب تلقائي عند فتح الصفحة، وكل 20 ثانية، وعند رجوع التبويب نشط */
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) pull(true); });
-setInterval(()=>pull(true), 20000);
+    // عرض البيانات في الجدول
+    function renderTable(rows) {
+      const tbody = document.querySelector("#dataTable tbody");
+      tbody.innerHTML = "";
+      rows.forEach((r, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.total || ""}</td>
+          <td>${r.netProfit || ""}</td>
+          <td>${r.workerFee || ""}</td>
+          <td>${r.harajFee || ""}</td>
+          <td><button onclick="deleteRow('${r.id}')">🗑️ حذف</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-/* تشغيل أولي */
-load(); render(); pull(true);
-</script>
+    // حذف صف
+    async function deleteRow(id) {
+      if (!confirm("هل أنت متأكد من الحذف؟")) return;
+      try {
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "delete", id }),
+          headers: { "Content-Type": "application/json" }
+        });
+        loadRows();
+      } catch (err) {
+        alert("❌ خطأ في الحذف");
+        console.error(err);
+      }
+    }
+
+    // تحميل أولي
+    loadRows();
+  </script>
 </body>
 </html>
