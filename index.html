@@ -14,9 +14,17 @@
   :root{
     --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
     --gold:#ffd400; --border:#000;
-    --c1:#f7f0e2; --c2:#e8f3e2; --c3:#e7f0fb; --c4:#ffe9b6;
-    --c5:#f3e0e7; --c6:#e6ecfa; --c7:#e7f4e1;
-    --ok:#2e7d32; --bad:#b00020; --ok-bg:#dbf2df; --bad-bg:#f8d7da;
+    /* ألوان الأعمدة */
+    --c1:#f7f0e2; /* الإجمالي */
+    --c2:#e8f3e2; /* سعر */
+    --c3:#e7f0fb; /* عدد */
+    --c4:#ffe9b6; /* التاريخ */
+    --c5:#f3e0e7; /* حراج % */
+    --c6:#e6ecfa; /* أجر العامل (رقمي) */
+    --c7:#e7f4e1; /* صافي */
+    /* شارات */
+    --ok:#2e7d32; --bad:#b00020;
+    --ok-bg:#dbf2df; --bad-bg:#f8d7da;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
@@ -29,7 +37,9 @@
   .ghost{background:#fff;color:#111}
   .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
   label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
-  input[type="number"],input[type="date"]{width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px}
+  input[type="number"],input[type="date"]{
+    width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px
+  }
   .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
   table{width:100%;border-collapse:separate;border-spacing:0}
   thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
@@ -40,6 +50,7 @@
   .c-date{background:var(--c4)} .c-fee{background:var(--c5)} .c-worker{background:var(--c6)} .c-net{background:var(--c7)}
   .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
   tfoot td{background:#f1f1f1;font-weight:700}
+  /* مربعات ✅/❌ */
   .flagbox{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800;font-size:18px}
   .flag-ok{background:var(--ok-bg);color:var(--ok)} .flag-no{background:var(--bad-bg);color:var(--bad)}
   .hint{font-size:12px;color:var(--muted);margin-top:6px}
@@ -48,9 +59,7 @@
 </head>
 <body>
 <header>
-  <div class="logo">
-    <span class="logo-badge">B</span><span>bonkaim</span>
-  </div>
+  <div class="logo"><span class="logo-badge">B</span><span>bonkaim</span></div>
   <div style="display:flex;gap:8px">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
     <button class="ghost" id="btnClearLocal">مسح المحلي</button>
@@ -69,26 +78,35 @@
       <div><label>أجرة عامل (مدفوعة؟)</label><input id="workerPaid" type="checkbox"></div>
       <div style="display:flex;align-items:end"><button id="btnAdd">+ إضافة</button></div>
     </div>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> — يحفظ محليًا + يتزامن مع Google Sheets.</div>
+    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets.</div>
   </div>
 
   <div class="table-wrap" style="margin-top:12px">
     <table id="tbl">
       <thead>
         <tr>
-          <th>إجراءات</th><th>حراج</th><th>أجرة عامل</th>
-          <th class="c-net">صافي الربح</th><th class="c-worker">أجر العامل (2/فلين)</th>
-          <th class="c-fee">حراج %1</th><th class="c-total">الإجمالي</th>
-          <th class="c-price">سعر الفلين</th><th class="c-count">عدد الفلين</th><th class="c-date">التاريخ</th>
+          <th>إجراءات</th>
+          <th>حراج</th>
+          <th>أجرة عامل</th>
+          <th class="c-net">صافي الربح</th>
+          <th class="c-worker">أجر العامل (2/فلين)</th>
+          <th class="c-fee">حراج %1</th>
+          <th class="c-total">الإجمالي</th>
+          <th class="c-price">سعر الفلين</th>
+          <th class="c-count">عدد الفلين</th>
+          <th class="c-date">التاريخ</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
       <tfoot>
         <tr>
           <td>الإجماليات</td><td></td><td></td>
-          <td class="num" id="tNet">0.00</td><td class="num" id="tWorker">0.00</td>
-          <td class="num" id="tFee">0.00</td><td class="num" id="tTotal">0.00</td>
-          <td class="num" id="tAvgPrice">0.00 (متوسط)</td><td class="num" id="tCount">0</td>
+          <td class="num" id="tNet">0.00</td>
+          <td class="num" id="tWorker">0.00</td>
+          <td class="num" id="tFee">0.00</td>
+          <td class="num" id="tTotal">0.00</td>
+          <td class="num" id="tAvgPrice">0.00 (متوسط)</td>
+          <td class="num" id="tCount">0</td>
           <td style="font-size:12px">يحفظ تلقائيًا + مزامنة بالشيت</td>
         </tr>
       </tfoot>
@@ -97,8 +115,8 @@
 </div>
 
 <script>
-// ضع هنا رابط الويب آب الجديد من Apps Script
-const SCRIPT_URL = 'ضع_رابطك_هنا/exec';
+/* ===== الرابط (بدّله إذا تغيّر) ===== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx9A-ujkCNCT_KWOMxZkGNFIGdpUlx5-n6-U6_URaSdlWYiA70WI4-SUMgjRez8dnQ/exec';
 
 const LS_KEY='bonikam_sync_v1';
 let rows=[];
@@ -150,9 +168,10 @@ function render(){
   $('tAvgPrice').textContent = avg.toFixed(2)+' (متوسط)';
 }
 
-function delRow(id){ rows=rows.filter(x=>x.id!==id); save(); render(); status('حُذف محليًا.'); }
+function delRow(id){ rows=rows.filter(x=>x.id!==id); save(); render(); status('حُذف محليًا (الشيت لم يتغيّر).'); }
 
 async function sendRow(row){
+  // POST JSON -> Apps Script doPost?action=add
   const res = await fetch(SCRIPT_URL+'?action=add',{
     method:'POST',
     headers:{'Content-Type':'application/json','Cache-Control':'no-store'},
@@ -177,7 +196,7 @@ async function addRow(){
   rows.push(row); save(); render();
 
   try{ status('جارِ الإرسال للشيت...'); await sendRow(row); status('تم الرفع للشيت ✔️'); }
-  catch(err){ status('تعذّر الإرسال الآن — محفوظ محليًا.'); alert('تعذّر الإرسال الآن، محفوظ محليًا.\nجرّب لاحقًا (تحديث من الشيت).'); }
+  catch(err){ status('تعذّر الإرسال الآن — محفوظ محليًا.'); alert('تعذّر الإرسال الآن—محفوظ محليًا.\nاضغط "تحديث من الشيت" لاحقًا بعد الاتصال.'); }
 
   $('count').value=''; $('price').value='';
 }
@@ -185,7 +204,7 @@ async function addRow(){
 async function pull(){
   try{
     status('جارِ التحديث من الشيت...');
-    const r = await fetch(SCRIPT_URL+'?action=get',{cache:'no-store'});
+    const r = await fetch(SCRIPT_URL+'?action=get&perPage=500',{cache:'no-store'});
     if(!r.ok) throw new Error('GET failed');
     const j = await r.json();
     const arr = Array.isArray(j.data)? j.data : [];
@@ -199,13 +218,15 @@ async function pull(){
     }));
     save(); render(); status('تم التحديث من الشيت ✔️');
   }catch(e){
-    status('تعذّر الجلب من الشيت.'); alert('تأكد من نشر السكربت كـ (Anyone) وتحديث الرابط.');
+    status('تعذّر الجلب من الشيت.'); alert('تأكد من نشر السكربت كتطبيق ويب (Anyone) وأن الرابط صحيح.');
   }
 }
 
 $('btnAdd').addEventListener('click', addRow);
 $('btnPull').addEventListener('click', pull);
-$('btnClearLocal').addEventListener('click', ()=>{ if(confirm('تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.'); } });
+$('btnClearLocal').addEventListener('click', ()=>{
+  if(confirm('متأكد تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.');}
+});
 
 load(); render();
 </script>
