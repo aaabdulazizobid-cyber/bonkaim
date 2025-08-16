@@ -54,10 +54,6 @@
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
     <button class="ghost" id="btnClearLocal">مسح المحلي</button>
-    <button class="ghost" id="btnBackup">تنزيل نسخة احتياطية (JSON)</button>
-    <button class="ghost" id="btnExport">تصدير CSV</button>
-    <button class="ghost" id="btnImport">استرجاع من ملف</button>
-    <input id="fileImport" type="file" accept="application/json" style="display:none">
   </div>
 </header>
 
@@ -73,7 +69,7 @@
       <div><label>أجرة عامل (مدفوعة؟)</label><input id="workerPaid" type="checkbox"></div>
       <div style="display:flex;align-items:end"><button id="btnAdd">+ إضافة</button></div>
     </div>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets عند الشبكة.</div>
+    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> — يحفظ محليًا + يتزامن مع Google Sheets.</div>
   </div>
 
   <div class="table-wrap" style="margin-top:12px">
@@ -101,20 +97,20 @@
 </div>
 
 <script>
-/* ========= الإعداد ========= */
+/* ===== الإعدادات ===== */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx9A-ujkCNCT_KWOMxZkGNFIGdpUlx5-n6-U6_URaSdlWYiA70WI4-SUMgjRez8dnQ/exec';
-const LS_KEY = 'bonkaim_v2';
+const LS_KEY = 'bonkaim_sync_v2';
 let rows = [];
 const $ = id => document.getElementById(id);
 
-/* ========= أدوات عامة ========= */
-function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10); }
+/* ===== عام ===== */
+function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10);}
 $('date').value = todayISO();
-function load(){ rows = JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
+function load(){ rows=JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
 function save(){ localStorage.setItem(LS_KEY, JSON.stringify(rows)); }
-function status(s){ $('syncStat').textContent = s; }
+function status(s){ $('syncStat').textContent=s; }
 
-/* حسبة الأعمدة */
+/* الحسبة */
 function compute(r){
   const c=+r.count||0, p=+r.price||0;
   const total=c*p;
@@ -124,22 +120,16 @@ function compute(r){
   r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net; 
   return r;
 }
-
-/* شارات مربعة ✓/✗ */
 function flagBox(tf){ return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`; }
 
-/* رسم الجدول + المجاميع */
+/* الرسم */
 function render(){
   const tb=$('tbody'); tb.innerHTML='';
   rows.sort((a,b)=> a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
   for(const r of rows){
     const tr=document.createElement('tr');
     tr.innerHTML=`
-      <td>
-        <button class="rowbtn" onclick="delLocal('${r.id}')">حذف محلي</button>
-        <button class="rowbtn" onclick="delRemote('${r.id}')">حذف من الشيت</button>
-        ${r._pending?'<div class="hint">⏳ بانتظار الرفع</div>':''}
-      </td>
+      <td><button class="rowbtn" onclick="deleteRow('${r.id}')">حذف</button></td>
       <td>${flagBox(!!r.harajPaid)}</td>
       <td>${flagBox(!!r.workerPaid)}</td>
       <td class="num c-net">${(r.net??0).toFixed(2)}</td>
@@ -161,22 +151,7 @@ function render(){
   $('tAvgPrice').textContent = avg.toFixed(2)+' (متوسط)';
 }
 
-/* حذف */
-function delLocal(id){
-  rows = rows.filter(x=>x.id!==id);
-  save(); render(); status('حُذف محليًا (الشيت لم يتغيّر).');
-}
-async function delRemote(id){
-  try{
-    status('جارِ الحذف من الشيت...');
-    const body = new URLSearchParams({action:'delete', id});
-    await fetch(SCRIPT_URL, {method:'POST', body});
-    rows = rows.filter(x=>x.id!==id);
-    save(); render(); status('تم الحذف من الشيت ✔️');
-  }catch(e){ alert('تعذّر حذف الصف من الشيت'); status('فشل حذف الشيت.'); }
-}
-
-/* إضافة صف + دفع للصف إلى الطابور */
+/* إضافة */
 async function addRow(){
   const date=$('date').value||todayISO();
   const count=+$('count').value||0;
@@ -184,108 +159,86 @@ async function addRow(){
   const harajPaid=$('harajPaid').checked;
   const workerPaid=$('workerPaid').checked;
 
-  const row=compute({id: Date.now()+''+Math.random().toString(16).slice(2), date,count,price, harajPaid, workerPaid, _pending:true});
+  const row=compute({id: Date.now()+''+Math.random().toString(16).slice(2), date,count,price, harajPaid, workerPaid});
   rows.push(row); save(); render();
+
   $('count').value=''; $('price').value='';
-
-  await sendQueue(); // يحاول يرفع الآن
-}
-
-/* === إرسال بسيط بلا ترويسات مخصصة (يتفادى CORS preflight) === */
-async function sendQueue(){
-  const pend = rows.filter(r=>r._pending);
-  if(!pend.length){ status('لا يوجد سجلات معلّقة.'); return; }
-  status('جارِ رفع '+pend.length+' سجل للشيت...');
-  let ok=0, fail=0;
-
-  for(const r of pend){
-    try{
-      const body = new URLSearchParams({
-        action:'add',
-        id:r.id, date:r.date, count:String(r.count), price:String(r.price),
-        total:String(r.total), fee:String(r.fee), worker:String(r.worker), net:String(r.net),
-        harajPaid:r.harajPaid?'TRUE':'FALSE',
-        workerPaid:r.workerPaid?'TRUE':'FALSE'
-      });
-      const res = await fetch(SCRIPT_URL, {method:'POST', body}); // لا نحدد Content-Type
-      if(!res.ok) throw new Error(await res.text());
-      r._pending=false; ok++;
-    }catch(e){ fail++; }
-  }
-  save(); render();
-  if(fail){ status(`تم رفع ${ok}، وفشل ${fail} — سيُعاد المحاولة تلقائيًا.`); }
-  else{ status('تم الرفع للشيت ✔️'); }
-}
-
-/* جلب من الشيت + دمج بدون مسح المحلي */
-async function pull(){
   try{
-    status('جارِ التحديث من الشيت...');
+    await postForm({action:'add', ...row,
+      harajPaid: row.harajPaid?'TRUE':'FALSE',
+      workerPaid: row.workerPaid?'TRUE':'FALSE'
+    });
+    status('تم الرفع للشيت ✔️');
+    await pull(true); // حدث فورًا لظهور السجل في الجهاز الآخر
+  }catch(e){
+    status('فشل الرفع الآن — محفوظ محليًا.');
+    alert('فشل الرفع — اضغط "تحديث من الشيت" لاحقًا.');
+  }
+}
+
+/* حذف */
+async function deleteRow(id){
+  const keep = rows.find(r=>r.id===id);
+  rows = rows.filter(r=>r.id!==id); save(); render();
+  try{
+    await postForm({action:'delete', id});
+    status('تم الحذف من الشيت ✔️');
+    await pull(true);
+  }catch(e){
+    // رجّع الصف إذا فشل الحذف
+    if(keep){ rows.push(keep); save(); render(); }
+    alert('تعذّر الحذف من الشيت، أعد المحاولة لاحقًا.');
+  }
+}
+
+/* إرسال form-url-encoded (بدون ترويسات → بلا preflight) */
+function postForm(obj){
+  const body = new URLSearchParams();
+  for(const k in obj) body.append(k, String(obj[k]??''));
+  // نضيف معلمة عشوائية لمنع الكاش على بعض الشبكات
+  body.append('_ts', Date.now());
+  return fetch(SCRIPT_URL, { method:'POST', body });
+}
+
+/* سحب + دمج */
+async function pull(quiet=false){
+  try{
+    if(!quiet) status('جارِ التحديث من الشيت...');
     const r = await fetch(SCRIPT_URL+'?action=get&_ts='+(Date.now()), {cache:'no-store'});
     if(!r.ok) throw new Error('GET failed');
     const j = await r.json();
-    const arr = Array.isArray(j.data)? j.data : [];
-    // نحول صفوف الشيت إلى خريطة بالـ id
-    const map = new Map(rows.map(x=>[x.id,x]));
-    for(const o of arr){
-      const remote = compute({
-        id: String(o.id||''),
-        date: String(o.date||''),
-        count:+o.count||0, price:+o.price||0,
+    const remote = Array.isArray(j.data)? j.data : [];
+    const map = new Map(rows.map(x=>[String(x.id), x]));
+    for(const o of remote){
+      const id = String(o.id||'');
+      const merged = compute({
+        id, date:String(o.date||''), count:+o.count||0, price:+o.price||0,
         total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
         harajPaid:(o.harajPaid===true||o.harajPaid==='TRUE'||o.harajPaid==='تم'),
         workerPaid:(o.workerPaid===true||o.workerPaid==='TRUE'||o.workerPaid==='تم')
       });
-      const local = map.get(remote.id);
-      if(!local){ rows.push(remote); }                 // جديد من الشيت
-      else if(local._pending===true){ /* اترك المحلي المعلّق */ }
-      else{ map.set(remote.id, Object.assign(local, remote)); } // حدّث المحلي من الشيت
+      const local = map.get(id);
+      if(!local){ rows.push(merged); } else { Object.assign(local, merged); }
     }
-    save(); render(); status('تم التحديث من الشيت ✔️');
+    save(); render(); if(!quiet) status('تم التحديث من الشيت ✔️');
   }catch(e){
-    status('تعذّر الجلب من الشيت. تأكد من الرابط/الصلاحيات.');
-    alert('تعذّر الجلب — تأكد من أن Web App منشور Anyone وأن الرابط صحيح.');
+    if(!quiet){ status('تعذّر الجلب من الشيت.'); alert('تعذّر الجلب — تأكد من صلاحيات تطبيق الويب.'); }
   }
 }
 
-/* نسخ احتياطي/استرجاع/CSV */
-$('btnBackup').onclick=()=>{
-  const blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='bonkaim-backup.json'; a.click(); URL.revokeObjectURL(a.href);
-};
-$('btnExport').onclick=()=>{
-  const header=['id','date','count','price','total','fee','worker','net','harajPaid','workerPaid'];
-  const lines=[header.join(',')].concat(rows.map(r=>header.map(k=>r[k]).join(',')));
-  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='bonkaim.csv'; a.click(); URL.revokeObjectURL(a.href);
-};
-$('btnImport').onclick=()=>$('fileImport').click();
-$('fileImport').onchange=async (ev)=>{
-  try{
-    const file=ev.target.files[0]; if(!file) return;
-    const text=await file.text(); const arr=JSON.parse(text);
-    if(!Array.isArray(arr)) throw new Error('bad file');
-    // دمج مع الموجود
-    const map=new Map(rows.map(r=>[r.id,r]));
-    for(const x of arr){ map.set(x.id, compute(x)); }
-    rows=[...map.values()]; save(); render(); status('تم الاسترجاع للمحلي.');
-  }catch(_){ alert('ملف غير صالح'); }
-};
-
-/* أزرار الرأس */
+/* أزرار */
 $('btnAdd').addEventListener('click', addRow);
-$('btnPull').addEventListener('click', pull);
+$('btnPull').addEventListener('click', ()=>pull(false));
 $('btnClearLocal').addEventListener('click', ()=>{
   if(confirm('تأكيد مسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.');}
 });
 
-/* مؤقّت بسيط يعيد محاولة الرفع تلقائيًا */
-setInterval(()=>{ sendQueue(); }, 15000);
+/* سحب تلقائي عند فتح الصفحة، وكل 20 ثانية، وعند رجوع التبويب نشط */
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) pull(true); });
+setInterval(()=>pull(true), 20000);
 
 /* تشغيل أولي */
-load(); render(); // لا نسحب تلقائيًا — المستخدم يضغط "تحديث من الشيت" عند الحاجة
+load(); render(); pull(true);
 </script>
 </body>
 </html>
