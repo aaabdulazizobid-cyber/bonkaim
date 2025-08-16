@@ -3,38 +3,49 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>bonkaim</title>
+<title>bonkaim — بيع البونيكام</title>
 <meta name="theme-color" content="#FFD700"/>
 <style>
-:root{--ink:#0f0f0f;--muted:#666;--bg:#f7f7f8;--card:#fff;--gold:#ffd400;--border:#000;
---c1:#f7f0e2;--c2:#e8f3e2;--c3:#e7f0fb;--c4:#ffe9b6;--c5:#f3e0e7;--c6:#e6ecfa;--c7:#e7f4e1;
---ok:#2e7d32;--bad:#b00020;--ok-bg:#dbf2df;--bad-bg:#f8d7da}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
-header{background:var(--gold);border-bottom:2px solid var(--border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center}
-.logo{display:flex;gap:10px;align-items:center;font-weight:800}.logo-badge{width:34px;height:34px;border-radius:8px;background:#111;color:#ffd400;display:grid;place-items:center}
-.wrap{max-width:1100px;margin:auto;padding:14px}.toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
-button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
-.ghost{background:#fff;color:#111}
-.inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
-label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
-input[type="number"],input[type="date"]{width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px}
-.table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden;margin-top:12px}
-table{width:100%;border-collapse:separate;border-spacing:0}
-thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
-tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
-tbody tr:nth-child(even){background:#fcfcfc}.num{font-variant-numeric:tabular-nums}
-.c-total{background:var(--c1)} .c-price{background:var(--c2)} .c-count{background:var(--c3)}
-.c-date{background:var(--c4)} .c-fee{background:var(--c5)} .c-worker{background:var(--c6)} .c-net{background:var(--c7)}
-.rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
-.flagbox{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800;font-size:18px}
-.flag-ok{background:var(--ok-bg);color:var(--ok)} .flag-no{background:var(--bad-bg);color:var(--bad)}
-tfoot td{background:#f1f1f1;font-weight:700}.hint{font-size:12px;color:var(--muted);margin-top:6px}
-@media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
+  :root{
+    --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
+    --gold:#ffd400; --border:#000;
+    --c1:#f7f0e2; --c2:#e8f3e2; --c3:#e7f0fb; --c4:#ffe9b6;
+    --c5:#f3e0e7; --c6:#e6ecfa; --c7:#e7f4e1;
+    --ok:#2e7d32; --bad:#b00020; --ok-bg:#dbf2df; --bad-bg:#f8d7da;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
+  header{background:var(--gold); border-bottom:2px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px}
+  .logo-badge{width:34px;height:34px;border-radius:8px;background:#111;color:#ffd400;display:grid;place-items:center;font-weight:800}
+  .wrap{max-width:1100px;margin:auto;padding:14px}
+  .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+  button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
+  .ghost{background:#fff;color:#111}
+  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
+  label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
+  input[type="number"],input[type="date"]{width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px}
+  .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
+  tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
+  tbody tr:nth-child(even){background:#fcfcfc}
+  .num{font-variant-numeric:tabular-nums}
+  .c-total{background:var(--c1)} .c-price{background:var(--c2)} .c-count{background:var(--c3)}
+  .c-date{background:var(--c4)} .c-fee{background:var(--c5)} .c-worker{background:var(--c6)} .c-net{background:var(--c7)}
+  .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
+  tfoot td{background:#f1f1f1;font-weight:700}
+  .flagbox{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800;font-size:18px}
+  .flag-ok{background:var(--ok-bg);color:var(--ok)} .flag-no{background:var(--bad-bg);color:var(--bad)}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  @media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo"><span class="logo-badge">B</span><span>bonkaim</span></div>
+  <div class="logo">
+    <span class="logo-badge">B</span><span>bonkaim</span>
+  </div>
   <div style="display:flex;gap:8px">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
     <button class="ghost" id="btnClearLocal">مسح المحلي</button>
@@ -42,7 +53,7 @@ tfoot td{background:#f1f1f1;font-weight:700}.hint{font-size:12px;color:var(--mut
 </header>
 
 <div class="wrap">
-  <div class="toolrow"><span id="syncStat" class="hint">لا يزال هناك سجلات عالقة.</span></div>
+  <div class="toolrow"><span id="syncStat" class="hint">جاهز.</span></div>
 
   <div class="card">
     <div class="inputs">
@@ -50,13 +61,13 @@ tfoot td{background:#f1f1f1;font-weight:700}.hint{font-size:12px;color:var(--mut
       <div><label>التاريخ</label><input id="date" type="date"></div>
       <div><label>سعر الفلين (ريال)</label><input id="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25"></div>
       <div><label>حراج (مدفوع؟)</label><input id="harajPaid" type="checkbox"></div>
-      <div><label>أجرة عامل (مدفوعة؟)</label><input id="workerPaid" type="checkbox"></div>
+      <div><label>أجرة عامل (مدفوعة؟)</label><input id="workerPaid" type="checkbox" checked></div>
       <div style="display:flex;align-items:end"><button id="btnAdd">+ إضافة</button></div>
     </div>
     <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> — يحفظ محليًا + يتزامن مع Google Sheets.</div>
   </div>
 
-  <div class="table-wrap">
+  <div class="table-wrap" style="margin-top:12px">
     <table id="tbl">
       <thead>
         <tr>
@@ -81,29 +92,34 @@ tfoot td{background:#f1f1f1;font-weight:700}.hint{font-size:12px;color:var(--mut
 </div>
 
 <script>
-/* === رابط تطبيق الويب (Apps Script) === */
+/* ===== إعداد رابط تطبيق الويب (Apps Script) =====
+   استبدل هذا بالرابط الأخير عندك إذا تغير */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby326PEkBLafZpUnY_fcZ466O8ynURdNpTDyyXAczd8JyENGks5KPtCn7fHMKkX4aIZzQ/exec';
 
-/* مفاتيح التخزين المحلي */
-const LS_ROWS = 'bonkaim_rows_v2';
-const LS_QUEUE = 'bonkaim_queue_v2';
+/* ===== مفاتيح التخزين المحلي ===== */
+const LS_ROWS   = 'bonkaim_rows_v2';
+const LS_QUEUE  = 'bonkaim_queue_v2';   // طابور (إرسال/حذف) عند ضعف الشبكة
 
-let rows = [];            // البيانات المعروضة
-let queue = [];           // عمليات رفع/حذف عالقة (للأوفلاين)
+let rows = [];
+let queue = []; // عناصر من نوع {type:'add'|'del', payload: {...}}
 
 const $ = id => document.getElementById(id);
-function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10); }
+function todayISO(){const d=new Date();const t=new Date(d.getTime()-d.getTimezoneOffset()*60000);return t.toISOString().slice(0,10);}
 $('date').value = todayISO();
 
 function load(){
-  rows = JSON.parse(localStorage.getItem(LS_ROWS)||'[]');
-  queue = JSON.parse(localStorage.getItem(LS_QUEUE)||'[]');
+  rows  = JSON.parse(localStorage.getItem(LS_ROWS) || '[]');
+  queue = JSON.parse(localStorage.getItem(LS_QUEUE)|| '[]');
 }
-function save(){ localStorage.setItem(LS_ROWS, JSON.stringify(rows)); }
-function saveQueue(){ localStorage.setItem(LS_QUEUE, JSON.stringify(queue)); }
-function status(s){ $('syncStat').textContent=s; }
+function save(){
+  localStorage.setItem(LS_ROWS, JSON.stringify(rows));
+}
+function saveQueue(){
+  localStorage.setItem(LS_QUEUE, JSON.stringify(queue));
+}
+function status(s){ $('syncStat').textContent = s; }
 
-/* حساب المشتقات */
+/* ===== الحسابات ===== */
 function compute(r){
   const c=+r.count||0, p=+r.price||0;
   const total=c*p;
@@ -115,153 +131,147 @@ function compute(r){
 }
 function flagBox(tf){ return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`; }
 
-/* رسم الجدول */
 function render(){
   const tb=$('tbody'); tb.innerHTML='';
-  rows.sort((a,b)=> a.date.localeCompare(b.date));
+  rows.sort((a,b)=> a.date.localeCompare(b.date) || String(a.id).localeCompare(String(b.id)));
   for(const r of rows){
     const tr=document.createElement('tr');
     tr.innerHTML=`
-      <td>
-        <button class="rowbtn" onclick="delAll('${r.id}')">حذف</button>
-        ${r.__pending?'<small> (بانتظار الرفع ⏳)</small>':''}
-      </td>
+      <td><button class="rowbtn" onclick="delRow('${r.id}')">حذف</button></td>
       <td>${flagBox(!!r.harajPaid)}</td>
       <td>${flagBox(!!r.workerPaid)}</td>
-      <td class="num c-net">${(r.net??0).toFixed(2)}</td>
-      <td class="num c-worker">${(r.worker??0).toFixed(2)}</td>
-      <td class="num c-fee">${(r.fee??0).toFixed(2)}</td>
-      <td class="num c-total">${(r.total??0).toFixed(2)}</td>
-      <td class="num c-price">${r.price}</td>
-      <td class="num c-count">${r.count}</td>
-      <td class="c-date">${r.date}</td>`;
+      <td class="num c-net">${(+r.net||0).toFixed(2)}</td>
+      <td class="num c-worker">${(+r.worker||0).toFixed(2)}</td>
+      <td class="num c-fee">${(+r.fee||0).toFixed(2)}</td>
+      <td class="num c-total">${(+r.total||0).toFixed(2)}</td>
+      <td class="num c-price">${+r.price||0}</td>
+      <td class="num c-count">${+r.count||0}</td>
+      <td class="c-date">${r.date||''}</td>`;
     tb.appendChild(tr);
   }
   const sum=k=>rows.reduce((a,c)=>a+Number(c[k]||0),0);
   const avg=rows.length? rows.reduce((a,c)=>a+Number(c.price||0),0)/rows.length : 0;
-  $('tCount').textContent = sum('count').toFixed(0);
-  $('tTotal').textContent = sum('total').toFixed(2);
-  $('tFee').textContent   = sum('fee').toFixed(2);
-  $('tWorker').textContent= sum('worker').toFixed(2);
-  $('tNet').textContent   = sum('net').toFixed(2);
+  $('tCount').textContent  = sum('count').toFixed(0);
+  $('tTotal').textContent  = sum('total').toFixed(2);
+  $('tFee').textContent    = sum('fee').toFixed(2);
+  $('tWorker').textContent = sum('worker').toFixed(2);
+  $('tNet').textContent    = sum('net').toFixed(2);
   $('tAvgPrice').textContent = avg.toFixed(2)+' (متوسط)';
-
-  if(queue.length) status(`${queue.length} عملية بانتظار الشبكة ⏳`); else status('متزامن.');
 }
 
-/* طابور عمليات الأوفلاين */
-async function flushQueue(){
-  if(!queue.length) return;
-  try{
-    for(const job of [...queue]){
-      if(job.type==='add'){
-        await sendRow(job.row);
-      }else if(job.type==='delete'){
-        await sendDelete(job.id);
-      }
-      queue.shift(); saveQueue();
-    }
-    status('تمت مزامنة العمليات المتأخرة ✔️');
-  }catch(e){
-    // نوقف لو فشل، نبقيها في الطابور
-  }
-}
-
-/* API */
-async function sendRow(row){
-  const res = await fetch(SCRIPT_URL+'?action=add',{
+/* ===== إرسال/حذف للشيت مع طابور ===== */
+async function postToScript(payload){
+  const r = await fetch(SCRIPT_URL+'?action=add&t=' + Date.now(), {
     method:'POST',
     headers:{'Content-Type':'application/json','Cache-Control':'no-store'},
-    body: JSON.stringify({
-      id: row.id, date: row.date, count: row.count, price: row.price,
-      total: row.total, fee: row.fee, worker: row.worker, net: row.net,
-      harajPaid: row.harajPaid ? 'TRUE' : 'FALSE',
-      workerPaid: row.workerPaid ? 'TRUE' : 'FALSE'
-    })
+    body: JSON.stringify(payload)
   });
-  if(!res.ok) throw new Error(await res.text());
+  if(!r.ok) throw new Error(await r.text());
 }
-async function sendDelete(id){
-  const res = await fetch(SCRIPT_URL+'?action=delete&id='+encodeURIComponent(id), {method:'POST', cache:'no-store'});
-  if(!res.ok) throw new Error(await res.text());
+async function deleteFromScript(id){
+  const r = await fetch(SCRIPT_URL+'?action=delete&id='+encodeURIComponent(id)+'&t='+Date.now(), {method:'POST', headers:{'Cache-Control':'no-store'}});
+  if(!r.ok) throw new Error(await r.text());
 }
 
-/* إضافة سجل */
-async function addRow(){
-  const row = compute({
-    id: Date.now()+''+Math.random().toString(16).slice(2),
-    date: $('date').value||todayISO(),
-    count:+$('count').value||0,
-    price:+$('price').value||0,
-    harajPaid:$('harajPaid').checked,
-    workerPaid:$('workerPaid').checked
-  });
-  rows.push({...row, __pending:true}); save(); render();
-
-  try{
-    await sendRow(row);
-    const idx = rows.findIndex(x=>x.id===row.id);
-    if(idx>-1){ rows[idx].__pending=false; save(); render(); }
-  }catch(e){
-    queue.push({type:'add', row}); saveQueue();
-    alert('فشل الرفع الآن، محفوظ محليًا.\nاضغط "تحديث من الشيت" لاحقًا بعد الاتصال.');
+async function flushQueue(){
+  if(!queue.length) return;
+  const copy=[...queue];
+  for(let i=0;i<copy.length;i++){
+    const item=copy[i];
+    try{
+      if(item.type==='add'){ await postToScript(item.payload); }
+      else if(item.type==='del'){ await deleteFromScript(item.payload.id); }
+      queue.shift(); saveQueue();
+    }catch(_){ /* نخليها للمرة الجاية */ break; }
   }
+}
 
+/* ===== إضافة صف ===== */
+async function addRow(){
+  const date=$('date').value||todayISO();
+  const count=+$('count').value||0;
+  const price=+$('price').value||0;
+  const harajPaid=$('harajPaid').checked;
+  const workerPaid=$('workerPaid').checked;
+
+  const row=compute({
+    id: Date.now()+''+Math.random().toString(16).slice(2),
+    date,count,price, harajPaid, workerPaid
+  });
+  rows.push(row); save(); render();
+
+  // أرسل للشيت (مع طابور)
+  const payload = {
+    id: row.id, date: row.date, count: row.count, price: row.price,
+    total: row.total, fee: row.fee, worker: row.worker, net: row.net,
+    harajPaid: row.harajPaid ? 'TRUE':'FALSE',
+    workerPaid: row.workerPaid ? 'TRUE':'FALSE'
+  };
+  queue.push({type:'add', payload}); saveQueue();
+  status('جارِ الرفع…');
+  await flushQueue().then(()=>status('تم الرفع للشيت ✔️')).catch(()=>status('فشل الرفع، محفوظ محليًا—سيُرسل لاحقًا.'));
   $('count').value=''; $('price').value='';
 }
 
-/* حذف واحد: يحذف من الشيت ثم من المحلي */
-async function delAll(id){
-  const i = rows.findIndex(r=>r.id===id);
-  if(i<0) return;
-  const localOnly = !confirm('سيُحذف السجل من الشيت أيضًا. متابعة؟');
-  const row = rows[i];
-  rows.splice(i,1); save(); render();
-
-  if(localOnly) return;
-
-  try{
-    await sendDelete(row.id);
-  }catch(e){
-    queue.push({type:'delete', id: row.id}); saveQueue();
-    status('تعذر حذف من الشيت الآن — سيُحذف لاحقًا عند الاتصال.');
-  }
+/* ===== حذف صف (محلي + شيت) ===== */
+async function delRow(id){
+  if(!confirm('حذف هذا السجل؟')) return;
+  rows = rows.filter(x=>String(x.id)!==String(id)); save(); render();
+  queue.push({type:'del', payload:{id}}); saveQueue();
+  status('جارِ حذف السجل من الشيت…');
+  await flushQueue().then(()=>status('حُذف من الشيت ✔️')).catch(()=>status('تعذّر الحذف الآن—سيُنفّذ لاحقًا.'));
 }
 
-/* تحديث من الشيت (يسحب قائمة نظيفة) */
-let pulling=false;
+/* ===== تحديث من الشيت (دمج بدون مسح المحلي) ===== */
 async function pull(){
-  if(pulling) return; pulling=true;
   try{
-    status('جارِ التحديث من الشيت...');
-    const r = await fetch(SCRIPT_URL+'?action=get&perPage=1000',{cache:'no-store'});
+    status('جارِ التحديث من الشيت…');
+    const r = await fetch(SCRIPT_URL+'?action=get&perPage=1000&t='+Date.now(), {cache:'no-store'});
     if(!r.ok) throw new Error('GET failed');
     const j = await r.json();
     const arr = Array.isArray(j.data)? j.data : [];
-    rows = arr.map(o=>compute({
-      id: String(o.id||''),
-      date: String(o.date||''),
-      count:+o.count||0, price:+o.price||0,
-      total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
-      harajPaid: (String(o.harajPaid).toUpperCase()==='TRUE' || String(o.harajPaid)==='تم'),
-      workerPaid:(String(o.workerPaid).toUpperCase()==='TRUE' || String(o.workerPaid)==='تم')
-    }));
-    save(); render(); status('تم التحديث من الشيت ✔️');
-    await flushQueue(); // بعد السحب حاول مزامنة العالق
+
+    // نبني خريطة محلية
+    const localById = new Map(rows.map(x=>[String(x.id), x]));
+    // نضيف من الشيت أي عنصر غير موجود محليًا فقط (دمج)
+    let added = 0;
+    for(const o of arr){
+      const id = String(o.id||'');
+      if(!id) continue;
+      if(!localById.has(id)){
+        const rec = compute({
+          id,
+          date: o.date||'',
+          count:+o.count||0, price:+o.price||0,
+          total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
+          harajPaid: (o.harajPaid===true || String(o.harajPaid).toUpperCase()==='TRUE'),
+          workerPaid:(o.workerPaid===true|| String(o.workerPaid).toUpperCase()==='TRUE'),
+        });
+        rows.push(rec); added++;
+      }
+    }
+    if(added>0){ save(); render(); }
+    status(added? `تم التحديث—أضيف ${added} من الشيت ✔️` : 'تم التحديث—لا جديد من الشيت ✔️');
+    // بعد الجلب نحاول نفلش الطابور أيضًا
+    await flushQueue();
   }catch(e){
-    status('تعذّر الجلب من الشيت.'); alert('تأكد من نشر السكربت كتطبيق ويب (Anyone).');
-  }finally{ pulling=false; }
+    status('تعذّر الجلب من الشيت.'); alert('تعذّر الجلب من الشيت. تأكد من نشر السكربت كتطبيق ويب (Anyone).');
+  }
 }
 
-/* أحداث */
+/* ===== أحداث الواجهة ===== */
 $('btnAdd').addEventListener('click', addRow);
 $('btnPull').addEventListener('click', pull);
 $('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.'); }
+  if(confirm('تمسح النسخة المحلية فقط؟ (لن يُمسح الشيت)')){
+    rows=[]; save(); render(); status('تم مسح المحلي.');
+  }
 });
 
-/* بدء */
-load(); render(); flushQueue();
+/* ===== بدء التشغيل ===== */
+load(); render();
+// محاولة إرسال أي شيء متعطل عند الإقلاع
+flushQueue().catch(()=>{});
 </script>
 </body>
 </html>
