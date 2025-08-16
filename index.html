@@ -10,15 +10,9 @@
   :root{
     --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
     --gold:#ffd400; --border:#000;
-    --c1:#f7f0e2; /* الإجمالي */
-    --c2:#e8f3e2; /* سعر */
-    --c3:#e7f0fb; /* عدد */
-    --c4:#ffe9b6; /* التاريخ */
-    --c5:#f3e0e7; /* حراج% */
-    --c6:#e6ecfa; /* أجر العامل (رقمي) */
-    --c7:#e7f4e1; /* صافي */
-    --ok:#2e7d32; --bad:#b00020;
-    --ok-bg:#dbf2df; --bad-bg:#f8d7da;
+    --c1:#f7f0e2; --c2:#e8f3e2; --c3:#e7f0fb; --c4:#ffe9b6;
+    --c5:#f3e0e7; --c6:#e6ecfa; --c7:#e7f4e1;
+    --ok:#2e7d32; --bad:#b00020; --ok-bg:#dbf2df; --bad-bg:#f8d7da;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
@@ -29,44 +23,28 @@
   .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
   button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
   .ghost{background:#fff;color:#111}
-  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
   label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
-  input[type="number"],input[type="date"]{
-    width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px
-  }
-  .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
+  input[type="number"],input[type="date"]{width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px}
+  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
+  .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden;margin-top:12px}
   table{width:100%;border-collapse:separate;border-spacing:0}
   thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
   tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
-  tbody tr:nth-child(even){background:#fcfcfc}
   .num{font-variant-numeric:tabular-nums}
-  .c-total{background:var(--c1)}
-  .c-price{background:var(--c2)}
-  .c-count{background:var(--c3)}
-  .c-date{background:var(--c4)}
-  .c-fee{background:var(--c5)}
-  .c-worker{background:var(--c6)}
-  .c-net{background:var(--c7)}
+  .c-total{background:var(--c1)} .c-price{background:var(--c2)} .c-count{background:var(--c3)}
+  .c-date{background:var(--c4)} .c-fee{background:var(--c5)} .c-worker{background:var(--c6)} .c-net{background:var(--c7)}
   .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
   tfoot td{background:#f1f1f1;font-weight:700}
-
-  /* شارات مربعة لحراج/أجرة عامل */
-  .flagbox {display:inline-flex; align-items:center; justify-content:center; width:34px;height:34px;
-            border:2px solid var(--border); border-radius:6px; font-weight:800; font-size:18px;}
-  .flag-ok{background:var(--ok-bg); color:var(--ok);}
-  .flag-no{background:var(--bad-bg); color:var(--bad);}
-
+  .flagbox{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800;font-size:18px}
+  .flag-ok{background:var(--ok-bg);color:var(--ok)} .flag-no{background:var(--bad-bg);color:var(--bad)}
   .hint{font-size:12px;color:var(--muted);margin-top:6px}
-  @media (max-width:900px){
-    .inputs{grid-template-columns:1fr 1fr}
-  }
+  @media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <header>
   <div class="logo">
-    <span class="logo-badge">B</span>
-    <span>bonkaim</span>
+    <span class="logo-badge">B</span><span>bonkaim</span>
   </div>
   <div style="display:flex;gap:8px">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
@@ -79,34 +57,17 @@
 
   <div class="card">
     <div class="inputs">
-      <div>
-        <label>عدد الفلين</label>
-        <input id="count" type="number" inputmode="numeric" min="0" step="1" placeholder="مثال: 100"/>
-      </div>
-      <div>
-        <label>التاريخ</label>
-        <input id="date" type="date"/>
-      </div>
-      <div>
-        <label>سعر الفلين (ريال)</label>
-        <input id="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25"/>
-      </div>
-      <div>
-        <label>حراج (مدفوع؟)</label>
-        <input id="harajPaid" type="checkbox"/>
-      </div>
-      <div>
-        <label>أجرة عامل (مدفوعة؟)</label>
-        <input id="workerPaid" type="checkbox"/>
-      </div>
-      <div style="display:flex;align-items:end">
-        <button id="btnAdd">+ إضافة</button>
-      </div>
+      <div><label>عدد الفلين</label><input id="count" type="number" inputmode="numeric" min="0" step="1" placeholder="مثال: 100"></div>
+      <div><label>التاريخ</label><input id="date" type="date"></div>
+      <div><label>سعر الفلين (ريال)</label><input id="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25"></div>
+      <div><label>حراج (مدفوع؟)</label><input id="harajPaid" type="checkbox"></div>
+      <div><label>أجرة عامل (مدفوعة؟)</label><input id="workerPaid" type="checkbox"></div>
+      <div style="display:flex;align-items:end"><button id="btnAdd">+ إضافة</button></div>
     </div>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> من الإجمالي — يحفظ محليًا + يتزامن مع Google Sheets عند توافر الشبكة.</div>
+    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> — يحفظ محليًا + يتزامن مع Google Sheets عند توافر الشبكة.</div>
   </div>
 
-  <div class="table-wrap" style="margin-top:12px">
+  <div class="table-wrap">
     <table id="tbl">
       <thead>
         <tr>
@@ -125,9 +86,7 @@
       <tbody id="tbody"></tbody>
       <tfoot>
         <tr>
-          <td>الإجماليات</td>
-          <td></td>
-          <td></td>
+          <td>الإجماليات</td><td></td><td></td>
           <td class="num" id="tNet">0.00</td>
           <td class="num" id="tWorker">0.00</td>
           <td class="num" id="tFee">0.00</td>
@@ -142,53 +101,57 @@
 </div>
 
 <script>
-/* ==== إعداد السكربت ==== */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbze6kYvsRaCelyxkMqsHuyz1yMJE_z98yKOzvX2oyaBfXH3p81kNRas8vyQS_3du2BA/exec';
+/* ===== إعداد الرابط (ضع هنا رابط EXEC الذي يعمل) ===== */
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx9A-ujkCNCT_KWOMxZkGNFIGdpUlx5-n6-U6_URaSdlWYiA70WI4-SUMgjRez8dnQ/exec';
 
-/* ==== محلي ==== */
-const LS_ROWS='bonikam_rows_v1';
-const LS_QUEUE='bonikam_queue_v1';
-let rows=[], queue=[]; // queue: عناصر تنتظر الرفع
-const $ = id=>document.getElementById(id);
+/* ===== تخزين محلي: بيانات + طابور إرسال ===== */
+const LS_ROWS   = 'bk_rows_v2';
+const LS_OUTBOX = 'bk_outbox_v2';
+let rows = [];
+let outbox = [];
+let syncing = false;
 
-function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10);}
+const $ = id => document.getElementById(id);
+function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10); }
 $('date').value = todayISO();
 
 function loadLocal(){
-  rows = JSON.parse(localStorage.getItem(LS_ROWS) || '[]');
-  queue = JSON.parse(localStorage.getItem(LS_QUEUE) || '[]');
+  rows   = JSON.parse(localStorage.getItem(LS_ROWS)||'[]');
+  outbox = JSON.parse(localStorage.getItem(LS_OUTBOX)||'[]');
 }
 function saveLocal(){
   localStorage.setItem(LS_ROWS, JSON.stringify(rows));
-  localStorage.setItem(LS_QUEUE, JSON.stringify(queue));
+  localStorage.setItem(LS_OUTBOX, JSON.stringify(outbox));
 }
-function statusTxt(s){ $('syncStat').textContent=s; }
+function status(s){ $('syncStat').textContent = s; }
 
-/* ==== حسابات ==== */
 function compute(r){
   const c=+r.count||0, p=+r.price||0;
   const total=c*p;
   const fee=+(total*0.01).toFixed(2);
   const worker=+(c*2).toFixed(2);
   const net=+(total-fee-worker).toFixed(2);
-  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net;
+  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net; 
   return r;
 }
 function flagBox(tf){ return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`; }
 
-/* ==== رسم ==== */
 function render(){
   const tb=$('tbody'); tb.innerHTML='';
-  rows.sort((a,b)=> a.date.localeCompare(b.date));
-  for(const r of rows){
+  const pendingAdds = new Set(outbox.filter(o=>o.op==='add').map(o=>String(o.row.id)));
+  const byDate = [...rows].sort((a,b)=> String(a.date).localeCompare(String(b.date)));
+  for(const r0 of byDate){
+    const r = compute({...r0});
     const tr=document.createElement('tr');
+    const pending = pendingAdds.has(String(r.id)) ? ' (بانتظار ⏳)' : '';
     tr.innerHTML=`
       <td>
-        <button class="rowbtn" onclick="deleteRow('${r.id}')">حذف</button>
+        <button class="rowbtn" onclick="delRow('${r.id}')">حذف محلي</button>
+        <button class="rowbtn" style="margin-inline-start:6px" onclick="delFromSheet('${r.id}')">حذف من الشيت</button>
       </td>
       <td>${flagBox(!!r.harajPaid)}</td>
       <td>${flagBox(!!r.workerPaid)}</td>
-      <td class="num c-net">${(r.net??0).toFixed(2)}</td>
+      <td class="num c-net">${(r.net??0).toFixed(2)}${pending}</td>
       <td class="num c-worker">${(r.worker??0).toFixed(2)}</td>
       <td class="num c-fee">${(r.fee??0).toFixed(2)}</td>
       <td class="num c-total">${(r.total??0).toFixed(2)}</td>
@@ -207,113 +170,99 @@ function render(){
   $('tAvgPrice').textContent = avg.toFixed(2)+' (متوسط)';
 }
 
-/* ==== إضافة ==== */
+function delRow(id){
+  rows = rows.filter(r=> String(r.id)!==String(id));
+  outbox.push({op:'delete', id:String(id)});
+  saveLocal(); render(); trySync();
+}
+function delFromSheet(id){
+  outbox.push({op:'delete', id:String(id)});
+  saveLocal(); render(); trySync();
+}
+
 async function addRow(){
-  const date=$('date').value||todayISO();
-  const count=+$('count').value||0;
-  const price=+$('price').value||0;
-  const harajPaid=$('harajPaid').checked;
-  const workerPaid=$('workerPaid').checked;
-
-  const row=compute({id: Date.now()+''+Math.random().toString(16).slice(2),
-                     date,count,price, harajPaid, workerPaid});
-  rows.push(row); // تفاؤليًا
-  queue.push({type:'add', row});
+  const row = compute({
+    id: Date.now()+''+Math.random().toString(16).slice(2),
+    date: $('date').value||todayISO(),
+    count: +($('count').value||0),
+    price: +($('price').value||0),
+    harajPaid: $('harajPaid').checked,
+    workerPaid:$('workerPaid').checked
+  });
+  rows.push(row);
+  outbox.push({op:'add', row});
   saveLocal(); render();
-
   $('count').value=''; $('price').value='';
-  flushQueue(); // حاول الرفع الآن
+  trySync();
 }
 
-/* ==== حذف ==== */
-async function deleteRow(id){
-  if(!confirm('متأكد تحذف؟')) return;
-  // احذف محليًا
-  rows = rows.filter(x=>x.id!==id);
-  // ادفع أمر حذف للطابور
-  queue.push({type:'delete', id});
-  saveLocal(); render();
-  flushQueue();
-}
-
-/* ==== طابور الرفع ==== */
-let flushing=false;
-async function flushQueue(){
-  if(flushing || queue.length===0) return;
-  flushing=true;
-  try{
-    statusTxt('جارِ الرفع للشيت…');
-    while(queue.length){
-      const job = queue[0];
-      if(job.type==='add'){
-        await fetch(SCRIPT_URL+'?action=add',{
-          method:'POST',
-          headers:{'Content-Type':'application/json','Cache-Control':'no-store'},
-          body: JSON.stringify({
-            id: job.row.id, date: job.row.date, count: job.row.count, price: job.row.price,
-            total: job.row.total, fee: job.row.fee, worker: job.row.worker, net: job.row.net,
-            harajPaid: job.row.harajPaid ? 'TRUE' : 'FALSE',
-            workerPaid: job.row.workerPaid ? 'TRUE' : 'FALSE'
-          })
-        }).then(r=>{ if(!r.ok) throw new Error('add failed'); });
-      }else if(job.type==='delete'){
-        await fetch(SCRIPT_URL+'?action=delete',{
-          method:'POST',
-          headers:{'Content-Type':'application/json','Cache-Control':'no-store'},
+async function trySync(){
+  if(syncing) return;
+  if(!outbox.length){ status('لا يوجد شيء لرفعه.'); return; }
+  syncing = true;
+  status('جارِ الرفع للشيت...');
+  while(outbox.length){
+    const job = outbox[0];
+    try{
+      let res;
+      if(job.op==='add'){
+        res = await fetch(SCRIPT_URL+'?action=add',{method:'POST',cache:'no-store',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(job.row)
+        });
+      }else{ // delete
+        res = await fetch(SCRIPT_URL+'?action=delete',{method:'POST',cache:'no-store',
+          headers:{'Content-Type':'application/json'},
           body: JSON.stringify({id: job.id})
-        }).then(r=>{ if(!r.ok) throw new Error('delete failed'); });
+        });
       }
-      queue.shift(); saveLocal();
+      if(!res.ok){ throw new Error(await res.text()); }
+      outbox.shift(); saveLocal(); render();
+    }catch(e){
+      status('فشل الرفع — محفوظ محليًا.'); console.error(e);
+      break;
     }
-    statusTxt('تمت المزامنة ✔️');
-  }catch(e){
-    statusTxt('فشل الرفع — محفوظ محليًا.'); // نترك الطابور كما هو
-  }finally{
-    flushing=false;
   }
+  syncing=false;
+  if(!outbox.length){ status('تم التزامن ✔️'); await pull(); }
 }
 
-/* ==== سحب من الشيت + دمج ==== */
 async function pull(){
   try{
-    statusTxt('جارِ التحديث من الشيت…');
+    status('جارِ التحديث من الشيت...');
     const r = await fetch(SCRIPT_URL+'?action=get&perPage=1000',{cache:'no-store'});
     if(!r.ok) throw new Error('GET failed');
     const j = await r.json();
-    const arr = Array.isArray(j.data)? j.data : (Array.isArray(j)? j : []);
-    // تحويل وتوحيد
-    const got = arr.map(o=>compute({
-      id: String(o.id ?? o.ID ?? ''),
-      date: o.date ?? '',
-      count:+o.count||0, price:+o.price||0,
-      total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
-      harajPaid: (o.harajPaid===true || o.harajPaid==='TRUE' || o.harajPaid==='تم' || o.harajPaid==='✓'),
-      workerPaid:(o.workerPaid===true || o.workerPaid==='TRUE' || o.workerPaid==='تم' || o.workerPaid==='✓')
-    }));
-    // لا نمسح المحلي: ندمج حسب id (الأحدث يربح)
-    const map=new Map();
-    for(const r of got) map.set(r.id,r);
-    for(const r of rows) map.set(r.id, r); // يُبقي غير المرفوع
-    rows = Array.from(map.values());
-    saveLocal(); render(); statusTxt('الشيت لا يحتوي بيانات جديدة–تركت المحلي كما هو.');
-    // بعد السحب جرّب ترفع الطابور
-    flushQueue();
+    const arr = Array.isArray(j.data)? j.data : [];
+    // استخدم النسخة من الشيت فقط إذا ما فيه طابور إرسال معلّق
+    if(outbox.length===0){
+      rows = arr.map(o=>compute({
+        id: o.id ?? '', date: o.date ?? '',
+        count:+o.count||0, price:+o.price||0,
+        total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
+        harajPaid: (o.harajPaid===true || o.harajPaid==='TRUE' || o.harajPaid==='تم'),
+        workerPaid:(o.workerPaid===true || o.workerPaid==='TRUE' || o.workerPaid==='تم')
+      }));
+      saveLocal(); render(); status('تم التحديث من الشيت ✔️');
+    }else{
+      status('هناك عناصر بانتظار الرفع؛ أرسلها أولاً ثم حدّث.');
+    }
   }catch(e){
-    statusTxt('تعذّر الجلب من الشيت.'); alert('تأكد من نشر السكربت كتطبيق ويب (Anyone).');
+    status('تعذّر الجلب من الشيت.'); console.error(e);
   }
 }
 
-/* ==== ربط الأزرار ==== */
 $('btnAdd').addEventListener('click', addRow);
 $('btnPull').addEventListener('click', pull);
 $('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('تمسح النسخة المحلية فقط؟ (لن يحذف من الشيت)')){
-    rows=[]; queue=[]; saveLocal(); render(); statusTxt('تم مسح المحلي.');
-  }
+  if(confirm('متأكد تمسح النسخة المحلية فقط؟ لن يُحذف من الشيت.')){ rows=[]; outbox=[]; saveLocal(); render(); status('تم مسح المحلي.');}
 });
 
-/* ==== تشغيل أولي ==== */
-loadLocal(); render(); flushQueue();
+loadLocal(); render();
+// حاول تزامن تلقائيًا + تحديث دوري
+trySync();
+setInterval(trySync, 10000);
+setInterval(()=>{ if(!outbox.length) pull(); }, 30000);
 </script>
 </body>
 </html>
