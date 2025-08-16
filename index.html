@@ -6,12 +6,9 @@
 <title>برنامج بيع البونيكام — نسخة سريعة</title>
 <meta name="theme-color" content="#FFD700"/>
 
-<!-- PWA / iOS -->
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
   :root{
@@ -43,8 +40,6 @@
   .c-date{background:var(--c4)} .c-fee{background:var(--c5)} .c-worker{background:var(--c6)} .c-net{background:var(--c7)}
   .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
   tfoot td{background:#f1f1f1;font-weight:700}
-
-  /* مربعات ✓/✗ (حراج + أجرة عامل) */
   .flagbox{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800;font-size:18px}
   .flag-ok{background:var(--ok-bg);color:var(--ok)} .flag-no{background:var(--bad-bg);color:var(--bad)}
   .hint{font-size:12px;color:var(--muted);margin-top:6px}
@@ -63,7 +58,7 @@
 </header>
 
 <div class="wrap">
-  <div class="toolrow"><span id="syncStat" class="hint">الشيت غير متاح الآن، محفوظ محليًا.</span></div>
+  <div class="toolrow"><span id="syncStat" class="hint">جاهز.</span></div>
 
   <div class="card">
     <div class="inputs">
@@ -102,8 +97,8 @@
 </div>
 
 <script>
-/* رابط تطبيق الويب (Apps Script) — نفس اللي أرسلته لي */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwW3PY8LRygbOdoVauvgarWxYYc8QV2NVK6tf0t54vuJReO_lMwPwqOaP2zeW4b0pmH/exec';
+// ضع هنا رابط الويب آب الجديد من Apps Script
+const SCRIPT_URL = 'ضع_رابطك_هنا/exec';
 
 const LS_KEY='bonikam_sync_v1';
 let rows=[];
@@ -157,37 +152,18 @@ function render(){
 
 function delRow(id){ rows=rows.filter(x=>x.id!==id); save(); render(); status('حُذف محليًا.'); }
 
-/* --- إرسال صف: text/plain لتفادي preflight في iOS --- */
 async function sendRow(row){
-  const url = `${SCRIPT_URL}?action=add&ts=${Date.now()}`;
-  const res = await fetch(url,{
+  const res = await fetch(SCRIPT_URL+'?action=add',{
     method:'POST',
-    headers:{'Content-Type':'text/plain;charset=utf-8','Cache-Control':'no-store'},
+    headers:{'Content-Type':'application/json','Cache-Control':'no-store'},
     body: JSON.stringify({
       id: row.id, date: row.date, count: row.count, price: row.price,
       total: row.total, fee: row.fee, worker: row.worker, net: row.net,
       harajPaid: row.harajPaid ? 'TRUE' : 'FALSE',
       workerPaid: row.workerPaid ? 'TRUE' : 'FALSE'
-    }),
-    cache:'no-store',
-    credentials:'omit',
-    mode:'cors'
+    })
   });
   if(!res.ok) throw new Error(await res.text());
-}
-
-/* قائمة انتظار للرفع عند العودة للشبكة */
-function queuePending(row){
-  const q = JSON.parse(localStorage.getItem('pending')||'[]');
-  q.push(row); localStorage.setItem('pending', JSON.stringify(q));
-}
-async function flushPending(){
-  const q = JSON.parse(localStorage.getItem('pending')||'[]');
-  if(!q.length) return;
-  for(const r of q){
-    try{ await sendRow(r); }catch(e){ return; }
-  }
-  localStorage.removeItem('pending');
 }
 
 async function addRow(){
@@ -200,17 +176,16 @@ async function addRow(){
   const row=compute({id: Date.now()+''+Math.random().toString(16).slice(2), date,count,price, harajPaid, workerPaid});
   rows.push(row); save(); render();
 
-  try{ status('جارِ الإرسال للشيت...'); await sendRow(row); await flushPending(); status('تم الرفع للشيت ✔️'); }
-  catch(err){ queuePending(row); status('تعذّر الإرسال الآن — محفوظ محليًا.'); }
+  try{ status('جارِ الإرسال للشيت...'); await sendRow(row); status('تم الرفع للشيت ✔️'); }
+  catch(err){ status('تعذّر الإرسال الآن — محفوظ محليًا.'); alert('تعذّر الإرسال الآن، محفوظ محليًا.\nجرّب لاحقًا (تحديث من الشيت).'); }
 
   $('count').value=''; $('price').value='';
 }
 
-/* جلب من الشيت بدون كاش iOS */
 async function pull(){
   try{
     status('جارِ التحديث من الشيت...');
-    const r = await fetch(`${SCRIPT_URL}?action=get&ts=${Date.now()}`,{cache:'no-store', credentials:'omit', mode:'cors'});
+    const r = await fetch(SCRIPT_URL+'?action=get',{cache:'no-store'});
     if(!r.ok) throw new Error('GET failed');
     const j = await r.json();
     const arr = Array.isArray(j.data)? j.data : [];
@@ -223,22 +198,16 @@ async function pull(){
       workerPaid:(o.workerPaid===true || o.workerPaid==='TRUE' || o.workerPaid==='تم')
     }));
     save(); render(); status('تم التحديث من الشيت ✔️');
-    await flushPending();
   }catch(e){
-    status('تعذّر الجلب من الشيت.'); alert('تأكد أن السكربت منشور كتطبيق ويب (Anyone) ويرجع JSON صحيح.');
+    status('تعذّر الجلب من الشيت.'); alert('تأكد من نشر السكربت كـ (Anyone) وتحديث الرابط.');
   }
 }
 
 $('btnAdd').addEventListener('click', addRow);
 $('btnPull').addEventListener('click', pull);
-$('btnClearLocal').addEventListener('click', ()=>{ if(confirm('متأكد تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.'); } });
+$('btnClearLocal').addEventListener('click', ()=>{ if(confirm('تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.'); } });
 
-/* تشغيل أولي */
 load(); render();
-flushPending();
-
-/* محاولة مزامنة تلقائية عند عودة الاتصال في iOS */
-window.addEventListener('online', flushPending);
 </script>
 </body>
 </html>
