@@ -2,353 +2,320 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>bonkaim</title>
 <style>
-  :root { --yellow:#ffd633; --ink:#111; --muted:#666; --ok:#43a047; --bad:#e53935; --bd:#e5e5e5; }
-  * { box-sizing:border-box; }
-  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink); background:#fff7cc; }
-  header { position:sticky; top:0; z-index:3; background:var(--yellow); padding:10px 12px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #00000022;}
-  header h1 { margin:0; font-size:18px; font-weight:700; letter-spacing:.3px; }
-  header .badge { margin-right:auto; background:#000; color:#ffd633; border-radius:8px; padding:2px 8px; font-weight:700; }
-  .toolbar { display:flex; gap:8px; padding:8px 10px; flex-wrap:wrap; }
-  .toolbar button { border:0; background:#000; color:#fff; padding:10px 12px; border-radius:10px; font-weight:700; box-shadow:0 2px 0 #00000033; }
-  .toolbar button.alt { background:#fff; color:#111; border:1px solid #00000030; }
-  .wrap { padding:10px; }
-  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .field { display:flex; flex-direction:column; gap:6px; }
-  .field input[type="number"], .field input[type="date"], .field input[type="text"] {
-    width:100%; padding:12px; border-radius:12px; border:2px solid #00000020; background:#fff; font-size:16px;
+  :root{
+    --bg:#f6f6f6; --brand:#ffd400; --ink:#222; --muted:#666;
+    --c-date:#ffe7a1; --c-count:#e3f0ff; --c-price:#e9ffe7; --c-total:#ffe9d7;
+    --c-haraj:#ffdbe4; --c-worker:#e8f0ff; --c-net:#e7ffe7;
+    --c-actions:#fff; --radius:14px;
   }
-  .chk { display:flex; align-items:center; gap:8px; }
-  .addRow { margin-top:8px; }
-  table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:16px; background:#fff; }
-  th,td { border:1px solid var(--bd); padding:10px 8px; text-align:center; font-size:14px; }
-  thead th { position:sticky; top:58px; z-index:2; background:#fffef5; }
-  tfoot td { font-weight:800; background:#fffef0; }
-  .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:10px; font-weight:700; }
-  .ok { background:#e7f6ec; color:#1b5e20; }
-  .bad { background:#fdeaea; color:#b71c1c; }
-  .ghost { opacity:.6; }
-  .btn-mini { border:0; padding:6px 10px; border-radius:10px; font-weight:700; background:#000; color:#fff; }
-  .btn-del { background:#111; }
-  .note { color:var(--muted); font-size:12px; padding:4px 2px; }
-  .toast { position:fixed; inset:auto 12px 14px 12px; background:#111; color:#fff; padding:10px 12px; border-radius:10px; font-weight:600; display:none; z-index:10; }
+  html,body{background:#fff;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:5;background:var(--brand);border-bottom:3px solid #00000020}
+  .wrap{max-width:980px;margin:0 auto;padding:8px 12px}
+  h1{margin:0;font-weight:700;font-size:22px;display:flex;align-items:center;gap:10px}
+  .badge{background:#000;color:#fff;border-radius:8px;padding:2px 8px;font-weight:700}
+  .tools{display:flex;gap:10px;margin:10px 0 0}
+  .btn{border:2px solid #0003;background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+  .btn:active{transform:scale(.98)}
+  .note{font-size:13px;color:var(--muted);margin:10px 0;text-align:center}
+  .form{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-top:8px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field input[type="number"], .field input[type="date"], .field input[type="text"]{
+    border:2px solid #0001;border-radius:10px;padding:10px 12px;font-size:16px
+  }
+  .pill{display:inline-block;background:#000;color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
+  .tbl{margin-top:14px;border:2px solid #0002;border-radius:var(--radius);overflow:hidden}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  th,td{padding:10px 8px;border-left:2px solid #0001;border-top:2px solid #0001;text-align:center}
+  th:first-child,td:first-child{border-right:none}
+  tr:first-child th{border-top:none}
+  thead th{font-size:14px}
+  thead th:nth-child(1){background:var(--c-date)}
+  thead th:nth-child(2){background:var(--c-count)}
+  thead th:nth-child(3){background:var(--c-price)}
+  thead th:nth-child(4){background:var(--c-total)}
+  thead th:nth-child(5){background:var(--c-haraj)}
+  thead th:nth-child(6){background:var(--c-worker)}
+  thead th:nth-child(7){background:var(--c-net)}
+  thead th:nth-child(8), thead th:nth-child(9){background:#f5fff5}
+  thead th:nth-child(10){background:var(--c-actions)}
+  tbody td:nth-child(1){background:var(--c-date)}
+  tfoot td{font-weight:800;background:#f7f7f7}
+  .ok{background:#2ecc71;border:2px solid #1f8f4f;color:#fff;border-radius:10px;padding:6px 10px;font-weight:800;cursor:pointer}
+  .no{background:#ff6b6b;border:2px solid #c03;color:#fff;border-radius:10px;padding:6px 10px;font-weight:800;cursor:pointer}
+  .del{background:#000;color:#fff;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer}
+  .chip{font-size:12px;line-height:1.2}
+  .hint{font-size:12px;color:#888}
+  dialog{border:none;border-radius:14px;padding:16px 14px;max-width:480px}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>bonkaim</h1>
-  <span class="badge">B</span>
-</header>
-
-<div class="toolbar">
-  <button id="btnRefresh" class="alt">تحديث من الشيت</button>
-  <button id="btnClear" class="alt">مسح المحلي</button>
-  <button id="btnExport" class="alt">تصدير JSON</button>
+<div class="topbar">
+  <div class="wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <h1>bonkaim <span class="badge">B</span></h1>
+      <div class="tools">
+        <button class="btn" id="btnSync">تحديث من الشيت</button>
+        <button class="btn" id="btnClear">مسح المحلي</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="wrap">
-  <div class="grid">
+  <!-- رسالة حالة -->
+  <div id="status" class="hint">فشل الرفع… محفوظ محلياً.</div>
+
+  <!-- النموذج -->
+  <div class="form" style="margin-top:14px">
     <div class="field">
       <label>التاريخ</label>
-      <input id="fDate" type="date" />
+      <input type="date" id="inDate">
     </div>
     <div class="field">
-      <label>عدد الثلين</label>
-      <input id="fCount" type="number" inputmode="numeric" placeholder="مثال: 100" />
+      <label>عدد الثنين</label>
+      <input type="number" id="inCount" placeholder="مثال: 100">
     </div>
     <div class="field">
-      <label>سعر الثلين (ريال)</label>
-      <input id="fPrice" type="number" inputmode="numeric" placeholder="مثال: 25" />
+      <label>حراج (مدفوع؟)</label>
+      <input type="checkbox" id="inHarajPaid" />
     </div>
     <div class="field">
-      <label class="chk"><input id="fHarajPaid" type="checkbox" checked /> حراج (مدفوع؟)</label>
+      <label>سعر الثنين (ريال)</label>
+      <input type="number" id="inPrice" placeholder="مثال: 25">
+    </div>
+    <div class="field">
+      <label class="hint">أجرة عامل (مدفوعة؟)</label>
+      <input type="checkbox" id="inWorkerPaid" checked>
+    </div>
+    <div class="field" style="align-self:end">
+      <button id="btnAdd" class="pill">إضافة +</button>
     </div>
   </div>
-  <button id="btnAdd" class="addRow">إضافة +</button>
 
-  <p class="note">يحفظ محليًا ويُرفع تلقائيًا عند توفر الشبكة. “تحديث من الشيت” لا يمسح المحلي.</p>
+  <div class="note">.Google Sheets مع يتزامن + يحفظ مجاناً — الحراج = 1% — الأجرة = 2 ريال × عدد الثنين</div>
 
-  <div style="overflow:auto; margin-top:8px;">
+  <!-- الجدول -->
+  <div class="tbl">
     <table id="tbl">
       <thead>
         <tr>
           <th>التاريخ</th>
-          <th>عدد</th>
-          <th>سعر</th>
+          <th>عدد الثنين</th>
+          <th>سعر الثنين</th>
           <th>الإجمالي</th>
           <th>حراج 1%</th>
-          <th>أجر العامل (2/قين)</th>
+          <th>أجر العامل (2/ثنين)</th>
           <th>صافي الربح</th>
-          <th>مرفوع</th>
+          <th>أجرة عامل</th>
+          <th>حراج</th>
           <th>إجراءات</th>
         </tr>
       </thead>
-      <tbody id="tbody"></tbody>
+      <tbody id="rows"></tbody>
       <tfoot>
         <tr>
-          <td>الإجماليات</td>
-          <td id="tCount">0</td>
-          <td id="tAvg">0.00 (متوسط)</td>
-          <td id="tTotal">0.00</td>
-          <td id="tFee">0.00</td>
-          <td id="tWorker">0.00</td>
-          <td id="tNet">0.00</td>
-          <td colspan="2"></td>
+          <td class="chip">يحفظ تلقائياً<br/>+ مزامنة بالشيت</td>
+          <td id="sumCount">0</td>
+          <td><span id="avgPrice">0.00</span> (متوسط)</td>
+          <td id="sumTotal">0.00</td>
+          <td id="sumHaraj">0.00</td>
+          <td id="sumWorker">0.00</td>
+          <td id="sumNet">0.00</td>
+          <td></td><td></td><td>الإجماليات</td>
         </tr>
       </tfoot>
     </table>
   </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- حوار تنبيه -->
+<dialog id="dlg">
+  <div id="dlgText" style="margin-bottom:10px"></div>
+  <button onclick="dlg.close()">إغلاق</button>
+</dialog>
 
 <script>
-/* ===== رابط سكربت Google Apps Script (لا تغيّره) ===== */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyBlKn5FVFJm0FMp98ntQ8E3y9Ae_AlRzchLlXUEFcAcD32xW4nSFjRTgf9K5-PeynyoQ/exec';
+/* ===== إعداداتك ===== */
+const API_URL = "https://script.google.com/macros/s/AKfycbyBlKn5FVFJm0FMp98ntQ8E3y9Ae_AlRzchLlXUEFcAcD32xW4nSFjRTgf9K5-PeynyoQ/exec"; // رابط السكربت المنشور (النسخة الأخيرة)
+const HEADERS = ['id','date','count','price','total','fee','worker','net','harajPaid','workerPaid'];
+/* ==================== */
 
-/* ===== تخزين محلي ===== */
-const LS_KEY = 'bonkaim.rows.v3';     // السجلات
-const LS_QUEUE = 'bonkaim.queue.v3';  // طابور لم تُرفع بعد
+const $ = sel => document.querySelector(sel);
+const rowsEl = $("#rows");
+const dlg = $("#dlg"), dlgText=$("#dlgText");
+const stateKey = "bonkaim-data-v2";
+const queueKey = "bonkaim-queue-v2";
+let data = load(stateKey) || [];      // السجلات المحلية
+let queue = load(queueKey) || [];     // عمليات تنتظر الرفع
+updateUI();
 
-const $ = (s,root=document)=>root.querySelector(s);
-const $$ = (s,root=document)=>[...root.querySelectorAll(s)];
-const toast = (msg,ms=2000)=>{ const t=$("#toast"); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',ms); };
+/* أحداث */
+$("#btnAdd").onclick = addRow;
+$("#btnSync").onclick = syncFromSheet;
+$("#btnClear").onclick = clearLocal;
 
-function loadLS(key, fallback) {
-  try { return JSON.parse(localStorage.getItem(key) || '') ?? fallback; } catch { return fallback; }
+/* افتراض تاريخ اليوم */
+$("#inDate").value = new Date().toISOString().slice(0,10);
+
+/* أدوات مساعدة */
+function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function load(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch{ return null } }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function money(n){ return (+n||0).toFixed(2); }
+function show(msg){ dlgText.textContent = msg; dlg.showModal(); }
+function setStatus(msg){ $("#status").textContent = msg; }
+
+/* حسابات الصف */
+function compute(r){
+  const count = +r.count||0;
+  const price = +r.price||0;
+  const total = count*price;
+  const fee = total*0.01;
+  const worker = count*2;
+  const net = total - fee - worker;
+  return {...r,total,fee,worker,net};
 }
-function saveLS(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 
-/* ===== بيانات وعمليات ===== */
-let localRows = loadLS(LS_KEY, []);     // [{id,date,count,price,total,fee,worker,net, harajPaid, workerPaid, _posted}]
-let queue = loadLS(LS_QUEUE, []);       // [{...row}]
+/* رسم الجدول + المجاميع */
+function updateUI(){
+  rowsEl.innerHTML = "";
+  let sumCount=0,sumTotal=0,sumFee=0,sumWorker=0,sumNet=0;
+  let priceSum=0, priceN=0;
 
-const fmt = n => (Number(n)||0).toFixed(2);
+  data.forEach(r=>{
+    r = compute(r);
+    sumCount += (+r.count||0);
+    sumTotal += r.total; sumFee += r.fee; sumWorker += r.worker; sumNet += r.net;
+    if(+r.price){ priceSum+=+r.price; priceN++; }
 
-function recalcRow(r){
-  const count = Number(r.count)||0;
-  const price = Number(r.price)||0;
-  const total = count * price;
-  const fee = +(total * 0.01).toFixed(2);
-  const worker = +(count * 2).toFixed(2);   // أجر العامل (افتراضي = 2 ريال لكل ثل)
-  const net = +(total - fee - worker).toFixed(2);
-  return { ...r, total, fee, worker, net };
-}
-
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
-
-function render(){
-  const tbody = $("#tbody");
-  tbody.innerHTML = '';
-  let sumCount=0, sumPrice=0, sumTotal=0, sumFee=0, sumWorker=0, sumNet=0;
-
-  localRows.forEach(r=>{
-    const tr = document.createElement('tr');
-    if (!r._posted) tr.classList.add('ghost');
-
+    const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${r.date||''}</td>
       <td>${r.count||0}</td>
-      <td>${fmt(r.price)}</td>
-      <td>${fmt(r.total)}</td>
-      <td>${fmt(r.fee)}</td>
-      <td>${fmt(r.worker)}</td>
-      <td>${fmt(r.net)}</td>
-      <td>${r._posted ? '<span class="pill ok">✓</span>' : '<span class="pill bad">بانتظار الرفع ⏳</span>'}</td>
-      <td>
-        <button class="btn-mini btn-del" data-id="${r.id}">حذف</button>
-      </td>
+      <td>${money(r.price)}</td>
+      <td>${money(r.total)}</td>
+      <td>${money(r.fee)}</td>
+      <td>${money(r.worker)}</td>
+      <td>${money(r.net)}</td>
+      <td><button class="ok" title="أجرة عامل مدفوعة">${r.workerPaid==='TRUE'?'✓':' '}</button></td>
+      <td><button class="ok" title="حراج مدفوع">${r.harajPaid==='TRUE'?'✓':' '}</button></td>
+      <td><button class="del">حذف</button></td>
     `;
-    tbody.appendChild(tr);
-
-    sumCount += Number(r.count)||0;
-    sumPrice += Number(r.price)||0;
-    sumTotal += Number(r.total)||0;
-    sumFee += Number(r.fee)||0;
-    sumWorker += Number(r.worker)||0;
-    sumNet += Number(r.net)||0;
+    tr.querySelector(".del").onclick = ()=> removeRow(r.id);
+    rowsEl.appendChild(tr);
   });
 
-  $("#tCount").textContent = sumCount;
-  const avg = localRows.length ? (sumPrice/localRows.length) : 0;
-  $("#tAvg").textContent = `${fmt(avg)} (متوسط)`;
-  $("#tTotal").textContent = fmt(sumTotal);
-  $("#tFee").textContent = fmt(sumFee);
-  $("#tWorker").textContent = fmt(sumWorker);
-  $("#tNet").textContent = fmt(sumNet);
-}
+  $("#sumCount").textContent = sumCount;
+  $("#sumTotal").textContent = money(sumTotal);
+  $("#sumHaraj").textContent = money(sumFee);
+  $("#sumWorker").textContent = money(sumWorker);
+  $("#sumNet").textContent = money(sumNet);
+  $("#avgPrice").textContent = money(priceN?priceSum/priceN:0);
 
-function addLocalRow(row){
-  localRows.unshift(row);
-  saveLS(LS_KEY, localRows);
-  render();
-}
-
-function delLocal(id){
-  localRows = localRows.filter(r=>r.id!==id);
-  saveLS(LS_KEY, localRows);
-  render();
-}
-
-/* ===== تواصل مع الشيت ===== */
-async function apiGet(){
-  const url = API_URL + '?action=get';
-  const res = await fetch(url, { method:'GET', cache:'no-store' });
-  if(!res.ok) throw new Error('GET failed');
-  const j = await res.json().catch(()=>({ok:false,data:[]}));
-  if(!j.ok) throw new Error('GET bad response');
-  return j.data||[];
-}
-
-async function apiPostRow(r){
-  // نرسل application/x-www-form-urlencoded (يتوافق مع السكربت)
-  const form = new URLSearchParams();
-  Object.entries({
-    id:r.id, date:r.date, count:r.count, price:r.price, total:r.total,
-    fee:r.fee, worker:r.worker, net:r.net,
-    harajPaid: r.harajPaid ? 'TRUE' : 'FALSE',
-    workerPaid: r.workerPaid ? 'TRUE' : 'FALSE'
-  }).forEach(([k,v])=>form.append(k, String(v ?? '')));
-
-  const res = await fetch(API_URL, {
-    method:'POST',
-    headers: { 'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8' },
-    body: form
-  });
-  if(!res.ok) throw new Error('POST failed');
-  const j = await res.json().catch(()=>({ok:false}));
-  if(!j.ok) throw new Error('POST bad response');
-  return j;
-}
-
-/* مزامنة الطابور */
-async function syncQueue(){
-  if(!navigator.onLine) return;
-  if(queue.length===0) return;
-
-  const pending = [...queue];
-  for(const r of pending){
-    try{
-      await apiPostRow(r);
-      // علّم المحلي بأنه مرفوع
-      const i = localRows.findIndex(x=>x.id===r.id);
-      if(i>-1){ localRows[i]._posted = true; saveLS(LS_KEY, localRows); }
-      queue = queue.filter(x=>x.id!==r.id);
-      saveLS(LS_QUEUE, queue);
-    }catch(e){
-      // إذا فشل، نتركه في الطابور
-    }
+  // حالة
+  if(queue.length>0){
+    setStatus("بانتظار الرفع ⌛ — السجلات محفوظة محلياً.");
+    tryFlushQueue(); // حاول الرفع بصمت
+  }else{
+    setStatus("تم التحديث من الشيت ✓");
   }
-  render();
+
+  save(stateKey,data);
+  save(queueKey,queue);
 }
 
-/* تحديث من الشيت (بدون حذف المحلي) */
-async function refreshFromSheet(){
+/* إضافة */
+function addRow(){
+  const r = {
+    id: uid(),
+    date: $("#inDate").value,
+    count: $("#inCount").value,
+    price: $("#inPrice").value,
+    harajPaid: $("#inHarajPaid").checked ? 'TRUE':'FALSE',
+    workerPaid: $("#inWorkerPaid").checked ? 'TRUE':'FALSE',
+  };
+  data.push(r);
+  queue.push({op:'add', row:r});
+  updateUI();
+}
+
+/* حذف */
+function removeRow(id){
+  data = data.filter(r=>r.id!==id);
+  queue.push({op:'delete', id});
+  updateUI();
+}
+
+/* مسح المحلي فقط */
+function clearLocal(){
+  if(!confirm("متأكد تمسح البيانات المحلية فقط؟")) return;
+  data = []; queue = [];
+  updateUI();
+}
+
+/* تزامن من الشيت (سحب من الشيت) */
+async function syncFromSheet(){
   try{
-    const sheetRows = await apiGet(); // مصفوفة كائنات من السكربت
-    // دمج: نحافظ على المحلي، ونضيف أي صف غير موجود من الشيت (حسب id)
-    const known = new Set(localRows.map(r=>String(r.id)));
-    const merged = [...localRows];
-
-    sheetRows.forEach(sr=>{
-      const id = String(sr.id||'');
-      if(!id) return;
-      if(!known.has(id)){
-        const r = recalcRow({
-          id,
-          date: sr.date||'',
-          count: Number(sr.count)||0,
-          price: Number(sr.price)||0,
-          harajPaid: String(sr.harajPaid||'').toUpperCase()==='TRUE',
-          workerPaid: String(sr.workerPaid||'').toUpperCase()==='TRUE',
-          _posted: true
-        });
-        merged.push({ ...r, _posted:true });
-      }else{
-        // لو موجود محليًا وكان غير مرفوع، لا نلمسه
-        const idx = merged.findIndex(x=>String(x.id)===id);
-        if(idx>-1 && merged[idx]._posted===true){
-          // تحديث قيم محفوظة من الشيت (اختياري)
-          merged[idx] = { ...merged[idx], ...recalcRow(sr), _posted:true };
-        }
-      }
-    });
-
-    // نحافظ على ترتيب الأحدث أولًا حسب التاريخ/الإنشاء
-    merged.sort((a,b)=>String(b.id).localeCompare(String(a.id)));
-
-    localRows = merged;
-    saveLS(LS_KEY, localRows);
-    render();
-    toast('تم التحديث من الشيت بنجاح');
+    const u = new URL(API_URL);
+    u.searchParams.set('action','get');
+    const res = await fetch(u, {method:'GET'});
+    const json = await res.json();
+    if(json.ok){
+      const rows = json.data || [];
+      // تأكد من المفاتيح والتحويل لأسماءنا
+      data = rows.map(arr=>{
+        const o={}; HEADERS.forEach((h,i)=>o[h]=arr[i] ?? '');
+        return o;
+      });
+      // بعد السحب حاول ترفَع أي طوابير عالقة
+      await tryFlushQueue(true);
+      updateUI();
+    }else{
+      show("تعذر التحديث من الشيت.");
+    }
   }catch(e){
-    toast('تعذر التحديث من الشيت الآن');
+    show("تعذر التحديث من الشيت. الشبكة؟");
   }
 }
 
-/* ===== أحداث الواجهة ===== */
-$("#btnAdd").addEventListener('click', async ()=>{
-  const date = $("#fDate").value || new Date().toISOString().slice(0,10);
-  const count = Number($("#fCount").value||0);
-  const price = Number($("#fPrice").value||0);
-  const harajPaid = $("#fHarajPaid").checked;
+/* رفع الطوابير (إضافة/حذف) */
+async function tryFlushQueue(force=false){
+  if(queue.length===0) return;
+  // جرّب واحدة واحدة؛ إذا فشلت وقف بهدوء
+  const item = queue[0];
+  try{
+    const form = new URLSearchParams();
+    form.set('action', item.op==='delete'?'delete':'add');
+    if(item.op==='delete'){
+      form.set('id', item.id);
+    }else{
+      // طبّق الحِسابات قبل الإرسال (اختياري)
+      const r = compute(item.row);
+      HEADERS.forEach(h=> form.set(h, r[h] ?? ''));
+    }
+    const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:form.toString()});
+    const json = await res.json();
+    if(json.ok){
+      queue.shift(); // تم
+      save(queueKey,queue);
+      if(force) setStatus("تم التحديث من الشيت ✓");
+      // جرّب التالية
+      if(queue.length>0) tryFlushQueue(force);
+    }else{
+      // فشل هادئ
+      setStatus("فشل الرفع الآن، السجل محفوظ محلياً.");
+    }
+  }catch(err){
+    setStatus("فشل الرفع الآن، السجل محفوظ محلياً.");
+  }
+}
 
-  if(!count || !price){ toast('أدخل العدد والسعر'); return; }
-
-  const base = { id: uid(), date, count, price, harajPaid, workerPaid:false, _posted:false };
-  const row = recalcRow(base);
-
-  addLocalRow(row);
-  queue.push({...row}); saveLS(LS_QUEUE, queue);
-  toast('انحفظ محليًا • سيتم الرفع تلقائيًا');
-  syncQueue();
-});
-
-$("#tbody").addEventListener('click', async (ev)=>{
-  const btn = ev.target.closest('.btn-del');
-  if(!btn) return;
-  const id = btn.dataset.id;
-  // حذف محلي فقط (لا نحذف من الشيت لتجنّب أخطاء)
-  delLocal(id);
-  // وكذلك لو كان في الطابور احذفه
-  queue = queue.filter(r=>r.id!==id); saveLS(LS_QUEUE, queue);
-  toast('تم حذف السجل محليًا');
-});
-
-$("#btnClear").addEventListener('click', ()=>{
-  if(!confirm('سيتم مسح النسخ المحلية فقط. متابعة؟')) return;
-  localRows = []; saveLS(LS_KEY, localRows);
-  queue = []; saveLS(LS_QUEUE, queue);
-  render();
-  toast('تم مسح المحلي');
-});
-
-$("#btnRefresh").addEventListener('click', refreshFromSheet);
-
-$("#btnExport").addEventListener('click', ()=>{
-  const data = JSON.stringify(localRows, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `bonkaim-backup-${Date.now()}.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-});
-
-/* مزامنة عند الاتصال */
-window.addEventListener('online', syncQueue);
-
-/* تشغيل أولي */
-(function init(){
-  // تاريخ اليوم افتراضي
-  $("#fDate").value = new Date().toISOString().slice(0,10);
-  render();
-  // محاولة رفع أي شيء متبقي
-  syncQueue();
-})();
+/* عند التحميل الأول: جرّب ترفَع أي شيء متبقّي */
+window.addEventListener('load', ()=> { if(queue.length>0) tryFlushQueue(); });
 </script>
 </body>
 </html>
