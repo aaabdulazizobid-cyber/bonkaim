@@ -1,308 +1,354 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>bonkaim — برنامج بيع البونيكام</title>
-<meta name="theme-color" content="#FFD400"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>bonkaim</title>
 <style>
-  :root{
-    --ink:#0f0f0f; --muted:#666; --bg:#f7f7f8; --card:#fff;
-    --gold:#ffd400; --border:#000;
-    --c1:#fff3cd; --c2:#e8f3e2; --c3:#e7f0fb; --c4:#ffe9b6;
-    --c5:#f3e0e7; --c6:#e6ecfa; --c7:#e7f4e1;
-    --ok:#1e7d32; --bad:#b00020; --okbg:#dcf7e2; --badbg:#ffe1e1;
+  :root { --yellow:#ffd633; --ink:#111; --muted:#666; --ok:#43a047; --bad:#e53935; --bd:#e5e5e5; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; color:var(--ink); background:#fff7cc; }
+  header { position:sticky; top:0; z-index:3; background:var(--yellow); padding:10px 12px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #00000022;}
+  header h1 { margin:0; font-size:18px; font-weight:700; letter-spacing:.3px; }
+  header .badge { margin-right:auto; background:#000; color:#ffd633; border-radius:8px; padding:2px 8px; font-weight:700; }
+  .toolbar { display:flex; gap:8px; padding:8px 10px; flex-wrap:wrap; }
+  .toolbar button { border:0; background:#000; color:#fff; padding:10px 12px; border-radius:10px; font-weight:700; box-shadow:0 2px 0 #00000033; }
+  .toolbar button.alt { background:#fff; color:#111; border:1px solid #00000030; }
+  .wrap { padding:10px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field input[type="number"], .field input[type="date"], .field input[type="text"] {
+    width:100%; padding:12px; border-radius:12px; border:2px solid #00000020; background:#fff; font-size:16px;
   }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Kufi Arabic","Noto Sans Arabic","Helvetica Neue",Arial,sans-serif}
-  header{background:var(--gold); border-bottom:2px solid var(--border); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:8px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-  .badge{width:34px;height:34px;border-radius:8px;background:#111;color:#ffd400;display:grid;place-items:center}
-  .wrap{max-width:1100px;margin:auto;padding:12px}
-  .toolrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-  button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
-  .ghost{background:#fff;color:#111}
-  .hint{font-size:12px;color:var(--muted)}
-  .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
-  label{font-size:12px;color:var(--muted);margin:0 0 4px;display:block}
-  input[type="number"],input[type="date"]{width:100%;padding:10px;border:1.8px solid #bbb;border-radius:10px;background:#fff;font-size:16px}
-  input[type="checkbox"]{width:22px;height:22px}
-  .table-wrap{background:#fff;border:2px solid var(--border);border-radius:12px;overflow:hidden}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  thead th{position:sticky;top:0;background:#fafafa;border-bottom:2px solid var(--border);padding:10px;text-align:center}
-  tbody td,tfoot td{padding:10px;border-top:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center}
-  tbody tr:nth-child(even){background:#fcfcfc}
-  .num{font-variant-numeric:tabular-nums}
-  .c-total{background:var(--c1)} .c-price{background:var(--c2)} .c-count{background:var(--c3)}
-  .c-date{background:var(--c4)} .c-fee{background:var(--c5)} .c-worker{background:var(--c6)} .c-net{background:var(--c7)}
-  .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
-  .flag{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800}
-  .ok{background:var(--okbg);color:var(--ok)} .no{background:var(--badbg);color:var(--bad)}
-  .pending{font-size:12px;opacity:.8}
-  tfoot td{background:#f1f1f1;font-weight:700}
-  .settings{display:flex;align-items:center;gap:8px}
-  .urlbox{min-width:260px;padding:8px;border:1.8px solid #bbb;border-radius:10px}
-  @media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
+  .chk { display:flex; align-items:center; gap:8px; }
+  .addRow { margin-top:8px; }
+  table { width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:16px; background:#fff; }
+  th,td { border:1px solid var(--bd); padding:10px 8px; text-align:center; font-size:14px; }
+  thead th { position:sticky; top:58px; z-index:2; background:#fffef5; }
+  tfoot td { font-weight:800; background:#fffef0; }
+  .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:10px; font-weight:700; }
+  .ok { background:#e7f6ec; color:#1b5e20; }
+  .bad { background:#fdeaea; color:#b71c1c; }
+  .ghost { opacity:.6; }
+  .btn-mini { border:0; padding:6px 10px; border-radius:10px; font-weight:700; background:#000; color:#fff; }
+  .btn-del { background:#111; }
+  .note { color:var(--muted); font-size:12px; padding:4px 2px; }
+  .toast { position:fixed; inset:auto 12px 14px 12px; background:#111; color:#fff; padding:10px 12px; border-radius:10px; font-weight:600; display:none; z-index:10; }
 </style>
 </head>
 <body>
+
 <header>
-  <div class="brand"><span class="badge">B</span><span>bonkaim</span></div>
-  <div class="settings">
-    <input id="gsUrl" class="urlbox" placeholder="ألصق رابط سكربت Apps Script هنا ثم حفظ" />
-    <button id="btnSaveUrl" class="ghost">حفظ الرابط</button>
-    <button id="btnPull" class="ghost">تحديث من الشيت</button>
-    <button id="btnClearLocal" class="ghost">مسح المحلي</button>
-  </div>
+  <h1>bonkaim</h1>
+  <span class="badge">B</span>
 </header>
 
+<div class="toolbar">
+  <button id="btnRefresh" class="alt">تحديث من الشيت</button>
+  <button id="btnClear" class="alt">مسح المحلي</button>
+  <button id="btnExport" class="alt">تصدير JSON</button>
+</div>
+
 <div class="wrap">
-  <div class="toolrow">
-    <span id="syncStat" class="hint">مستعد. يحفظ محليًا + يزامن مع Google Sheets عند توفر الشبكة.</span>
-  </div>
-
-  <div class="card">
-    <div class="inputs">
-      <div><label>عدد الفلين</label><input id="count" type="number" inputmode="numeric" min="0" step="1" placeholder="مثال: 100"></div>
-      <div><label>التاريخ</label><input id="date" type="date"></div>
-      <div><label>سعر الفلين (ريال)</label><input id="price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="مثال: 25"></div>
-      <div><label>حراج (مدفوع؟)</label><input id="harajPaid" type="checkbox"></div>
-      <div><label>أجرة عامل (مدفوعة؟)</label><input id="workerPaid" type="checkbox"></div>
-      <div style="display:flex;align-items:end"><button id="btnAdd">+ إضافة</button></div>
+  <div class="grid">
+    <div class="field">
+      <label>التاريخ</label>
+      <input id="fDate" type="date" />
     </div>
-    <div class="hint">الأجرة = <b>2 ريال</b> × عدد الفلين — الحراج = <b>1%</b> — يعمل بدون إنترنت ويزامن تلقائيًا عند الشبكة.</div>
+    <div class="field">
+      <label>عدد الثلين</label>
+      <input id="fCount" type="number" inputmode="numeric" placeholder="مثال: 100" />
+    </div>
+    <div class="field">
+      <label>سعر الثلين (ريال)</label>
+      <input id="fPrice" type="number" inputmode="numeric" placeholder="مثال: 25" />
+    </div>
+    <div class="field">
+      <label class="chk"><input id="fHarajPaid" type="checkbox" checked /> حراج (مدفوع؟)</label>
+    </div>
   </div>
+  <button id="btnAdd" class="addRow">إضافة +</button>
 
-  <div class="table-wrap" style="margin-top:12px">
+  <p class="note">يحفظ محليًا ويُرفع تلقائيًا عند توفر الشبكة. “تحديث من الشيت” لا يمسح المحلي.</p>
+
+  <div style="overflow:auto; margin-top:8px;">
     <table id="tbl">
       <thead>
         <tr>
-          <th>إجراءات</th><th>حراج</th><th>أجرة عامل</th>
-          <th class="c-net">صافي الربح</th><th class="c-worker">أجر العامل (2/فلين)</th>
-          <th class="c-fee">حراج %1</th><th class="c-total">الإجمالي</th>
-          <th class="c-price">سعر الفلين</th><th class="c-count">عدد الفلين</th><th class="c-date">التاريخ</th>
+          <th>التاريخ</th>
+          <th>عدد</th>
+          <th>سعر</th>
+          <th>الإجمالي</th>
+          <th>حراج 1%</th>
+          <th>أجر العامل (2/قين)</th>
+          <th>صافي الربح</th>
+          <th>مرفوع</th>
+          <th>إجراءات</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
       <tfoot>
         <tr>
-          <td>الإجماليات</td><td></td><td></td>
-          <td class="num" id="tNet">0.00</td><td class="num" id="tWorker">0.00</td>
-          <td class="num" id="tFee">0.00</td><td class="num" id="tTotal">0.00</td>
-          <td class="num" id="tAvgPrice">0.00 (متوسط)</td><td class="num" id="tCount">0</td>
-          <td style="font-size:12px">محلي + مزامنة بالشيت</td>
+          <td>الإجماليات</td>
+          <td id="tCount">0</td>
+          <td id="tAvg">0.00 (متوسط)</td>
+          <td id="tTotal">0.00</td>
+          <td id="tFee">0.00</td>
+          <td id="tWorker">0.00</td>
+          <td id="tNet">0.00</td>
+          <td colspan="2"></td>
         </tr>
       </tfoot>
     </table>
   </div>
 </div>
 
+<div id="toast" class="toast"></div>
+
 <script>
-/* ========== الإعداد ========== */
+/* ===== رابط سكربت Google Apps Script (لا تغيّره) ===== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyBlKn5FVFJm0FMp98ntQ8E3y9Ae_AlRzchLlXUEFcAcD32xW4nSFjRTgf9K5-PeynyoQ/exec';
 
-/* احفظ هنا “مبدئيًا” رابط تطبيق الويب (Apps Script) — تقدر تغيّره من خانة الإعداد أعلى الصفحة */
-const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby326PEkBLafZpUnY_fcZ466O8ynURdNpTDyyXAczd8JyENGks5KPtCn7fHMKkX4aIZzQ/exec';
-const LS_URL   = 'bonkaim_gs_url_v1';
-const LS_ROWS  = 'bonkaim_rows_v3';
-const LS_OUTBOX= 'bonkaim_outbox_v1';
+/* ===== تخزين محلي ===== */
+const LS_KEY = 'bonkaim.rows.v3';     // السجلات
+const LS_QUEUE = 'bonkaim.queue.v3';  // طابور لم تُرفع بعد
 
-function gsURL(){ return localStorage.getItem(LS_URL) || DEFAULT_SCRIPT_URL; }
-function setGsURL(u){ localStorage.setItem(LS_URL, u.trim()); $('gsUrl').value = gsURL(); }
+const $ = (s,root=document)=>root.querySelector(s);
+const $$ = (s,root=document)=>[...root.querySelectorAll(s)];
+const toast = (msg,ms=2000)=>{ const t=$("#toast"); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',ms); };
 
-const $ = id => document.getElementById(id);
-const sleep = ms => new Promise(r=>setTimeout(r,ms));
-
-/* ========== بيانات ========== */
-let rows = [];         // السجلات المحلية
-let outbox = [];       // طابور السجلات المطلوب رفعها (id فقط)
-
-/* ========== أدوات ========== */
-function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10); }
-$('date').value = todayISO();
-
-function load(){
-  rows   = JSON.parse(localStorage.getItem(LS_ROWS)||'[]');
-  outbox = JSON.parse(localStorage.getItem(LS_OUTBOX)||'[]');
+function loadLS(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key) || '') ?? fallback; } catch { return fallback; }
 }
-function save(){
-  localStorage.setItem(LS_ROWS, JSON.stringify(rows));
-  localStorage.setItem(LS_OUTBOX, JSON.stringify(outbox));
-}
-function status(s){ $('syncStat').textContent=s; }
+function saveLS(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
 
-/* حسابات الصف */
-function compute(r){
-  const c=+r.count||0, p=+r.price||0;
-  const total=c*p;
-  const fee=+(total*0.01).toFixed(2);
-  const worker=+(c*2).toFixed(2);
-  const net=+(total-fee-worker).toFixed(2);
-  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net;
-  return r;
-}
-function Flag(tf){ return `<span class="flag ${tf?'ok':'no'}">${tf?'✓':'✗'}</span>`; }
+/* ===== بيانات وعمليات ===== */
+let localRows = loadLS(LS_KEY, []);     // [{id,date,count,price,total,fee,worker,net, harajPaid, workerPaid, _posted}]
+let queue = loadLS(LS_QUEUE, []);       // [{...row}]
 
-/* رسم الجدول */
+const fmt = n => (Number(n)||0).toFixed(2);
+
+function recalcRow(r){
+  const count = Number(r.count)||0;
+  const price = Number(r.price)||0;
+  const total = count * price;
+  const fee = +(total * 0.01).toFixed(2);
+  const worker = +(count * 2).toFixed(2);   // أجر العامل (افتراضي = 2 ريال لكل ثل)
+  const net = +(total - fee - worker).toFixed(2);
+  return { ...r, total, fee, worker, net };
+}
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
 function render(){
-  const tb=$('tbody'); tb.innerHTML='';
-  // لا نمس الترتيب الزمني المتزايد
-  rows.sort((a,b)=> a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
-  for(const r of rows){
-    const pending = outbox.includes(r.id);
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+  const tbody = $("#tbody");
+  tbody.innerHTML = '';
+  let sumCount=0, sumPrice=0, sumTotal=0, sumFee=0, sumWorker=0, sumNet=0;
+
+  localRows.forEach(r=>{
+    const tr = document.createElement('tr');
+    if (!r._posted) tr.classList.add('ghost');
+
+    tr.innerHTML = `
+      <td>${r.date||''}</td>
+      <td>${r.count||0}</td>
+      <td>${fmt(r.price)}</td>
+      <td>${fmt(r.total)}</td>
+      <td>${fmt(r.fee)}</td>
+      <td>${fmt(r.worker)}</td>
+      <td>${fmt(r.net)}</td>
+      <td>${r._posted ? '<span class="pill ok">✓</span>' : '<span class="pill bad">بانتظار الرفع ⏳</span>'}</td>
       <td>
-        <button class="rowbtn" onclick="delRow('${r.id}')">حذف</button>
-        ${pending? `<div class="pending">بانتظار الرفع ⏳</div>`:''}
+        <button class="btn-mini btn-del" data-id="${r.id}">حذف</button>
       </td>
-      <td>${Flag(!!r.harajPaid)}</td>
-      <td>${Flag(!!r.workerPaid)}</td>
-      <td class="num c-net">${(r.net??0).toFixed(2)}</td>
-      <td class="num c-worker">${(r.worker??0).toFixed(2)}</td>
-      <td class="num c-fee">${(r.fee??0).toFixed(2)}</td>
-      <td class="num c-total">${(r.total??0).toFixed(2)}</td>
-      <td class="num c-price">${(+r.price||0).toFixed(2)}</td>
-      <td class="num c-count">${(+r.count||0).toFixed(0)}</td>
-      <td class="c-date">${r.date||''}</td>`;
-    tb.appendChild(tr);
-  }
-  const sum=k=>rows.reduce((a,c)=>a+Number(c[k]||0),0);
-  const avg=rows.length? rows.reduce((a,c)=>a+Number(c.price||0),0)/rows.length : 0;
-  $('tCount').textContent = sum('count').toFixed(0);
-  $('tTotal').textContent = sum('total').toFixed(2);
-  $('tFee').textContent   = sum('fee').toFixed(2);
-  $('tWorker').textContent= sum('worker').toFixed(2);
-  $('tNet').textContent   = sum('net').toFixed(2);
-  $('tAvgPrice').textContent = avg.toFixed(2)+' (متوسط)';
-}
+    `;
+    tbody.appendChild(tr);
 
-function delRow(id){
-  // حذف محلي فقط (الزر واحد وواضح)
-  rows = rows.filter(x=>x.id!==id);
-  outbox = outbox.filter(x=>x!==id);
-  save(); render(); status('تم حذف السجل محليًا. (لن يحذف من الشيت)');
-}
-
-/* ========== شبكة ========== */
-async function postJSON(url, bodyObj){
-  // Apps Script غالبًا يرجّع HTML فيه JSON — نتعامل معه كـ نص ثم نعمل JSON.parse
-  const res = await fetch(url, {
-    method:'POST',
-    headers:{'Content-Type':'application/json','Cache-Control':'no-store'},
-    body: JSON.stringify(bodyObj)
+    sumCount += Number(r.count)||0;
+    sumPrice += Number(r.price)||0;
+    sumTotal += Number(r.total)||0;
+    sumFee += Number(r.fee)||0;
+    sumWorker += Number(r.worker)||0;
+    sumNet += Number(r.net)||0;
   });
-  const txt = await res.text();
-  try{ return JSON.parse(txt); } catch{ return {ok:res.ok, raw:txt}; }
+
+  $("#tCount").textContent = sumCount;
+  const avg = localRows.length ? (sumPrice/localRows.length) : 0;
+  $("#tAvg").textContent = `${fmt(avg)} (متوسط)`;
+  $("#tTotal").textContent = fmt(sumTotal);
+  $("#tFee").textContent = fmt(sumFee);
+  $("#tWorker").textContent = fmt(sumWorker);
+  $("#tNet").textContent = fmt(sumNet);
 }
 
-async function sendRow(row){
-  const url = gsURL();
-  const payload = {
-    id: row.id, date: row.date, count: row.count, price: row.price,
-    total: row.total, fee: row.fee, worker: row.worker, net: row.net,
-    harajPaid: row.harajPaid ? 'TRUE' : 'FALSE',
-    workerPaid: row.workerPaid ? 'TRUE' : 'FALSE'
-  };
-  const r = await postJSON(url+'?action=add', payload);
-  if(!r || r.ok!==true) throw new Error('upload failed');
+function addLocalRow(row){
+  localRows.unshift(row);
+  saveLS(LS_KEY, localRows);
+  render();
 }
 
-async function addRow(){
-  const date=$('date').value||todayISO();
-  const count=+$('count').value||0;
-  const price=+$('price').value||0;
-  const harajPaid=$('harajPaid').checked;
-  const workerPaid=$('workerPaid').checked;
-
-  const row=compute({id: Date.now()+''+Math.random().toString(16).slice(2), date,count,price, harajPaid, workerPaid});
-  rows.push(row);
-  outbox.push(row.id);
-  save(); render();
-
-  // نحاول رفعه الآن؛ لو فشل يبقى في outbox
-  try{
-    status('جارِ الرفع للشيت…'); await sendRow(row);
-    outbox = outbox.filter(x=>x!==row.id); save(); render();
-    status('تم الرفع للشيت ✔️');
-  }catch(e){
-    status('فشل الرفع الآن — محفوظ محليًا. سيُرسل تلقائيًا عند الشبكة.');
-    alert('فشل الرفع الآن، السجل محفوظ محليًا.\nاضغط "تحديث من الشيت" لاحقًا بعد توفر الشبكة.');
-  }
-
-  $('count').value=''; $('price').value='';
+function delLocal(id){
+  localRows = localRows.filter(r=>r.id!==id);
+  saveLS(LS_KEY, localRows);
+  render();
 }
 
-async function pushOutbox(){
-  // نحاول رفع كل المتراكم
-  if(outbox.length===0) return;
-  const url = gsURL();
-  status('رفع السجلات المعلقة…');
-  for(const id of [...outbox]){ // نسخة
-    const row = rows.find(r=>r.id===id);
-    if(!row){ outbox = outbox.filter(x=>x!==id); save(); continue; }
-    try{ await sendRow(row); outbox = outbox.filter(x=>x!==id); save(); render(); }
-    catch(_){ /* نوقف إذا الشبكة سيئة */ break; }
-  }
+/* ===== تواصل مع الشيت ===== */
+async function apiGet(){
+  const url = API_URL + '?action=get';
+  const res = await fetch(url, { method:'GET', cache:'no-store' });
+  if(!res.ok) throw new Error('GET failed');
+  const j = await res.json().catch(()=>({ok:false,data:[]}));
+  if(!j.ok) throw new Error('GET bad response');
+  return j.data||[];
 }
 
-async function pull(){
-  try{
-    await pushOutbox(); // أولًا نحاول رفع المعلّق
-    status('جارِ التحديث من الشيت…');
+async function apiPostRow(r){
+  // نرسل application/x-www-form-urlencoded (يتوافق مع السكربت)
+  const form = new URLSearchParams();
+  Object.entries({
+    id:r.id, date:r.date, count:r.count, price:r.price, total:r.total,
+    fee:r.fee, worker:r.worker, net:r.net,
+    harajPaid: r.harajPaid ? 'TRUE' : 'FALSE',
+    workerPaid: r.workerPaid ? 'TRUE' : 'FALSE'
+  }).forEach(([k,v])=>form.append(k, String(v ?? '')));
 
-    // نضيف باراميتر t لتفادي كاش سفاري
-    const r = await fetch(gsURL()+'?action=get&t='+(Date.now()), {cache:'no-store'});
-    const txt = await r.text();
-    let j={ok:false,data:[]}; try{ j=JSON.parse(txt);}catch(_){}
-    if(!j || j.ok!==true) throw new Error('bad get');
+  const res = await fetch(API_URL, {
+    method:'POST',
+    headers: { 'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8' },
+    body: form
+  });
+  if(!res.ok) throw new Error('POST failed');
+  const j = await res.json().catch(()=>({ok:false}));
+  if(!j.ok) throw new Error('POST bad response');
+  return j;
+}
 
-    const remote = Array.isArray(j.data)? j.data : [];
-    // نضيف الجديد فقط، ولا نمس المحلي (لا مسح للمحلي)
-    const localIDs = new Set(rows.map(x=>x.id));
-    let added=0;
-    for(const o of remote){
-      if(!o || !o.id) continue;
-      if(!localIDs.has(String(o.id))){
-        const r = compute({
-          id:String(o.id), date:o.date||'', count:+o.count||0, price:+o.price||0,
-          total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
-          harajPaid: (String(o.harajPaid).toUpperCase()==='TRUE' || String(o.harajPaid)==='تم'),
-          workerPaid:(String(o.workerPaid ).toUpperCase()==='TRUE' || String(o.workerPaid )==='تم')
-        });
-        rows.push(r); added++;
-      }
+/* مزامنة الطابور */
+async function syncQueue(){
+  if(!navigator.onLine) return;
+  if(queue.length===0) return;
+
+  const pending = [...queue];
+  for(const r of pending){
+    try{
+      await apiPostRow(r);
+      // علّم المحلي بأنه مرفوع
+      const i = localRows.findIndex(x=>x.id===r.id);
+      if(i>-1){ localRows[i]._posted = true; saveLS(LS_KEY, localRows); }
+      queue = queue.filter(x=>x.id!==r.id);
+      saveLS(LS_QUEUE, queue);
+    }catch(e){
+      // إذا فشل، نتركه في الطابور
     }
-    save(); render();
-    status(added? ('تم التحديث من الشيت ✔️ أضيف '+added+' سجل'): 'تم التحديث — لا جديد من الشيت.');
+  }
+  render();
+}
+
+/* تحديث من الشيت (بدون حذف المحلي) */
+async function refreshFromSheet(){
+  try{
+    const sheetRows = await apiGet(); // مصفوفة كائنات من السكربت
+    // دمج: نحافظ على المحلي، ونضيف أي صف غير موجود من الشيت (حسب id)
+    const known = new Set(localRows.map(r=>String(r.id)));
+    const merged = [...localRows];
+
+    sheetRows.forEach(sr=>{
+      const id = String(sr.id||'');
+      if(!id) return;
+      if(!known.has(id)){
+        const r = recalcRow({
+          id,
+          date: sr.date||'',
+          count: Number(sr.count)||0,
+          price: Number(sr.price)||0,
+          harajPaid: String(sr.harajPaid||'').toUpperCase()==='TRUE',
+          workerPaid: String(sr.workerPaid||'').toUpperCase()==='TRUE',
+          _posted: true
+        });
+        merged.push({ ...r, _posted:true });
+      }else{
+        // لو موجود محليًا وكان غير مرفوع، لا نلمسه
+        const idx = merged.findIndex(x=>String(x.id)===id);
+        if(idx>-1 && merged[idx]._posted===true){
+          // تحديث قيم محفوظة من الشيت (اختياري)
+          merged[idx] = { ...merged[idx], ...recalcRow(sr), _posted:true };
+        }
+      }
+    });
+
+    // نحافظ على ترتيب الأحدث أولًا حسب التاريخ/الإنشاء
+    merged.sort((a,b)=>String(b.id).localeCompare(String(a.id)));
+
+    localRows = merged;
+    saveLS(LS_KEY, localRows);
+    render();
+    toast('تم التحديث من الشيت بنجاح');
   }catch(e){
-    status('تعذّر الجلب من الشيت. تأكد من رابط السكربت والنشر Anyone.');
-    alert('تعذّر الجلب من الشيت.\n- تأكد أن رابط السكربت صحيح ومختوم بـ /exec\n- وأن النشر "أي شخص".');
+    toast('تعذر التحديث من الشيت الآن');
   }
 }
 
-/* ========== ربط واجهة ========== */
-$('btnAdd').addEventListener('click', addRow);
-$('btnPull').addEventListener('click', pull);
-$('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('متأكد تمسح النسخة المحلية فقط؟ لن يُحذف من الشيت.')){
-    rows=[]; outbox=[]; save(); render(); status('تم مسح المحلي.');
-  }
-});
-$('btnSaveUrl').addEventListener('click', ()=>{
-  const val = $('gsUrl').value.trim();
-  if(!val){ alert('ألصق رابط السكربت أولًا'); return; }
-  setGsURL(val);
-  status('تم حفظ رابط السكربت.'); 
+/* ===== أحداث الواجهة ===== */
+$("#btnAdd").addEventListener('click', async ()=>{
+  const date = $("#fDate").value || new Date().toISOString().slice(0,10);
+  const count = Number($("#fCount").value||0);
+  const price = Number($("#fPrice").value||0);
+  const harajPaid = $("#fHarajPaid").checked;
+
+  if(!count || !price){ toast('أدخل العدد والسعر'); return; }
+
+  const base = { id: uid(), date, count, price, harajPaid, workerPaid:false, _posted:false };
+  const row = recalcRow(base);
+
+  addLocalRow(row);
+  queue.push({...row}); saveLS(LS_QUEUE, queue);
+  toast('انحفظ محليًا • سيتم الرفع تلقائيًا');
+  syncQueue();
 });
 
-function init(){
-  $('gsUrl').value = gsURL();
-  load(); render();
-  // نحاول فور الفتح نرفع أي معلقات
-  pushOutbox();
-}
-init();
+$("#tbody").addEventListener('click', async (ev)=>{
+  const btn = ev.target.closest('.btn-del');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  // حذف محلي فقط (لا نحذف من الشيت لتجنّب أخطاء)
+  delLocal(id);
+  // وكذلك لو كان في الطابور احذفه
+  queue = queue.filter(r=>r.id!==id); saveLS(LS_QUEUE, queue);
+  toast('تم حذف السجل محليًا');
+});
+
+$("#btnClear").addEventListener('click', ()=>{
+  if(!confirm('سيتم مسح النسخ المحلية فقط. متابعة؟')) return;
+  localRows = []; saveLS(LS_KEY, localRows);
+  queue = []; saveLS(LS_QUEUE, queue);
+  render();
+  toast('تم مسح المحلي');
+});
+
+$("#btnRefresh").addEventListener('click', refreshFromSheet);
+
+$("#btnExport").addEventListener('click', ()=>{
+  const data = JSON.stringify(localRows, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `bonkaim-backup-${Date.now()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+
+/* مزامنة عند الاتصال */
+window.addEventListener('online', syncQueue);
+
+/* تشغيل أولي */
+(function init(){
+  // تاريخ اليوم افتراضي
+  $("#fDate").value = new Date().toISOString().slice(0,10);
+  render();
+  // محاولة رفع أي شيء متبقي
+  syncQueue();
+})();
 </script>
 </body>
 </html>
