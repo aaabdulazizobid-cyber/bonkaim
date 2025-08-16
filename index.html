@@ -58,9 +58,9 @@
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
     <button class="ghost" id="btnClearLocal">مسح المحلي</button>
-    <button class="ghost" id="btnBackup">تنزيل نسخة احتياطية (JSON)</button>
+    <button class="ghost" id="btnBackup">تراجع/نسخة</button>
     <button class="ghost" id="btnCsv">تصدير CSV</button>
-    <label class="ghost" for="fileRestore" style="display:inline-block;cursor:pointer;padding:10px 14px;border-radius:10px;border:1.8px solid var(--border)">استرجاع من ملف</label>
+    <label class="ghost" for="fileRestore" style="display:inline-block;cursor:pointer;padding:10px 14px;border-radius:10px;border:1.8px solid var(--border)">استرجاع</label>
     <input id="fileRestore" type="file" accept="application/json">
   </div>
 </header>
@@ -108,9 +108,9 @@
 /* ===== إعدادات ===== */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyx9A-ujkCNCT_KWOMxZkGNFIGdpUlx5-n6-U6_URaSdlWYiA70WI4-SUMgjRez8dnQ/exec';
 
-/* مفاتيح تخزين جديدة v3 (وداعاً لمسح البيانات) */
+/* مفاتيح تخزين جديدة v3 */
 const LS_ROWS   = 'bonikam_rows_v3';
-const LS_QUEUE  = 'bonikam_queue_v3'; // يدعم add/delete
+const LS_QUEUE  = 'bonikam_queue_v3';
 const $ = id => document.getElementById(id);
 
 function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10);}
@@ -141,8 +141,7 @@ function render(){
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td>
-        <button class="rowbtn" onclick="delRow('${r.id}')">حذف محلي</button>
-        <button class="rowbtn danger" onclick="delFromSheet('${r.id}')">حذف من الشيت</button>
+        <button class="rowbtn" onclick="delRow('${r.id}')">حذف</button>
       </td>
       <td>${flagBox(!!r.harajPaid)}</td>
       <td>${flagBox(!!r.workerPaid)}</td>
@@ -167,7 +166,7 @@ function render(){
 
 function delRow(id){
   rows = rows.filter(x=>x.id!==id);
-  save(LS_ROWS, rows); render(); status('حُذف محليًا (لن يُحذف من الشيت).');
+  save(LS_ROWS, rows); render(); status('حُذف محليًا.');
 }
 
 /* إرسال */
@@ -185,60 +184,15 @@ async function sendAdd(row){
   if(!res.ok) throw new Error(await res.text());
 }
 
-async function sendDelete(id){
-  const res = await fetch(SCRIPT_URL+'?action=delete&id='+encodeURIComponent(id),{
-    method:'POST',
-    headers:{'Cache-Control':'no-store'}
-  });
-  if(!res.ok) throw new Error(await res.text());
-}
-
 async function flushQueue(){
   if(!queue.length) return;
   status('جارِ معالجة السجلات المعلّقة...');
   const remain=[];
   for(const it of queue){
-    try{
-      if(it.op==='del') await sendDelete(it.id);
-      else await sendAdd(it.row || it); // توافق مع الطابور القديم
-    }catch(e){ remain.push(it); }
+    try{ await sendAdd(it.row || it); }catch(e){ remain.push(it); }
   }
   queue = remain; save(LS_QUEUE, queue);
   status(remain.length? 'لا يزال هناك سجلات معلّقة.' : 'تمت مزامنة السجلات المعلّقة ✔️');
-}
-
-function buildRow(){
-  return compute({
-    id: Date.now()+''+Math.random().toString(16).slice(2),
-    date: $('date').value || todayISO(),
-    count:+$('count').value||0,
-    price:+$('price').value||0,
-    harajPaid: $('harajPaid').checked,
-    workerPaid: $('workerPaid').checked
-  });
-}
-
-async function addRow(){
-  const row=buildRow();
-  rows.push(row); save(LS_ROWS, rows); render();
-  try{ status('جارِ الإرسال للشيت...'); await sendAdd(row); status('تم الرفع للشيت ✔️'); }
-  catch(err){ queue.push({op:'add', row}); save(LS_QUEUE, queue); status('تعذّر الإرسال الآن—محفوظ محليًا.'); alert('فشل الرفع الآن. محفوظ وسيُرسل لاحقًا.'); }
-  $('count').value=''; $('price').value='';
-}
-
-async function delFromSheet(id){
-  if(!confirm('حذف من Google Sheets نهائيًا؟')) return;
-  try{
-    status('جارِ الحذف من الشيت...');
-    await sendDelete(id);
-    rows = rows.filter(x=>x.id!==id);
-    save(LS_ROWS, rows); render();
-    status('تم الحذف من الشيت ✔️');
-  }catch(e){
-    queue.push({op:'del', id}); save(LS_QUEUE, queue);
-    alert('قد لا يدعم السكربت الحذف أو الشبكة ضعيفة.\nتمت إضافة العملية للطابور وستُجرَّب لاحقًا.');
-    status('تمت إضافة طلب الحذف للطابور.');
-  }
 }
 
 /* سحب من الشيت + دمج */
@@ -268,24 +222,41 @@ async function pull(){
     save(LS_ROWS, rows); render();
     status('تم الدمج والتحديث من الشيت ✔️');
   }catch(e){
-    status('تعذّر الجلب من الشيت.'); alert('تأكد من اتصال الشبكة ونشر السكربت.');
+    status('تعذّر الجلب من الشيت.'); 
   }
 }
 
-/* النسخة الاحتياطية */
+/* بناء صف + إضافة */
+function buildRow(){
+  return compute({
+    id: Date.now()+''+Math.random().toString(16).slice(2),
+    date: $('date').value || todayISO(),
+    count:+$('count').value||0,
+    price:+$('price').value||0,
+    harajPaid: $('harajPaid').checked,
+    workerPaid: $('workerPaid').checked
+  });
+}
+async function addRow(){
+  const row=buildRow();
+  rows.push(row); save(LS_ROWS, rows); render();
+  try{ status('جارِ الإرسال للشيت...'); await sendAdd(row); status('تم الرفع للشيت ✔️'); await pull(); }
+  catch(err){ queue.push({op:'add', row}); save(LS_QUEUE, queue); status('تعذّر الإرسال الآن—محفوظ محليًا.'); }
+  $('count').value=''; $('price').value='';
+}
+
+/* نسخ احتياطي / استرجاع / CSV */
 function download(name, text, type){
   const a=document.createElement('a');
   a.href = URL.createObjectURL(new Blob([text],{type}));
   a.download = name;
   document.body.appendChild(a); a.click(); a.remove();
 }
-
 function backupNow(){
   const payload = { version:'v3', exportedAt:new Date().toISOString(), rows, queue };
   download('bonkaim-backup.json', JSON.stringify(payload, null, 2), 'application/json');
-  status('تم تنزيل النسخة الاحتياطية ✔️');
+  status('تم تنزيل النسخة ✔️');
 }
-
 function restoreFromFile(file){
   const reader = new FileReader();
   reader.onload = e=>{
@@ -295,13 +266,11 @@ function restoreFromFile(file){
       rows = (j.rows||[]).map(compute);
       queue = Array.isArray(j.queue)? j.queue : [];
       save(LS_ROWS, rows); save(LS_QUEUE, queue); render();
-      status('تم الاسترجاع من النسخة الاحتياطية ✔️');
+      status('تم الاسترجاع ✔️'); 
     }catch(err){ alert('تعذّر الاسترجاع: ملف غير صالح.'); }
   };
   reader.readAsText(file);
 }
-
-/* تصدير CSV */
 function toCSV(arr){
   const hdr = ['id','date','count','price','total','fee','worker','net','harajPaid','workerPaid'];
   const lines = [hdr.join(',')];
@@ -315,24 +284,28 @@ function toCSV(arr){
   }
   return lines.join('\n');
 }
-function exportCSV(){
-  download('bonkaim-data.csv', toCSV(rows), 'text/csv');
-  status('تم تنزيل CSV ✔️');
-}
+function exportCSV(){ download('bonkaim-data.csv', toCSV(rows), 'text/csv'); status('تم تنزيل CSV ✔️'); }
 
 /* أزرار */
 $('btnAdd').addEventListener('click', addRow);
 $('btnPull').addEventListener('click', pull);
 $('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('تمسح النسخة المحلية فقط؟ (لن يحذف من الشيت)')){ rows=[]; queue=[]; save(LS_ROWS, rows); save(LS_QUEUE, queue); render(); status('تم مسح المحلي.');}
+  if(confirm('تمسح النسخة المحلية فقط؟')){ rows=[]; queue=[]; save(LS_ROWS, rows); save(LS_QUEUE, queue); render(); status('تم مسح المحلي.');}
 });
 $('btnBackup').addEventListener('click', backupNow);
 $('btnCsv').addEventListener('click', exportCSV);
 $('fileRestore').addEventListener('change', (e)=>{ if(e.target.files && e.target.files[0]) restoreFromFile(e.target.files[0]); e.target.value=''; });
 
-/* تشغيل أولي */
+/* مزامنة تلقائية بين الأجهزة */
 render();
-setTimeout(flushQueue, 600);
+/* عند التحميل: صفّ الطابور ثم اسحب من الشيت */
+(async ()=>{ try{ await flushQueue(); await pull(); }catch{} })();
+/* رجع النت */
+window.addEventListener('online', ()=> { flushQueue().then(pull).catch(()=>{}); });
+/* الصفحة صارت بالمقدمة */
+document.addEventListener('visibilitychange', ()=> { if(document.visibilityState==='visible'){ flushQueue().then(pull).catch(()=>{}); }});
+/* تحديث دوري خفيف كل 30 ثانية */
+setInterval(()=>{ flushQueue().then(pull).catch(()=>{}); }, 30000);
 </script>
 </body>
 </html>
