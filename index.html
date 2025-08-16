@@ -1,321 +1,281 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>bonkaim</title>
 <style>
-  :root{
-    --bg:#f6f6f6; --brand:#ffd400; --ink:#222; --muted:#666;
-    --c-date:#ffe7a1; --c-count:#e3f0ff; --c-price:#e9ffe7; --c-total:#ffe9d7;
-    --c-haraj:#ffdbe4; --c-worker:#e8f0ff; --c-net:#e7ffe7;
-    --c-actions:#fff; --radius:14px;
-  }
-  html,body{background:#fff;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;color:var(--ink)}
-  .topbar{position:sticky;top:0;z-index:5;background:var(--brand);border-bottom:3px solid #00000020}
-  .wrap{max-width:980px;margin:0 auto;padding:8px 12px}
-  h1{margin:0;font-weight:700;font-size:22px;display:flex;align-items:center;gap:10px}
-  .badge{background:#000;color:#fff;border-radius:8px;padding:2px 8px;font-weight:700}
-  .tools{display:flex;gap:10px;margin:10px 0 0}
-  .btn{border:2px solid #0003;background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
-  .btn:active{transform:scale(.98)}
-  .note{font-size:13px;color:var(--muted);margin:10px 0;text-align:center}
-  .form{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:center;margin-top:8px}
-  .field{display:flex;flex-direction:column;gap:6px}
-  .field input[type="number"], .field input[type="date"], .field input[type="text"]{
-    border:2px solid #0001;border-radius:10px;padding:10px 12px;font-size:16px
-  }
-  .pill{display:inline-block;background:#000;color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}
-  .tbl{margin-top:14px;border:2px solid #0002;border-radius:var(--radius);overflow:hidden}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:10px 8px;border-left:2px solid #0001;border-top:2px solid #0001;text-align:center}
-  th:first-child,td:first-child{border-right:none}
-  tr:first-child th{border-top:none}
-  thead th{font-size:14px}
-  thead th:nth-child(1){background:var(--c-date)}
-  thead th:nth-child(2){background:var(--c-count)}
-  thead th:nth-child(3){background:var(--c-price)}
-  thead th:nth-child(4){background:var(--c-total)}
-  thead th:nth-child(5){background:var(--c-haraj)}
-  thead th:nth-child(6){background:var(--c-worker)}
-  thead th:nth-child(7){background:var(--c-net)}
-  thead th:nth-child(8), thead th:nth-child(9){background:#f5fff5}
-  thead th:nth-child(10){background:var(--c-actions)}
-  tbody td:nth-child(1){background:var(--c-date)}
-  tfoot td{font-weight:800;background:#f7f7f7}
-  .ok{background:#2ecc71;border:2px solid #1f8f4f;color:#fff;border-radius:10px;padding:6px 10px;font-weight:800;cursor:pointer}
-  .no{background:#ff6b6b;border:2px solid #c03;color:#fff;border-radius:10px;padding:6px 10px;font-weight:800;cursor:pointer}
-  .del{background:#000;color:#fff;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer}
-  .chip{font-size:12px;line-height:1.2}
-  .hint{font-size:12px;color:#888}
-  dialog{border:none;border-radius:14px;padding:16px 14px;max-width:480px}
+:root{
+  --brand:#ffd200; --ink:#111; --muted:#666;
+  --c-date:#ffe08a;       /* التاريخ */
+  --c-count:#e7f4ff;      /* عدد الثنين */
+  --c-price:#e6ffe6;      /* سعر الثنين */
+  --c-total:#fff1dc;      /* الإجمالي */
+  --c-fee:#ffe0ea;        /* حراج 1% */
+  --c-worker:#eaf0ff;     /* أجر العامل (2/ثنين) */
+  --c-net:#eaffea;        /* صافي الربح */
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#fafafa;color:var(--ink)}
+.topbar{position:sticky;top:0;z-index:10;background:var(--brand);padding:10px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #e6c700}
+.btn{border:0;border-radius:10px;padding:9px 12px;font-weight:700;cursor:pointer}
+.btn.gray{background:#fff;border:2px solid #000;color:#000}
+.brand{margin-inline-start:auto;display:flex;align-items:center;gap:8px;font-weight:900}
+.badge{background:#000;color:#fff;padding:2px 7px;border-radius:10px}
+.wrap{max-width:1100px;margin:12px auto;padding:0 12px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:10px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px}
+label{font-size:13px;color:#444;margin:6px 2px;display:block}
+input[type="number"],input[type="date"],input[type="text"]{width:100%;height:40px;border:2px solid #ddd;border-radius:10px;padding:0 12px;font-size:16px;background:#fff}
+.switch{display:flex;align-items:center;gap:8px}
+.addline{display:flex;align-items:center;gap:10px;margin:14px 0}
+.btn.black{background:#000;color:#fff}
+.note{font-size:12px;color:#555;margin:6px 2px}
+.table{overflow:auto;border-radius:14px;border:2px solid #ddd;background:#fff}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:900px}
+th,td{padding:10px 12px;border-bottom:1px solid #eee;text-align:center;font-weight:700}
+thead th{position:sticky;top:0;background:#fff}
+.col-date{background:var(--c-date)}
+.col-count{background:var(--c-count)}
+.col-price{background:var(--c-price)}
+.col-total{background:var(--c-total)}
+.col-fee{background:var(--c-fee)}
+.col-worker{background:var(--c-worker)}
+.col-net{background:var(--c-net)}
+.ok{background:#12c063;color:#fff;padding:2px 8px;border-radius:8px;font-weight:900}
+.x{background:#ff3b30;color:#fff;padding:2px 8px;border-radius:8px;font-weight:900}
+.del{background:#000;color:#fff;border:0;border-radius:8px;padding:6px 12px;cursor:pointer}
+tfoot td{font-weight:900;background:#f7f7f7}
+.small{font-size:12px;color:#666}
 </style>
 </head>
 <body>
 
+<!-- الشريط العلوي -->
 <div class="topbar">
-  <div class="wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <h1>bonkaim <span class="badge">B</span></h1>
-      <div class="tools">
-        <button class="btn" id="btnSync">تحديث من الشيت</button>
-        <button class="btn" id="btnClear">مسح المحلي</button>
-      </div>
-    </div>
-  </div>
+  <button id="btnVersion" class="btn gray">تراجع النسخة</button>
+  <button id="btnClear" class="btn gray">مسح المحلي</button>
+  <button id="btnPull"  class="btn gray">تحديث من الشيت</button>
+  <div class="brand"><span class="badge">B</span> bonkaim</div>
 </div>
 
 <div class="wrap">
-  <!-- رسالة حالة -->
-  <div id="status" class="hint">فشل الرفع… محفوظ محلياً.</div>
-
-  <!-- النموذج -->
-  <div class="form" style="margin-top:14px">
-    <div class="field">
-      <label>التاريخ</label>
-      <input type="date" id="inDate">
-    </div>
-    <div class="field">
+  <!-- المدخلات -->
+  <div class="row3">
+    <div>
       <label>عدد الثنين</label>
-      <input type="number" id="inCount" placeholder="مثال: 100">
+      <input id="inpCount" type="number" inputmode="numeric" placeholder="مثال: 100">
     </div>
-    <div class="field">
-      <label>حراج (مدفوع؟)</label>
-      <input type="checkbox" id="inHarajPaid" />
-    </div>
-    <div class="field">
+    <div>
       <label>سعر الثنين (ريال)</label>
-      <input type="number" id="inPrice" placeholder="مثال: 25">
+      <input id="inpPrice" type="number" step="0.01" inputmode="decimal" placeholder="مثال: 25">
     </div>
-    <div class="field">
-      <label class="hint">أجرة عامل (مدفوعة؟)</label>
-      <input type="checkbox" id="inWorkerPaid" checked>
-    </div>
-    <div class="field" style="align-self:end">
-      <button id="btnAdd" class="pill">إضافة +</button>
+    <div>
+      <label>التاريخ</label>
+      <input id="inpDate" type="date">
     </div>
   </div>
 
-  <div class="note">.Google Sheets مع يتزامن + يحفظ مجاناً — الحراج = 1% — الأجرة = 2 ريال × عدد الثنين</div>
+  <div class="row2">
+    <label class="switch"><input id="chkHarajPaid" type="checkbox"> حراج (مدفوع؟)</label>
+    <label class="switch"><input id="chkWorkerPaid" type="checkbox" checked> أجرة عامل (مدفوعة؟)</label>
+  </div>
+
+  <div class="addline">
+    <button id="btnAdd" class="btn black">+ إضافة</button>
+    <span id="state" class="small">جارِ الرفع عند توفر الشبكة…</span>
+  </div>
+
+  <div class="note">.Google Sheets مع يتزامن + يحفظ محليًا — %1 = الحراج — الثنين عدد × 2 ريال = الأجرة</div>
 
   <!-- الجدول -->
-  <div class="tbl">
+  <div class="table">
     <table id="tbl">
       <thead>
         <tr>
-          <th>التاريخ</th>
-          <th>عدد الثنين</th>
-          <th>سعر الثنين</th>
-          <th>الإجمالي</th>
-          <th>حراج 1%</th>
-          <th>أجر العامل (2/ثنين)</th>
-          <th>صافي الربح</th>
+          <th class="col-date">التاريخ</th>
+          <th class="col-count">عدد الثنين</th>
+          <th class="col-price">سعر الثنين</th>
+          <th class="col-total">الإجمالي</th>
+          <th class="col-fee">حراج 1%</th>
+          <th class="col-worker">أجر العامل (2/ثنين)</th>
+          <th class="col-net">صافي الربح</th>
           <th>أجرة عامل</th>
           <th>حراج</th>
           <th>إجراءات</th>
         </tr>
       </thead>
-      <tbody id="rows"></tbody>
+      <tbody id="body"></tbody>
       <tfoot>
         <tr>
-          <td class="chip">يحفظ تلقائياً<br/>+ مزامنة بالشيت</td>
-          <td id="sumCount">0</td>
-          <td><span id="avgPrice">0.00</span> (متوسط)</td>
-          <td id="sumTotal">0.00</td>
-          <td id="sumHaraj">0.00</td>
-          <td id="sumWorker">0.00</td>
-          <td id="sumNet">0.00</td>
-          <td></td><td></td><td>الإجماليات</td>
+          <td class="small">يحفظ تلقائيًا<br>+ مزامنة بالشيت</td>
+          <td id="fCount">0</td>
+          <td id="fPriceAvg">0.00 (متوسط)</td>
+          <td id="fTotal">0.00</td>
+          <td id="fFee">0.00</td>
+          <td id="fWorker">0.00</td>
+          <td id="fNet">0.00</td>
+          <td id="fWorkerPaid">—</td>
+          <td id="fHarajPaid">—</td>
+          <td>الإجماليات</td>
         </tr>
       </tfoot>
     </table>
   </div>
 </div>
 
-<!-- حوار تنبيه -->
-<dialog id="dlg">
-  <div id="dlgText" style="margin-bottom:10px"></div>
-  <button onclick="dlg.close()">إغلاق</button>
-</dialog>
-
 <script>
-/* ===== إعداداتك ===== */
-const API_URL = "https://script.google.com/macros/s/AKfycbyBlKn5FVFJm0FMp98ntQ8E3y9Ae_AlRzchLlXUEFcAcD32xW4nSFjRTgf9K5-PeynyoQ/exec"; // رابط السكربت المنشور (النسخة الأخيرة)
-const HEADERS = ['id','date','count','price','total','fee','worker','net','harajPaid','workerPaid'];
-/* ==================== */
+/* ================== إعدادات ================== */
+const APP_VERSION='9';              // لو تغيّر التصميم/الكاش زِد الرقم
+const API_URL = 'https://script.google.com/macros/s/AKfycbyBlKn5FVFJm0FMp98ntQ8E3y9Ae_AlRzchLlXUEFcAcD32xW4nSFjRTgf9K5-PeynyoQ/exec';
+const STORAGE_KEY='bk_rows';
+const PENDING_KEY='bk_pending';
 
-const $ = sel => document.querySelector(sel);
-const rowsEl = $("#rows");
-const dlg = $("#dlg"), dlgText=$("#dlgText");
-const stateKey = "bonkaim-data-v2";
-const queueKey = "bonkaim-queue-v2";
-let data = load(stateKey) || [];      // السجلات المحلية
-let queue = load(queueKey) || [];     // عمليات تنتظر الرفع
-updateUI();
+const $=s=>document.querySelector(s);
+const fmt=n=>Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const today=()=>new Date().toISOString().slice(0,10);
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
 
-/* أحداث */
-$("#btnAdd").onclick = addRow;
-$("#btnSync").onclick = syncFromSheet;
-$("#btnClear").onclick = clearLocal;
+function getRows(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]')}catch{return[]}}
+function setRows(v){localStorage.setItem(STORAGE_KEY,JSON.stringify(v))}
+function getPend(){try{return JSON.parse(localStorage.getItem(PENDING_KEY)||'[]')}catch{return[]}}
+function setPend(v){localStorage.setItem(PENDING_KEY,JSON.stringify(v))}
+function bust(u){const x=new URL(u);x.searchParams.set('_',Date.now());return x.toString()}
 
-/* افتراض تاريخ اليوم */
-$("#inDate").value = new Date().toISOString().slice(0,10);
+const _fetch=window.fetch.bind(window);
+window.fetch=(i,o={})=>{
+  let url=(typeof i==='string')?i:i.url;
+  if(url?.startsWith(API_URL)){url=bust(url);o=Object.assign({cache:'no-store',keepalive:true},o||{});return _fetch(url,o)}
+  return _fetch(i,o);
+};
 
-/* أدوات مساعدة */
-function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
-function load(k){ try{ return JSON.parse(localStorage.getItem(k)) }catch{ return null } }
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function money(n){ return (+n||0).toFixed(2); }
-function show(msg){ dlgText.textContent = msg; dlg.showModal(); }
-function setStatus(msg){ $("#status").textContent = msg; }
-
-/* حسابات الصف */
-function compute(r){
-  const count = +r.count||0;
-  const price = +r.price||0;
-  const total = count*price;
-  const fee = total*0.01;
-  const worker = count*2;
-  const net = total - fee - worker;
+/* ======== حسابات السطر ======== */
+function calc(r){
+  const count=+r.count||0, price=+r.price||0;
+  const total=count*price, fee=total*0.01, worker=count*2, net=total-fee-worker;
   return {...r,total,fee,worker,net};
 }
 
-/* رسم الجدول + المجاميع */
-function updateUI(){
-  rowsEl.innerHTML = "";
-  let sumCount=0,sumTotal=0,sumFee=0,sumWorker=0,sumNet=0;
-  let priceSum=0, priceN=0;
+/* ======== رسم الجدول ======== */
+function render(){
+  const body=$('#body'); body.innerHTML='';
+  const rows=getRows().map(calc);
 
-  data.forEach(r=>{
-    r = compute(r);
-    sumCount += (+r.count||0);
-    sumTotal += r.total; sumFee += r.fee; sumWorker += r.worker; sumNet += r.net;
-    if(+r.price){ priceSum+=+r.price; priceN++; }
+  let sCount=0, sPrice=0, sTotal=0, sFee=0, sWorker=0, sNet=0, cHarajPaid=0, cWorkerPaid=0;
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${r.date||''}</td>
-      <td>${r.count||0}</td>
-      <td>${money(r.price)}</td>
-      <td>${money(r.total)}</td>
-      <td>${money(r.fee)}</td>
-      <td>${money(r.worker)}</td>
-      <td>${money(r.net)}</td>
-      <td><button class="ok" title="أجرة عامل مدفوعة">${r.workerPaid==='TRUE'?'✓':' '}</button></td>
-      <td><button class="ok" title="حراج مدفوع">${r.harajPaid==='TRUE'?'✓':' '}</button></td>
-      <td><button class="del">حذف</button></td>
-    `;
-    tr.querySelector(".del").onclick = ()=> removeRow(r.id);
-    rowsEl.appendChild(tr);
+  rows.forEach(r=>{
+    sCount+=+r.count||0;
+    sPrice+=(+r.price||0)*(+r.count||0);
+    sTotal+=r.total; sFee+=r.fee; sWorker+=r.worker; sNet+=r.net;
+    if(r.harajPaid) cHarajPaid++; if(r.workerPaid) cWorkerPaid++;
+
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td class="col-date">${r.date||''}</td>
+      <td class="col-count">${r.count||0}</td>
+      <td class="col-price">${fmt(r.price||0)}</td>
+      <td class="col-total">${fmt(r.total)}</td>
+      <td class="col-fee">${fmt(r.fee)}</td>
+      <td class="col-worker">${fmt(r.worker)}</td>
+      <td class="col-net">${fmt(r.net)}</td>
+      <td>${r.workerPaid?'<span class="ok">✓</span>':'<span class="x">✕</span>'}</td>
+      <td>${r.harajPaid?'<span class="ok">✓</span>':'<span class="x">✕</span>'}</td>
+      <td><button class="del" data-del="${r.id}">حذف</button></td>`;
+    body.appendChild(tr);
   });
 
-  $("#sumCount").textContent = sumCount;
-  $("#sumTotal").textContent = money(sumTotal);
-  $("#sumHaraj").textContent = money(sumFee);
-  $("#sumWorker").textContent = money(sumWorker);
-  $("#sumNet").textContent = money(sumNet);
-  $("#avgPrice").textContent = money(priceN?priceSum/priceN:0);
-
-  // حالة
-  if(queue.length>0){
-    setStatus("بانتظار الرفع ⌛ — السجلات محفوظة محلياً.");
-    tryFlushQueue(); // حاول الرفع بصمت
-  }else{
-    setStatus("تم التحديث من الشيت ✓");
-  }
-
-  save(stateKey,data);
-  save(queueKey,queue);
+  $('#fCount').textContent=sCount;
+  $('#fPriceAvg').textContent=sCount?fmt(sPrice/sCount)+' (متوسط)':'0.00 (متوسط)';
+  $('#fTotal').textContent=fmt(sTotal);
+  $('#fFee').textContent=fmt(sFee);
+  $('#fWorker').textContent=fmt(sWorker);
+  $('#fNet').textContent=fmt(sNet);
+  $('#fWorkerPaid').textContent=cWorkerPaid?cWorkerPaid:'—';
+  $('#fHarajPaid').textContent=cHarajPaid?cHarajPaid:'—';
 }
 
-/* إضافة */
-function addRow(){
-  const r = {
-    id: uid(),
-    date: $("#inDate").value,
-    count: $("#inCount").value,
-    price: $("#inPrice").value,
-    harajPaid: $("#inHarajPaid").checked ? 'TRUE':'FALSE',
-    workerPaid: $("#inWorkerPaid").checked ? 'TRUE':'FALSE',
+/* ======== إضافة/حذف محلي + طابور ======== */
+function addLocal(row){
+  const rows=getRows(); rows.push(row); setRows(rows);
+  const p=getPend(); p.push({op:'add',row}); setPend(p);
+  render(); pushPending();
+}
+function deleteById(id){
+  setRows(getRows().filter(x=>x.id!==id));
+  const p=getPend(); p.push({op:'delete',id}); setPend(p);
+  render(); pushPending();
+}
+
+/* ======== API ======== */
+async function apiGet(){const r=await fetch(API_URL+'?action=get',{cache:'no-store'});return r.json();}
+async function apiAdd(row){const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,cache:'no-store',body:JSON.stringify({action:'add',...row})});return r.json();}
+async function apiDelete(id){const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,cache:'no-store',body:JSON.stringify({action:'delete',id})});return r.json();}
+
+/* ======== مزامنة ======== */
+async function pushPending(){
+  const s=$('#state'); let p=getPend(); if(!p.length){s.textContent='تم التحديث من الشيت ✔';return}
+  s.textContent='جارِ الرفع للشيت… ⏳';
+  const remain=[];
+  for(const job of p){
+    try{
+      if(job.op==='add') await apiAdd(calc(job.row));
+      else if(job.op==='delete') await apiDelete(job.id);
+    }catch(_){ remain.push(job); }
+  }
+  setPend(remain);
+  s.textContent=remain.length?'فشل الرفع الآن، السجل محفوظ محليًا.':'تمت المزامنة ✔';
+}
+async function pullFromSheet(){
+  $('#state').textContent='يجري السحب من الشيت…';
+  try{
+    const j=await apiGet();
+    if(j?.ok){
+      const pendAddIds=new Set(getPend().filter(x=>x.op==='add').map(x=>x.row.id));
+      const rows=(j.data||[]).filter(r=>r&&r.id&&!pendAddIds.has(r.id));
+      setRows(rows); render(); $('#state').textContent='تم التحديث من الشيت ✔';
+    }else{$('#state').textContent='تعذّر التحديث الآن.'}
+  }catch(_){$('#state').textContent='تعذّر التحديث الآن.'}
+}
+
+/* ======== أحداث واجهة ======== */
+$('#inpDate').value=today();
+$('#btnAdd').addEventListener('click',()=>{
+  const row={
+    id:uid(),
+    date:$('#inpDate').value||today(),
+    count:+$('#inpCount').value||0,
+    price:+$('#inpPrice').value||0,
+    harajPaid:$('#chkHarajPaid').checked,
+    workerPaid:$('#chkWorkerPaid').checked
   };
-  data.push(r);
-  queue.push({op:'add', row:r});
-  updateUI();
-}
+  addLocal(row);
+  $('#inpCount').value=''; $('#inpPrice').value='';
+});
+$('#body').addEventListener('click',e=>{
+  const id=e.target?.dataset?.del; if(id) deleteById(id);
+});
+$('#btnPull').addEventListener('click',pullFromSheet);
+$('#btnClear').addEventListener('click',()=>{ if(confirm('مسح التخزين المحلي فقط؟')){localStorage.removeItem(STORAGE_KEY);render();} });
+$('#btnVersion').addEventListener('click',()=>{
+  const kV='bk_version',kApi='bk_api';
+  const keep=getRows(), pend=getPend();
+  localStorage.clear(); setRows(keep); setPend(pend);
+  localStorage.setItem(kV,APP_VERSION); localStorage.setItem(kApi,API_URL);
+  render(); alert('تم تنظيف الكاش المحلي (تراجع النسخة).');
+});
 
-/* حذف */
-function removeRow(id){
-  data = data.filter(r=>r.id!==id);
-  queue.push({op:'delete', id});
-  updateUI();
-}
-
-/* مسح المحلي فقط */
-function clearLocal(){
-  if(!confirm("متأكد تمسح البيانات المحلية فقط؟")) return;
-  data = []; queue = [];
-  updateUI();
-}
-
-/* تزامن من الشيت (سحب من الشيت) */
-async function syncFromSheet(){
-  try{
-    const u = new URL(API_URL);
-    u.searchParams.set('action','get');
-    const res = await fetch(u, {method:'GET'});
-    const json = await res.json();
-    if(json.ok){
-      const rows = json.data || [];
-      // تأكد من المفاتيح والتحويل لأسماءنا
-      data = rows.map(arr=>{
-        const o={}; HEADERS.forEach((h,i)=>o[h]=arr[i] ?? '');
-        return o;
-      });
-      // بعد السحب حاول ترفَع أي طوابير عالقة
-      await tryFlushQueue(true);
-      updateUI();
-    }else{
-      show("تعذر التحديث من الشيت.");
-    }
-  }catch(e){
-    show("تعذر التحديث من الشيت. الشبكة؟");
+/* ======== تهيئة ======== */
+(function init(){
+  const kV='bk_version',kApi='bk_api';
+  if(localStorage.getItem(kV)!==APP_VERSION || localStorage.getItem(kApi)!==API_URL){
+    const keep=getRows(), pend=getPend();
+    localStorage.clear(); setRows(keep); setPend(pend);
+    localStorage.setItem(kV,APP_VERSION); localStorage.setItem(kApi,API_URL);
   }
-}
-
-/* رفع الطوابير (إضافة/حذف) */
-async function tryFlushQueue(force=false){
-  if(queue.length===0) return;
-  // جرّب واحدة واحدة؛ إذا فشلت وقف بهدوء
-  const item = queue[0];
-  try{
-    const form = new URLSearchParams();
-    form.set('action', item.op==='delete'?'delete':'add');
-    if(item.op==='delete'){
-      form.set('id', item.id);
-    }else{
-      // طبّق الحِسابات قبل الإرسال (اختياري)
-      const r = compute(item.row);
-      HEADERS.forEach(h=> form.set(h, r[h] ?? ''));
-    }
-    const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:form.toString()});
-    const json = await res.json();
-    if(json.ok){
-      queue.shift(); // تم
-      save(queueKey,queue);
-      if(force) setStatus("تم التحديث من الشيت ✓");
-      // جرّب التالية
-      if(queue.length>0) tryFlushQueue(force);
-    }else{
-      // فشل هادئ
-      setStatus("فشل الرفع الآن، السجل محفوظ محلياً.");
-    }
-  }catch(err){
-    setStatus("فشل الرفع الآن، السجل محفوظ محلياً.");
-  }
-}
-
-/* عند التحميل الأول: جرّب ترفَع أي شيء متبقّي */
-window.addEventListener('load', ()=> { if(queue.length>0) tryFlushQueue(); });
+})();
+render();            // اعرض المحلي فورًا
+pushPending();       // حاول رفع المعلّق
+pullFromSheet();     // اسحب من الشيت ليصير نفس البيانات بكل الأجهزة
 </script>
 </body>
 </html>
