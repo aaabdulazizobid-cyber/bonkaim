@@ -6,9 +6,12 @@
 <title>برنامج بيع البونيكام — نسخة سريعة</title>
 <meta name="theme-color" content="#FFD700"/>
 
+<!-- PWA / iOS -->
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <style>
   :root{
@@ -41,10 +44,9 @@
   .rowbtn{background:#111;color:#fff;border:1.8px solid var(--border);padding:6px 10px;border-radius:10px}
   tfoot td{background:#f1f1f1;font-weight:700}
 
-  /* مربعات الحالة (حراج / أجرة عامل) */
+  /* مربعات ✓/✗ (حراج + أجرة عامل) */
   .flagbox{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:2px solid var(--border);border-radius:6px;font-weight:800;font-size:18px}
   .flag-ok{background:var(--ok-bg);color:var(--ok)} .flag-no{background:var(--bad-bg);color:var(--bad)}
-
   .hint{font-size:12px;color:var(--muted);margin-top:6px}
   @media (max-width:900px){.inputs{grid-template-columns:1fr 1fr}}
 </style>
@@ -61,7 +63,7 @@
 </header>
 
 <div class="wrap">
-  <div class="toolrow"><span id="syncStat" class="hint">جاهز.</span></div>
+  <div class="toolrow"><span id="syncStat" class="hint">الشيت غير متاح الآن، محفوظ محليًا.</span></div>
 
   <div class="card">
     <div class="inputs">
@@ -100,28 +102,18 @@
 </div>
 
 <script>
-/* ===== إعداد رابط Apps Script ===== */
+/* رابط تطبيق الويب (Apps Script) — نفس اللي أرسلته لي */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwW3PY8LRygbOdoVauvgarWxYYc8QV2NVK6tf0t54vuJReO_lMwPwqOaP2zeW4b0pmH/exec';
 
-/* ===== مفاتيح التخزين ===== */
-const LS_MAIN  = 'bonikam_sync_v1';   // بيانات الجدول
-const LS_QUEUE = 'bonikam_queue_v1';  // طابور الإرسال
-
-/* ===== متغيرات عامة ===== */
-let rows = [];
-let queue = [];   // عناصر لم تُرسل بعد
+const LS_KEY='bonikam_sync_v1';
+let rows=[];
 const $ = id => document.getElementById(id);
 
-/* ===== أدوات ===== */
-function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10); }
+function todayISO(){ const d=new Date(); const t=new Date(d.getTime()-d.getTimezoneOffset()*60000); return t.toISOString().slice(0,10);}
 $('date').value = todayISO();
 
-function load(){
-  rows  = JSON.parse(localStorage.getItem(LS_MAIN)  || '[]');
-  queue = JSON.parse(localStorage.getItem(LS_QUEUE) || '[]');
-}
-function save(){ localStorage.setItem(LS_MAIN,  JSON.stringify(rows)); }
-function saveQ(){ localStorage.setItem(LS_QUEUE, JSON.stringify(queue)); }
+function load(){ rows=JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(rows)); }
 function status(s){ $('syncStat').textContent=s; }
 
 function compute(r){
@@ -130,18 +122,17 @@ function compute(r){
   const fee=+(total*0.01).toFixed(2);
   const worker=+(c*2).toFixed(2);
   const net=+(total-fee-worker).toFixed(2);
-  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net;
+  r.total=+total.toFixed(2); r.fee=fee; r.worker=worker; r.net=net; 
   return r;
 }
-const flagBox = tf => `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`;
+function flagBox(tf){ return `<span class="flagbox ${tf?'flag-ok':'flag-no'}">${tf?'✓':'✗'}</span>`; }
 
-/* ===== عرض الجدول ===== */
 function render(){
   const tb=$('tbody'); tb.innerHTML='';
   rows.sort((a,b)=> a.date.localeCompare(b.date));
   for(const r of rows){
     const tr=document.createElement('tr');
-    tr.innerHTML = `
+    tr.innerHTML=`
       <td><button class="rowbtn" onclick="delRow('${r.id}')">حذف</button></td>
       <td>${flagBox(!!r.harajPaid)}</td>
       <td>${flagBox(!!r.workerPaid)}</td>
@@ -156,102 +147,98 @@ function render(){
   }
   const sum=k=>rows.reduce((a,c)=>a+Number(c[k]||0),0);
   const avg=rows.length? rows.reduce((a,c)=>a+Number(c.price||0),0)/rows.length : 0;
-  $('tCount').textContent   = sum('count').toFixed(0);
-  $('tTotal').textContent   = sum('total').toFixed(2);
-  $('tFee').textContent     = sum('fee').toFixed(2);
-  $('tWorker').textContent  = sum('worker').toFixed(2);
-  $('tNet').textContent     = sum('net').toFixed(2);
-  $('tAvgPrice').textContent= avg.toFixed(2)+' (متوسط)';
+  $('tCount').textContent = sum('count').toFixed(0);
+  $('tTotal').textContent = sum('total').toFixed(2);
+  $('tFee').textContent   = sum('fee').toFixed(2);
+  $('tWorker').textContent= sum('worker').toFixed(2);
+  $('tNet').textContent   = sum('net').toFixed(2);
+  $('tAvgPrice').textContent = avg.toFixed(2)+' (متوسط)';
 }
 
-/* ===== حذف محلي فقط ===== */
-function delRow(id){ rows = rows.filter(x=>x.id!==id); save(); render(); status('حُذف محليًا. (لا يحذف من الشيت)'); }
+function delRow(id){ rows=rows.filter(x=>x.id!==id); save(); render(); status('حُذف محليًا.'); }
 
-/* ===== إضافة صف + وضعه في طابور الإرسال ===== */
-async function addRow(){
-  const row = compute({
-    id: Date.now()+''+Math.random().toString(16).slice(2),
-    date: $('date').value || todayISO(),
-    count:+$('count').value||0,
-    price:+$('price').value||0,
-    harajPaid:$('harajPaid').checked,
-    workerPaid:$('workerPaid').checked
-  });
-  rows.push(row); save(); render();
-
-  queue.push(row); saveQ();  // أدخل الطابور
-  flushQueue();              // حاول الإرسال الآن
-
-  $('count').value=''; $('price').value='';
-}
-
-/* ===== إرسال عنصر واحد للسكربت ===== */
-async function sendOne(item){
-  const res = await fetch(SCRIPT_URL+'?action=add',{
+/* --- إرسال صف: text/plain لتفادي preflight في iOS --- */
+async function sendRow(row){
+  const url = `${SCRIPT_URL}?action=add&ts=${Date.now()}`;
+  const res = await fetch(url,{
     method:'POST',
-    headers:{'Content-Type':'application/json','Cache-Control':'no-store'},
+    headers:{'Content-Type':'text/plain;charset=utf-8','Cache-Control':'no-store'},
     body: JSON.stringify({
-      id:item.id, date:item.date, count:item.count, price:item.price,
-      total:item.total, fee:item.fee, worker:item.worker, net:item.net,
-      harajPaid:item.harajPaid?'TRUE':'FALSE',
-      workerPaid:item.workerPaid?'TRUE':'FALSE'
-    })
+      id: row.id, date: row.date, count: row.count, price: row.price,
+      total: row.total, fee: row.fee, worker: row.worker, net: row.net,
+      harajPaid: row.harajPaid ? 'TRUE' : 'FALSE',
+      workerPaid: row.workerPaid ? 'TRUE' : 'FALSE'
+    }),
+    cache:'no-store',
+    credentials:'omit',
+    mode:'cors'
   });
   if(!res.ok) throw new Error(await res.text());
 }
 
-/* ===== تفريغ الطابور (إعادة المحاولة تلقائيًا) ===== */
-let flushing = false;
-async function flushQueue(){
-  if(flushing || !queue.length) return;
-  flushing = true;
-  status('جارِ رفع '+queue.length+' صف…');
-  const remain = [];
-  for(const item of queue){
-    try{ await sendOne(item); }
-    catch{ remain.push(item); }
+/* قائمة انتظار للرفع عند العودة للشبكة */
+function queuePending(row){
+  const q = JSON.parse(localStorage.getItem('pending')||'[]');
+  q.push(row); localStorage.setItem('pending', JSON.stringify(q));
+}
+async function flushPending(){
+  const q = JSON.parse(localStorage.getItem('pending')||'[]');
+  if(!q.length) return;
+  for(const r of q){
+    try{ await sendRow(r); }catch(e){ return; }
   }
-  queue = remain; saveQ();
-  if(queue.length===0){ status('تم الرفع للشيت ✔️'); pull(); }
-  else { status('بقي '+queue.length+' غير مرفوعة — سنعيد المحاولة تلقائيًا.'); }
-  flushing = false;
+  localStorage.removeItem('pending');
 }
 
-/* ===== سحب من الشيت (مع منع الكاش) ===== */
+async function addRow(){
+  const date=$('date').value||todayISO();
+  const count=+$('count').value||0;
+  const price=+$('price').value||0;
+  const harajPaid=$('harajPaid').checked;
+  const workerPaid=$('workerPaid').checked;
+
+  const row=compute({id: Date.now()+''+Math.random().toString(16).slice(2), date,count,price, harajPaid, workerPaid});
+  rows.push(row); save(); render();
+
+  try{ status('جارِ الإرسال للشيت...'); await sendRow(row); await flushPending(); status('تم الرفع للشيت ✔️'); }
+  catch(err){ queuePending(row); status('تعذّر الإرسال الآن — محفوظ محليًا.'); }
+
+  $('count').value=''; $('price').value='';
+}
+
+/* جلب من الشيت بدون كاش iOS */
 async function pull(){
   try{
-    status('جارِ التحديث من الشيت…');
-    const ts = Date.now();
-    const r = await fetch(SCRIPT_URL+`?action=get&perPage=1000&_=${ts}`,{cache:'no-store'});
+    status('جارِ التحديث من الشيت...');
+    const r = await fetch(`${SCRIPT_URL}?action=get&ts=${Date.now()}`,{cache:'no-store', credentials:'omit', mode:'cors'});
     if(!r.ok) throw new Error('GET failed');
     const j = await r.json();
     const arr = Array.isArray(j.data)? j.data : [];
-    // دمج فريد حسب id (لو فيه صفوف محلية قديمة بنفس id سيتم استبدالها)
-    const map = new Map();
-    for(const o of arr){ map.set(String(o.id||''), o); }
-    rows = Array.from(map.values()).map(o => compute({
-      id:o.id??'', date:o.date??'',
+    rows = arr.map(o=>compute({
+      id: o.id ?? '',
+      date: o.date ?? '',
       count:+o.count||0, price:+o.price||0,
       total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
-      harajPaid:(o.harajPaid===true||o.harajPaid==='TRUE'||o.harajPaid==='تم'),
-      workerPaid:(o.workerPaid===true||o.workerPaid==='TRUE'||o.workerPaid==='تم')
+      harajPaid: (o.harajPaid===true || o.harajPaid==='TRUE' || o.harajPaid==='تم'),
+      workerPaid:(o.workerPaid===true || o.workerPaid==='TRUE' || o.workerPaid==='تم')
     }));
     save(); render(); status('تم التحديث من الشيت ✔️');
+    await flushPending();
   }catch(e){
-    status('تعذّر الجلب من الشيت. تأكد من نشر السكربت (Anyone).');
+    status('تعذّر الجلب من الشيت.'); alert('تأكد أن السكربت منشور كتطبيق ويب (Anyone) ويرجع JSON صحيح.');
   }
 }
 
-/* ===== ربط الأزرار + تشغيل أولي ===== */
 $('btnAdd').addEventListener('click', addRow);
 $('btnPull').addEventListener('click', pull);
-$('btnClearLocal').addEventListener('click', ()=>{
-  if(confirm('متأكد تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.'); }
-});
+$('btnClearLocal').addEventListener('click', ()=>{ if(confirm('متأكد تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.'); } });
 
+/* تشغيل أولي */
 load(); render();
-flushQueue();               // حاول إرسال ما كان متوقف
-setInterval(flushQueue,20_000); // إعادة محاولة كل 20 ثانية
+flushPending();
+
+/* محاولة مزامنة تلقائية عند عودة الاتصال في iOS */
+window.addEventListener('online', flushPending);
 </script>
 </body>
 </html>
