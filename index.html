@@ -77,8 +77,14 @@
   <div class="toolrow">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
     <button class="ghost" id="btnClearLocal">مسح المحلي</button>
+    <!-- الجديد: تصدير/استيراد نسخة -->
+    <button class="ghost" id="btnExport">تصدير نسخة</button>
+    <button class="ghost" id="btnImport">استيراد نسخة</button>
     <span id="syncStat" class="hint">جاهز.</span>
   </div>
+
+  <!-- مُدخل ملف مخفي للاستيراد -->
+  <input id="fileImport" type="file" accept="application/json" style="display:none"/>
 
   <div class="card">
     <div class="inputs">
@@ -114,8 +120,8 @@
       <thead>
         <tr>
           <th>إجراءات</th>
-          <th>حراج</th>            <!-- (كان: الحالة) -->
-          <th>أجرة عامل</th>       <!-- (كان: تم الدفع؟) -->
+          <th>حراج</th>
+          <th>أجرة عامل</th>
           <th class="c-net">صافي الربح</th>
           <th class="c-worker">أجر العامل (فلين/2)</th>
           <th class="c-fee">حراج %1</th>
@@ -139,7 +145,6 @@
           <td class="num" id="tCount">0</td>
           <td style="font-size:12px">يحفظ تلقائيًا + مزامنة بالشيت</td>
         </tr>
-        <!-- صف تفصيلي جديد: مدفوع/متبقي لأجرة العامل والحراج -->
         <tr>
           <td colspan="5" class="num">أجرة العامل — مدفوع: <span id="tWorkerPaid">0.00</span> | متبقي: <span id="tWorkerDue">0.00</span></td>
           <td colspan="5" class="num">حراج — مدفوع: <span id="tFeePaid">0.00</span> | متبقي: <span id="tFeeDue">0.00</span></td>
@@ -150,16 +155,7 @@
 </div>
 
 <script>
-/* ---------------- إعداد المزامنة (اختياري) ----------------
-  لو تستخدم NoCodeAPI املأ GET_URL و ADD_URL (تبويب GET ثم Add new rows as JSON)
-  مثال:
-  const GET_URL = 'https://v1.nocodeapi.com/<user>/google_sheets/<key>?tabId=الورقة1';
-  const ADD_URL = 'https://v1.nocodeapi.com/<user>/google_sheets/<key>/addRows?tabId=الورقة1';
-
-  أو لو تستخدم Apps Script اترك GET_URL/ADD_URL يشيران إلى السكربت الخاص بك:
-  - GET:   https://script.google.com/macros/s/..../exec?action=get
-  - POST:  https://script.google.com/macros/s/..../exec?action=add
----------------------------------------------------------------- */
+/* ---------------- إعداد المزامنة (اختياري) ---------------- */
 const GET_URL = ''; // ضع رابط جلب الصفوف (إن رغبت)
 const ADD_URL = ''; // ضع رابط الإضافة (إن رغبت)
 
@@ -223,7 +219,6 @@ function render(){
   const sum=k=>rows.reduce((a,c)=>a+Number(c[k]||0),0);
   const avgPrice=rows.length? rows.reduce((a,c)=>a+Number(c.price||0),0)/rows.length : 0;
 
-  // المجاميع الأساسية (مثل قبل)
   document.getElementById('tCount').textContent = sum('count').toFixed(0);
   document.getElementById('tTotal').textContent = sum('total').toFixed(2);
   document.getElementById('tFee').textContent   = sum('fee').toFixed(2);
@@ -231,7 +226,6 @@ function render(){
   document.getElementById('tNet').textContent   = sum('net').toFixed(2);
   document.getElementById('tAvgPrice').textContent = avgPrice.toFixed(2)+' (متوسط)';
 
-  // الجديد: مدفوع/متبقي لأجرة العامل والحراج حسب ✓/✗
   const workerPaid = rows.reduce((a,r)=> a + (r.workerPaid ? Number(r.worker||0):0), 0);
   const workerDue  = rows.reduce((a,r)=> a + (!r.workerPaid ? Number(r.worker||0):0), 0);
   const feePaid    = rows.reduce((a,r)=> a + (r.harajPaid ? Number(r.fee||0):0), 0);
@@ -265,7 +259,6 @@ async function addRow(){
 
   try{
     status('جارِ الإرسال للشيت...');
-    // NoCodeAPI body format:
     const res=await fetch(ADD_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:[{
       id:row.id,date:row.date,count:row.count,price:row.price,total:row.total,fee:row.fee,worker:row.worker,net:row.net,
       harajPaid: row.harajPaid?'TRUE':'FALSE',
@@ -310,11 +303,63 @@ async function pull(){
   }
 }
 
+/* ---------------- النسخة الاحتياطية: تصدير/استيراد ---------------- */
+function exportBackup(){
+  try{
+    const payload = {version:1, exportedAt:new Date().toISOString(), rows};
+    const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+    const ts = new Date().toISOString().replace(/[:.]/g,'-');
+    const name = `bonkaim-backup-${ts}.json`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 0);
+    status('تم تنزيل النسخة الاحتياطية.');
+  }catch(e){
+    alert('تعذر إنشاء النسخة الاحتياطية.'); status('فشل التصدير.');
+  }
+}
+
+function handleImportFile(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file){ return; }
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      const arr = Array.isArray(data) ? data : (Array.isArray(data.rows) ? data.rows : null);
+      if(!arr) throw new Error('bad');
+      if(!confirm('سيتم استبدال البيانات الحالية بالنسخة المستوردة. متابعة؟')){ status('أُلغي الاستيراد.'); return; }
+      rows = arr.map(o=>compute({
+        id: o.id ?? Date.now()+''+Math.random().toString(16).slice(2),
+        date: o.date ?? '',
+        count:+o.count||0, price:+o.price||0,
+        total:+o.total||0, fee:+o.fee||0, worker:+o.worker||0, net:+o.net||0,
+        harajPaid: (o.harajPaid===true||o.harajPaid==='TRUE'||o.harajPaid==='تم'),
+        workerPaid:(o.workerPaid===true||o.workerPaid==='TRUE'||o.workerPaid==='تم')
+      }));
+      save(); render(); status('تم الاستيراد من الملف ✔️');
+    }catch(err){
+      alert('الملف غير صالح أو تالف.'); status('فشل الاستيراد.');
+    }finally{
+      e.target.value=''; // يسمح باختيار نفس الملف مرة أخرى
+    }
+  };
+  reader.onerror = () => { alert('حدث خطأ أثناء قراءة الملف.'); status('فشل الاستيراد.'); };
+  reader.readAsText(file);
+}
+
 document.getElementById('btnAdd').addEventListener('click', addRow);
 document.getElementById('btnPull').addEventListener('click', pull);
 document.getElementById('btnClearLocal').addEventListener('click', ()=>{
   if(confirm('متأكد تمسح النسخة المحلية فقط؟')){ rows=[]; save(); render(); status('تم مسح المحلي.');}
 });
+
+/* ربط أزرار النسخة الاحتياطية */
+document.getElementById('btnExport').addEventListener('click', exportBackup);
+document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('fileImport').click());
+document.getElementById('fileImport').addEventListener('change', handleImportFile);
 
 load(); render();
 </script>
