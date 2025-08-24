@@ -29,7 +29,6 @@
   .toolrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
   button{padding:10px 14px;border:1.8px solid var(--border);border-radius:10px;background:#111;color:#fff;cursor:pointer}
   .ghost{background:#fff;color:#111}
-  .clean{background:#fff;color:#111}
   .inputs{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:8px}
   label{font-size:12px;color:var(--muted);margin:0 0 5px;display:block}
   input[type="number"],input[type="date"]{
@@ -62,6 +61,21 @@
   @media (max-width:900px){
     .inputs{grid-template-columns:1fr 1fr}
   }
+
+  /* وضع أسود */
+  body.dark{
+    --ink:#f1f5f9; --muted:#cbd5e1; --bg:#0b0b0b; --card:#111;
+    --gold:#111; --border:#3f3f46;
+    --c1:#2a2618; --c2:#1f2a1f; --c3:#1a2431; --c4:#2a2516; --c5:#2a1e25; --c6:#1f2433; --c7:#1d2a1b;
+    --ok-bg:#16361a; --bad-bg:#3a1d21;
+  }
+  body.dark header{background:#111; border-bottom-color:#3f3f46}
+  body.dark .ghost{background:#222;color:#eee;border-color:#3f3f46}
+  body.dark input[type="number"], body.dark input[type="date"]{background:#111;color:#eee;border-color:#3f3f46}
+  body.dark .table-wrap{background:#111;border-color:#3f3f46}
+  body.dark thead th{background:#1a1a1a;border-bottom-color:#3f3f46}
+  body.dark tbody tr:nth-child(even){background:#101010}
+  body.dark tfoot td{background:#151515}
 </style>
 </head>
 <body>
@@ -77,13 +91,15 @@
   <div class="toolrow">
     <button class="ghost" id="btnPull">تحديث من الشيت</button>
     <button class="ghost" id="btnClearLocal">مسح المحلي</button>
-    <!-- الجديد: تصدير/استيراد نسخة -->
+    <!-- ظاهر: تصدير/استيراد -->
     <button class="ghost" id="btnExport">تصدير نسخة</button>
     <button class="ghost" id="btnImport">استيراد نسخة</button>
+    <!-- خيار الوضع الأسود -->
+    <button class="ghost" id="btnTheme">الوضع الأسود</button>
     <span id="syncStat" class="hint">جاهز.</span>
   </div>
 
-  <!-- مُدخل ملف مخفي للاستيراد -->
+  <!-- مُدخل ملف خفي للاستيراد -->
   <input id="fileImport" type="file" accept="application/json" style="display:none"/>
 
   <div class="card">
@@ -360,6 +376,24 @@ document.getElementById('btnClearLocal').addEventListener('click', ()=>{
 document.getElementById('btnExport').addEventListener('click', exportBackup);
 document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('fileImport').click());
 document.getElementById('fileImport').addEventListener('change', handleImportFile);
+
+/* --------- زر الوضع الأسود (يحفظ التفضيل) --------- */
+const THEME_KEY='bonikam_theme';
+function applyTheme(){
+  const v = localStorage.getItem(THEME_KEY)||'light';
+  document.body.classList.toggle('dark', v==='dark');
+  const btn = document.getElementById('btnTheme');
+  if(btn) btn.textContent = (v==='dark') ? 'الوضع الفاتح' : 'الوضع الأسود';
+}
+function toggleTheme(){
+  const v = localStorage.getItem(THEME_KEY)||'light';
+  const nv = (v==='dark')?'light':'dark';
+  localStorage.setItem(THEME_KEY, nv);
+  applyTheme();
+}
+document.getElementById('btnTheme').addEventListener('click', toggleTheme);
+applyTheme();
+/* --------------------------------------------------- */
 
 load(); render();
 </script>
